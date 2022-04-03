@@ -49,12 +49,10 @@ importers:
       react-dom: 17.0.2
       tsconfig: workspace:*
       typescript: ^4.5.3
-      ui: workspace:*
     dependencies:
       next: 12.0.8_react-dom@17.0.2+react@17.0.2
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      ui: link:../../packages/ui
     devDependencies:
       '@types/node': 17.0.23
       '@types/react': 17.0.37
