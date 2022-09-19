@@ -6,6 +6,8 @@
   "files": [
     "base.json",
     "nextjs.json",
+    "discord-bot.json",
+    "indexer.json",
     "react-library.json"
   ]
 }

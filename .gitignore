@@ -31,3 +31,5 @@ yarn-error.log*
 
 # turbo
 .turbo
+apps/discord-bot/tsconfig.tsbuildinfo
+apps/indexer/tsconfig.tsbuildinfo
