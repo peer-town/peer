@@ -9,6 +9,7 @@
     "dev": "nodemon"
   },
   "dependencies": {
+    "@prisma/client": "^4.3.1",
     "@types/node": "^18.7.17",
     "@types/node-fetch": "^2.6.2",
     "discord.js": "^14.3.0",
