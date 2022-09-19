@@ -1,7 +1,20 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import {
+  ChannelType,
+  Client,
+  GatewayIntentBits,
+  Message,
+  MessageType,
+  Partials,
+} from "discord.js";
 import { config } from "dotenv";
 config();
 
+import { PrismaClient } from "@prisma/client";
+import { randomString } from "@stablelib/random";
+const prisma = new PrismaClient();
+
+const DISCORD_INVOCATION_STRING = "devnode";
+const DISCORD_BOT_NAME = "devnode-bot";
 const DISCORD_SERVER_ERROR = "Whoops... we had an internal issue";
 const DISCORD_CHALLENGE_SUCCESS = "Great! Your challenge code is: ";
 const DISCORD_INVALID_DID =
@@ -18,8 +31,13 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
   ],
+  partials: [Partials.Channel],
 });
 
 console.log("discord-bot start");
@@ -28,34 +46,58 @@ client.once("ready", async () => {
   console.log("Ready!");
 });
 
-client.on("messageCreate", async (message: any) => {
+client.on("messageCreate", async (message: Message) => {
   /////////////////////////////
   // VERIFICATION IN DIRECT MESSAGE
   /////////////////////////////
-  if (message.channel.type === "dm") {
+
+  if (message.channel.type == ChannelType.DM) {
+    const user = await client.users.fetch(message.author.id);
+
     const { username: handle, discriminator, id: userId } = message.author;
-    if (handle === "3box-verifications-v2") return;
+    if (handle === DISCORD_BOT_NAME) return;
     const username = `${handle}#${discriminator}`;
 
-    let did;
+    let did = "";
     try {
-      did = message.content.match(/did:key:[a-zA-z0-9]{48}/)[0];
+      did = message.content.match(/did:[a-zA-z0-9]{48}/)![0];
     } catch (e) {
-      if (!did) return message.channel.send(DISCORD_INVALID_DID);
+      if (!did.length) {
+        user.send(DISCORD_INVALID_DID);
+        return;
+      }
     }
 
-    // const challengeCode = await storeMgr.saveRequest({
-    //   did,
-    //   username,
-    //   userId,
-    // });
+    let challengeCode = randomString(32);
 
-    // message.channel.send(`${DISCORD_CHALLENGE_SUCCESS} \`${challengeCode}\``);
+    const data = {
+      did,
+      username,
+      timestamp: Date.now(),
+      challengeCode,
+      userId,
+    };
+
+    await prisma.discordChallenge.upsert({
+      where: {
+        did: did,
+      },
+      update: {
+        did: did,
+        data: JSON.stringify(data),
+      },
+      create: {
+        did: did,
+        data: JSON.stringify(data),
+      },
+    });
+
+    user.send(`${DISCORD_CHALLENGE_SUCCESS} \`${challengeCode}\``);
 
     /////////////////////////////
     // INVOCATION IN PULIC CHANNEL
     /////////////////////////////
-  } else if (message.content === process.env.INVOCATION_STRING) {
+  } else if (message.content === DISCORD_INVOCATION_STRING) {
     // console.log(message);
     message.reply(DISCORD_REPLY);
     message.author.send(DISCORD_INITIAL_PROMPT);
