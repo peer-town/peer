@@ -15,17 +15,14 @@ const prisma = new PrismaClient();
 
 const DISCORD_INVOCATION_STRING = "devnode";
 const DISCORD_BOT_NAME = "devnode-bot";
+const API_ENDPOINT = "http://localhost:3000/api/discord-auth";
+
 const DISCORD_SERVER_ERROR = "Whoops... we had an internal issue";
-const DISCORD_CHALLENGE_SUCCESS = "Great! Your challenge code is: ";
+const DISCORD_CHALLENGE_SUCCESS = `Great! Your challenge code is: ${API_ENDPOINT}/`;
 const DISCORD_INVALID_DID =
   "Oops! That doesn't look right. It looks like this: `did:key:z6MkkyAkqY9bPr8gyQGuJTwQvzk8nsfywHCH4jyM1CgTq4KA`";
 const DISCORD_REPLY = `Please check your DMs`;
 const DISCORD_INITIAL_PROMPT = `Hi there! Lets get you verified. Reply with your did. It should look similar to this example: \`did:key:z6MkkyAkqY9bPr8gyQGuJTwQvzk8nsfywHCH4jyM1CgTq4KA\``;
-
-// TODO: remove and replace with redis code
-const API_ENDPOINT =
-  "https://r27sfer037.execute-api.us-west-2.amazonaws.com/develop";
-// const API_ENDPOINT = "http://localhost:3000";
 
 const client = new Client({
   intents: [
@@ -70,29 +67,27 @@ client.on("messageCreate", async (message: Message) => {
 
     let challengeCode = randomString(32);
 
-    const data = {
-      did,
-      username,
-      timestamp: Date.now(),
-      challengeCode,
-      userId,
-    };
-
     await prisma.discordChallenge.upsert({
       where: {
         did: did,
       },
       update: {
         did: did,
-        data: JSON.stringify(data),
+        username: username,
+        timestamp: new Date(),
+        challengeCode: challengeCode,
+        userId: userId,
       },
       create: {
         did: did,
-        data: JSON.stringify(data),
+        username: username,
+        timestamp: new Date(),
+        challengeCode: challengeCode,
+        userId: userId,
       },
     });
 
-    user.send(`${DISCORD_CHALLENGE_SUCCESS} \`${challengeCode}\``);
+    user.send(`${DISCORD_CHALLENGE_SUCCESS}${challengeCode}`);
 
     /////////////////////////////
     // INVOCATION IN PULIC CHANNEL

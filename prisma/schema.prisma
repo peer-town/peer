@@ -11,7 +11,10 @@ datasource db {
 }
 
 model DiscordChallenge {
-  id   Int     @id @default(autoincrement())
-  did  String  @unique
-  data String?
+  id            Int      @id @default(autoincrement())
+  did           String   @unique
+  username      String
+  timestamp     DateTime
+  challengeCode String   @unique
+  userId        String   @unique
 }
