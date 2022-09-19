@@ -33,3 +33,4 @@ yarn-error.log*
 .turbo
 apps/discord-bot/tsconfig.tsbuildinfo
 apps/indexer/tsconfig.tsbuildinfo
+prisma/dev.db

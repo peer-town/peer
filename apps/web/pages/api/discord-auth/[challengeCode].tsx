@@ -29,7 +29,20 @@ export default async function handler(
     return;
   }
 
+  await prisma.discordChallenge.delete({
+    where: {
+      challengeCode: challengeCode,
+    },
+  });
+
+  let user = await prisma.user.create({
+    data: {
+      did: details.did,
+      discord: details.username,
+    },
+  });
+
   res.status(200).json({
-    success: `Challenge code correct: ${details.username}, ${details.did}`,
+    success: `Challenge code correct: ${user.did}, ${user.discord}`,
   });
 }

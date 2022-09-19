@@ -18,3 +18,9 @@ model DiscordChallenge {
   challengeCode String   @unique
   userId        String   @unique
 }
+
+model User {
+  id      Int    @id @default(autoincrement())
+  did     String @unique
+  discord String @unique
+}
