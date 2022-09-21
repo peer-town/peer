@@ -116,7 +116,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div class="p-6">
+    <div className="p-6">
       <h1>Auth Page</h1>
 
       {session?.user ? (
@@ -127,7 +127,7 @@ const AuthPage = () => {
             onClick={() => {
               signOut();
             }}
-            class="bg-blue-500  text-white p-2 m-2 rounded"
+            className="bg-blue-500  text-white p-2 m-2 rounded"
           >
             Sign out NextJS
           </button>
@@ -137,7 +137,7 @@ const AuthPage = () => {
               onClick={() => {
                 handleCeramicLogin(window.ethereum);
               }}
-              class="bg-blue-500  text-white p-2 m-2 rounded"
+              className="bg-blue-500  text-white p-2 m-2 rounded"
             >
               Sign in Ceramic
             </button>
@@ -153,7 +153,7 @@ const AuthPage = () => {
                   <input
                     type="text"
                     value={nameInput}
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     onChange={(e) => {
                       setNameInput(e.target.value);
                     }}
@@ -162,7 +162,7 @@ const AuthPage = () => {
                 <input
                   type="submit"
                   value="Set Ceramic Data"
-                  class="bg-blue-500  text-white p-2 m-2 rounded"
+                  className="bg-blue-500  text-white p-2 m-2 rounded"
                 />
               </form>
               <br />
@@ -170,7 +170,7 @@ const AuthPage = () => {
                 onClick={() => {
                   readCeramicData();
                 }}
-                class="bg-blue-500  text-white p-2 m-2 rounded"
+                className="bg-blue-500  text-white p-2 m-2 rounded"
               >
                 Read Ceramic Data
               </button>
@@ -190,7 +190,7 @@ const AuthPage = () => {
           onClick={() => {
             handleLogin();
           }}
-          class="bg-blue-500  text-white p-2 m-2 rounded"
+          className="bg-blue-500  text-white p-2 m-2 rounded"
         >
           Sign in
         </button>
