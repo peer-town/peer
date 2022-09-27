@@ -2,26 +2,20 @@ import { useSession, getCsrfToken, signIn, signOut } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { useConnect, useAccount, useNetwork, useSignMessage } from "wagmi";
 import { CeramicClient } from "@ceramicnetwork/http-client";
-import { EthereumAuthProvider } from "@ceramicnetwork/blockchain-utils-linking";
-import { DIDDataStore } from "@glazed/did-datastore";
-import { DIDSession } from "@glazed/did-session";
-import React, { useEffect, useState } from "react";
+import { getResolver as getKeyResolver } from "key-did-resolver";
+import { getResolver as get3IDResolver } from "@ceramicnetwork/3id-did-resolver";
+import { TileDocument, TileMetadataArgs } from "@ceramicnetwork/stream-tile";
+import React, { useState } from "react";
+import { EthereumAuthProvider, ThreeIdConnect } from "@3id/connect";
+import { DID } from "dids";
 
-const ceramic = new CeramicClient("https://ceramic-clay.3boxlabs.com");
-
-const aliases = {
-  schemas: {
-    basicProfile:
-      "ceramic://k3y52l7qbv1frxt706gqfzmq6cbqdkptzk8uudaryhlkf6ly9vx21hqu4r6k1jqio",
-  },
-  definitions: {
-    BasicProfile:
-      "kjzl6cwe1jw145cjbeko9kil8g9bxszjhyde21ob8epxuxkaon1izyqsu8wgcic",
-  },
-  tiles: {},
-};
-
-const datastore = new DIDDataStore({ ceramic, model: aliases });
+let ceramic;
+let threeID;
+if (typeof window !== "undefined") {
+  ceramic = new CeramicClient("https://ceramic-clay.3boxlabs.com");
+  threeID = new ThreeIdConnect();
+}
+const CERAMIC_STREAM_CONTENT = { counter: 0 };
 
 const AuthPage = () => {
   const { data: session } = useSession();
@@ -32,55 +26,37 @@ const AuthPage = () => {
   const { signMessageAsync } = useSignMessage({});
 
   const [ceramicLoginState, setCeramicLoginState] = useState(false);
-  const [ceramicName, setCeramicName] = useState();
-
-  const [nameInput, setNameInput] = useState("Bilbo Baggins");
-
-  const setCeramicData = async (e) => {
-    e.preventDefault();
-    try {
-      const updatedProfile = {
-        name: nameInput,
-      };
-
-      await datastore.merge("BasicProfile", updatedProfile);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const readCeramicData = async () => {
-    try {
-      const profile = await datastore.get("BasicProfile");
-
-      console.log(profile);
-
-      let { name } = profile;
-      setCeramicName(name);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [streamId, setStreamId] = useState("");
+  const [streamData, setStreamData] = useState("");
+  const [streamMetadata, setStreamMetadata] = useState("");
 
   const handleCeramicLogin = async (ethereumProvider) => {
     const accounts = await ethereumProvider.request({
       method: "eth_requestAccounts",
     });
-
+    // Create an EthereumAuthProvider using the Ethereum provider and requested account
     const authProvider = new EthereumAuthProvider(
       ethereumProvider,
       accounts[0]
     );
+    await threeID.connect(authProvider);
 
-    const session = new DIDSession({ authProvider });
+    const did = new DID({
+      provider: threeID.getDidProvider(),
+      resolver: {
+        ...get3IDResolver(ceramic),
+        ...getKeyResolver(),
+      },
+    });
 
-    const did = await session.authorize();
+    await did.authenticate();
 
     ceramic.did = did;
+
     setCeramicLoginState(true);
   };
 
-  const handleLogin = async () => {
+  const handleNextJsLogin = async () => {
     try {
       if (!isConnected)
         Promise.all(
@@ -115,14 +91,54 @@ const AuthPage = () => {
     }
   };
 
+  async function createStream() {
+    const doc = await TileDocument.create(ceramic, CERAMIC_STREAM_CONTENT);
+
+    setStreamId(doc.id.toString());
+    setStreamData(JSON.stringify(doc.content));
+    setStreamMetadata(JSON.stringify(doc.metadata));
+  }
+
+  async function giveStreamRights() {
+    const DEVNODE_DID_CONTROLLER = await fetch("/api/ceramic/get-devnode-did")
+      .then((response) => response.json())
+      .then((data: any) => {
+        return data.did; //remove "did:key:"
+      });
+
+    const doc = await TileDocument.load(ceramic, streamId);
+
+    let metadata: TileMetadataArgs = {
+      controllers: [DEVNODE_DID_CONTROLLER],
+    };
+
+    await doc.update(doc.content, metadata);
+
+    setStreamId(doc.id.toString());
+    setStreamData(JSON.stringify(doc.content));
+    setStreamMetadata(JSON.stringify(doc.metadata));
+  }
+
+  async function incrementCounter() {
+    await fetch(`/api/ceramic/increment-counter?streamId=${streamId}`);
+
+    await new Promise((r) => setTimeout(r, 1000)); //wait to propagate
+
+    const doc = await TileDocument.load(ceramic, streamId);
+    setStreamId(doc.id.toString());
+    setStreamData(JSON.stringify(doc.content));
+    setStreamMetadata(JSON.stringify(doc.metadata));
+  }
+
   return (
     <div className="p-6">
-      <h1>Auth Page</h1>
+      <h1>Ceramic proof of concept</h1>
 
       {session?.user ? (
         <p>
-          {session.user.name}
-          <br />
+          <div className="flex-shrink mx-4 text-gray-600">
+            NextJS User : {session.user.name}
+          </div>
           <button
             onClick={() => {
               signOut();
@@ -133,67 +149,117 @@ const AuthPage = () => {
           </button>
           <br />
           {!ceramicLoginState ? (
-            <button
-              onClick={() => {
-                handleCeramicLogin(window.ethereum);
-              }}
-              className="bg-blue-500  text-white p-2 m-2 rounded"
-            >
-              Sign in Ceramic
-            </button>
-          ) : (
-            <div>Ceramic logged in</div>
-          )}
-          <br />
-          {ceramicLoginState && (
             <div>
-              <form onSubmit={setCeramicData}>
-                <label>
-                  Name:
-                  <input
-                    type="text"
-                    value={nameInput}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    onChange={(e) => {
-                      setNameInput(e.target.value);
-                    }}
-                  />
-                </label>
-                <input
-                  type="submit"
-                  value="Set Ceramic Data"
-                  className="bg-blue-500  text-white p-2 m-2 rounded"
-                />
-              </form>
-              <br />
               <button
                 onClick={() => {
-                  readCeramicData();
+                  handleCeramicLogin(window.ethereum);
                 }}
                 className="bg-blue-500  text-white p-2 m-2 rounded"
               >
-                Read Ceramic Data
+                Sign in Ceramic
               </button>
-              <br />
-              Ceramic Name: {ceramicName}
-              <br />
-              <br />
-              Check it on Cerscan here :
-              <br />
-              https://cerscan.com/testnet-clay/profile/did:pkh:eip155:1:
-              {session.user.name?.toLowerCase()}
+
+              <div className="flex-shrink mx-4 text-gray-600">
+                This will use 3ID-Connect to sign the user in Ceramic using
+                Ethereum provider
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="flex-shrink mx-4 text-gray-600">
+                Ceramic User : {ceramic.did ? ceramic.did.id : "none"}
+              </div>
+
+              <button
+                onClick={() => {
+                  ceramic.did = null;
+                  setCeramicLoginState(false);
+                }}
+                className="bg-blue-500  text-white p-2 m-2 rounded"
+              >
+                Sign out Ceramic
+              </button>
+
+              <div className="relative flex py-5 items-center">
+                <div className="flex-grow border-t border-gray-400"></div>
+              </div>
+
+              <div className="flex">
+                <button
+                  className="bg-blue-500  text-white p-2 m-2 rounded"
+                  onClick={() => {
+                    createStream();
+                  }}
+                >
+                  Create Ceramic Stream
+                </button>
+
+                <button
+                  className="bg-blue-500  text-white p-2 m-2 rounded"
+                  onClick={() => {
+                    giveStreamRights();
+                  }}
+                >
+                  Give us write rights
+                </button>
+
+                <button
+                  className="bg-blue-500  text-white p-2 m-2 rounded"
+                  onClick={() => {
+                    incrementCounter();
+                  }}
+                >
+                  Increment counter in backend
+                </button>
+              </div>
+
+              <div className="relative flex py-5 items-center">
+                <div className="flex-grow border-t border-gray-400"></div>
+                <span className="flex-shrink mx-4 text-gray-400">
+                  Stream ID
+                </span>
+                <div className="flex-grow border-t border-gray-400"></div>
+              </div>
+              <div className="flex-shrink mx-4 text-gray-600">{streamId}</div>
+
+              <div className="relative flex py-5 items-center">
+                <div className="flex-grow border-t border-gray-400"></div>
+                <span className="flex-shrink mx-4 text-gray-400">
+                  Stream Data
+                </span>
+                <div className="flex-grow border-t border-gray-400"></div>
+              </div>
+              <div className="flex-shrink mx-4 text-gray-600">{streamData}</div>
+
+              <div className="relative flex py-5 items-center">
+                <div className="flex-grow border-t border-gray-400"></div>
+                <span className="flex-shrink mx-4 text-gray-400">
+                  Stream Metadata
+                </span>
+                <div className="flex-grow border-t border-gray-400"></div>
+              </div>
+              <div className="flex-shrink mx-4 text-gray-600">
+                {streamMetadata}
+              </div>
             </div>
           )}
+          <br />
         </p>
       ) : (
-        <button
-          onClick={() => {
-            handleLogin();
-          }}
-          className="bg-blue-500  text-white p-2 m-2 rounded"
-        >
-          Sign in
-        </button>
+        <div>
+          <button
+            onClick={() => {
+              handleNextJsLogin();
+            }}
+            className="bg-blue-500  text-white p-2 m-2 rounded"
+          >
+            Sign in NextJS
+          </button>
+          <div className="flex-shrink mx-4 text-gray-600">
+            This will use Sign In With Ethereum and Next-Auth to sign the user
+            in and store a session cookie
+          </div>
+        </div>
       )}
     </div>
   );
