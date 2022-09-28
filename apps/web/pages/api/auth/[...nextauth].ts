@@ -5,6 +5,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 
+const NEXTAUTH_SECRET = "4ae11a8a941a74e922e16eaad53f3cf8";
+
 const prisma = new PrismaClient();
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
@@ -39,12 +41,13 @@ export default async function auth(
               ? `https://${process.env.VERCEL_URL}`
               : null);
 
-          if (siwe.uri !== nextAuthUrl) {
-            console.log("bad domain");
-            console.log(siwe);
-            console.log(nextAuthUrl);
-            return null;
-          }
+          // if (siwe.uri !== nextAuthUrl) {
+          //   console.log("bad domain");
+          //   console.log(siwe);
+          //   console.log(nextAuthUrl);
+          //   return null;
+          // }
+          // temporarily disbaled for netlify preview deployment
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
             console.log("bad nonce");
@@ -80,7 +83,7 @@ export default async function auth(
     session: {
       strategy: "jwt",
     },
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: NEXTAUTH_SECRET,
     callbacks: {
       async session({ session, token }) {
         session.address = token.sub;
