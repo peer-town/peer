@@ -1,38 +1,20 @@
-import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
-
-const NEXTAUTH_SECRET = "4ae11a8a941a74e922e16eaad53f3cf8";
+import { getCsrfToken } from "next-auth/react";
+import { NextApiRequest, NextApiResponse } from "next";
+import { IncomingMessage } from "http";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
-export default async function auth(
-  req: NextApiRequest,
-  res: NextApiResponse<any>
-) {
+
+export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
   const providers = [
     CredentialsProvider({
-      name: "Ethereum",
-      credentials: {
-        message: {
-          label: "Message",
-          type: "text",
-          placeholder: "0x0",
-        },
-        signature: {
-          label: "Signature",
-          type: "text",
-          placeholder: "0x0",
-        },
-      },
       async authorize(credentials) {
         try {
           const siwe = new SiweMessage(
-            JSON.parse(credentials?.message as string) || "{}"
+            JSON.parse(credentials?.message || "{}")
           );
 
           const nextAuthUrl =
@@ -40,57 +22,93 @@ export default async function auth(
             (process.env.VERCEL_URL
               ? `https://${process.env.VERCEL_URL}`
               : null);
+          if (!nextAuthUrl) {
+            return null;
+          }
 
-          // if (siwe.uri !== nextAuthUrl) {
-          //   console.log("bad domain");
-          //   console.log(siwe);
-          //   console.log(nextAuthUrl);
-          //   return null;
-          // }
-          // temporarily disbaled for netlify preview deployment
+          const nextAuthHost = new URL(nextAuthUrl).host;
+          if (siwe.domain !== nextAuthHost) {
+            return null;
+          }
 
           if (siwe.nonce !== (await getCsrfToken({ req }))) {
-            console.log("bad nonce");
-            console.log(siwe);
-            console.log(await getCsrfToken({ req }));
             return null;
           }
 
           await siwe.validate(credentials?.signature || "");
 
+          await prisma.user.upsert({
+            where: {
+              address: siwe.address,
+            },
+            create: {
+              address: siwe.address,
+              discord: "",
+              did: "",
+              stream: "",
+            },
+            update: {
+              address: siwe.address,
+            },
+          });
           return {
             id: siwe.address,
           };
         } catch (e) {
-          console.log(e);
           return null;
         }
       },
+      credentials: {
+        message: {
+          label: "Message",
+          placeholder: "0x0",
+          type: "text",
+        },
+        signature: {
+          label: "Signature",
+          placeholder: "0x0",
+          type: "text",
+        },
+      },
+      name: "Ethereum",
     }),
   ];
 
-  const isDefaultSigninPage =
-    req.method === "GET" && req.query.nextauth?.includes("signin");
-
-  // Hide Sign-In with Ethereum from default sign page
-  if (isDefaultSigninPage) {
-    providers.pop();
-  }
-
-  return await NextAuth(req, res, {
-    // https://next-auth.js.org/configuration/providers/oauth
-    providers,
-    session: {
-      strategy: "jwt",
-    },
-    secret: NEXTAUTH_SECRET,
+  return {
     callbacks: {
       async session({ session, token }) {
         session.address = token.sub;
         session.user!.name = token.sub;
-        session.user!.image = "https://www.fillmurray.com/128/128";
         return session;
       },
     },
-  });
+    // https://next-auth.js.org/configuration/providers/oauth
+    providers,
+    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+      strategy: "jwt",
+    },
+  };
+}
+
+// For more information on each option (and a full list of options) go to
+// https://next-auth.js.org/configuration/options
+export default async function auth(req: NextApiRequest, res: NextApiResponse) {
+  const authOptions = getAuthOptions(req);
+
+  if (!Array.isArray(req.query.nextauth)) {
+    res.status(400).send("Bad request");
+    return;
+  }
+
+  const isDefaultSigninPage =
+    req.method === "GET" &&
+    req.query.nextauth.find((value) => value === "signin");
+
+  // Hide Sign-In with Ethereum from default sign page
+  if (isDefaultSigninPage) {
+    authOptions.providers.pop();
+  }
+
+  return await NextAuth(req, res, authOptions);
 }

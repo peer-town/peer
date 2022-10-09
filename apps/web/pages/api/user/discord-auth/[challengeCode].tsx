@@ -35,9 +35,17 @@ export default async function handler(
     },
   });
 
-  let user = await prisma.user.create({
-    data: {
+  let user = await prisma.user.upsert({
+    where: {
       did: details.did,
+    },
+    create: {
+      address: "",
+      discord: details.username,
+      did: details.did,
+      stream: "",
+    },
+    update: {
       discord: details.username,
     },
   });

@@ -21,6 +21,27 @@ model DiscordChallenge {
 
 model User {
   id      Int    @id @default(autoincrement())
-  did     String @unique
+  address String @unique
   discord String @unique
+  did     String @unique
+  stream  String @unique
+}
+
+model Thread {
+  id          Int       @id @default(autoincrement())
+  discordId   String    @unique
+  discordUser String
+  timestamp   BigInt
+  content     String
+  messages    Message[]
+}
+
+model Message {
+  id          Int    @id @default(autoincrement())
+  discordId   String @unique
+  discordUser String
+  timestamp   BigInt
+  content     String
+  Thread      Thread @relation(fields: [threadId], references: [id])
+  threadId    Int
 }
