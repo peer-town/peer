@@ -50,9 +50,9 @@ client.once("ready", async () => {
     (channel) => channel.type == ChannelType.PublicThread
   );
 
-  threadChannels.forEach(async (threadChannel) => {
+  for (const threadChannel of threadChannels) {
     const channel = client.channels.cache.get(
-      threadChannel.id
+      threadChannel[1].id
     ) as ThreadChannel;
 
     let starterMessage = await channel.fetchStarterMessage();
@@ -63,13 +63,13 @@ client.once("ready", async () => {
     let dbThread = await prisma.thread.upsert({
       where: { discordId: channel.id },
       update: {
-        timestamp: Number(channel.createdTimestamp),
+        timestamp: String(channel.createdTimestamp),
         discordUser: String(owner?.user?.tag),
         content: String(starterMessage?.content),
       },
       create: {
         discordId: channel.id,
-        timestamp: Number(channel.createdTimestamp),
+        timestamp: String(channel.createdTimestamp),
         discordUser: String(owner?.user?.tag),
         content: String(starterMessage?.content),
       },
@@ -79,13 +79,13 @@ client.once("ready", async () => {
       await prisma.message.upsert({
         where: { discordId: message[1].id },
         update: {
-          timestamp: Number(message[1].createdTimestamp),
+          timestamp: String(message[1].createdTimestamp),
           discordUser: String(message[1].author.tag),
           content: String(message[1].content),
         },
         create: {
           discordId: message[1].id,
-          timestamp: Number(message[1].createdTimestamp),
+          timestamp: String(message[1].createdTimestamp),
           discordUser: String(message[1].author.tag),
           content: String(message[1].content),
           threadId: dbThread.id,
@@ -93,7 +93,7 @@ client.once("ready", async () => {
       });
       console.log(message[1].content);
     }
-  });
+  }
 });
 
 client.on("messageCreate", async (message: Message) => {
