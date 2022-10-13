@@ -1,0 +1,13 @@
+type Thread
+  @loadModel(
+    id: "kjzl6hvfrbw6c8zwpdnjdtn16p1kkxij8w3xj5obwi21vdgfuk1lkkkm9lm1rnm"
+  ) {
+  id: ID!
+}
+
+type Comment
+  @createModel(accountRelation: LIST, description: "DevNode Comment") {
+  threadID: StreamID! @documentReference(model: "Thread")
+  author: DID! @documentAccount
+  text: String! @string(maxLength: 2000)
+}

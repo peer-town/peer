@@ -24,7 +24,7 @@ export default async function handler(
         address: String(address),
         discord: "",
         did: String(did),
-        stream: "",
+        didSession: "",
       },
       update: {
         did: String(did),

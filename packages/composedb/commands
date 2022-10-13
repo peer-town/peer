@@ -1,0 +1,12 @@
+composedb composite:create ./schemas/Thread.graphql --output=gen/Thread.json --ceramic-url=http://localhost:7007 --did-private-key=56247767c6700937d3fe05e1eee059218f3600cf91c3aceefba39822b075d4de  
+composedb composite:create ./schemas/Comment.graphql --output=gen/Comment.json --ceramic-url=http://localhost:7007 --did-private-key=56247767c6700937d3fe05e1eee059218f3600cf91c3aceefba39822b075d4de
+
+composedb composite:merge ./gen/Thread.json ./gen/Comment.json --output=./gen/DevNode.json
+
+composedb composite:compile ./gen/DevNode.json ./gen/runtime-composite.json
+
+composedb composite:deploy ./gen/DevNode.json --ceramic-url=http://localhost:7007
+
+composedb composite:models ./gen/DevNode.json
+
+composedb composite:compile ./gen/DevNode.json src/gen/definition.ts --ceramic-url=http://localhost:7007

@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import type { AppProps, AppType } from "next/app";
 
 import {
   WagmiConfig,
@@ -12,6 +12,7 @@ import { publicProvider } from "wagmi/providers/public";
 
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { SessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
 
 // Configure chains & p
 
@@ -35,14 +36,17 @@ const client = createClient({
   webSocketProvider,
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp: AppType<{ session: Session | null }> = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}) => {
   return (
     <WagmiConfig client={client}>
-      <SessionProvider session={pageProps.session} refetchInterval={0}>
+      <SessionProvider session={session} refetchInterval={0}>
         <Component {...pageProps} />
       </SessionProvider>
     </WagmiConfig>
   );
-}
+};
 
 export default MyApp;

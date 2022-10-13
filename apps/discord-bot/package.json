@@ -1,5 +1,5 @@
 {
-  "name": "discord-bot",
+  "name": "@devnode/discord-bot",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,19 +9,22 @@
     "dev": "nodemon"
   },
   "dependencies": {
-    "@prisma/client": "^4.3.1",
+    "@composedb/client": "^0.3.0",
+    "@devnode/composedb": "*",
+    "@prisma/client": "^4.4.0",
     "@stablelib/random": "^1.0.2",
-    "@types/node": "^18.7.17",
+    "@types/node": "^18.8.5",
     "@types/node-fetch": "^2.6.2",
-    "discord.js": "^14.3.0",
-    "dotenv": "^16.0.2",
-    "nodemon": "^2.0.19",
+    "did-session": "^1.0.0",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.3"
+    "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "prisma": "^4.3.1",
-    "tsconfig": "workspace:*"
+    "@devnode/tsconfig": "*",
+    "prisma": "^4.4.0"
   },
   "prisma": {
     "schema": "./../../prisma/schema.prisma"

@@ -11,7 +11,7 @@ export default async function handler(
 ) {
   const session = await getServerAuthSession({ req, res });
 
-  const { address, did, stream } = req.query;
+  const { address, did, didSession } = req.query;
 
   if (session) {
     await prisma.user.upsert({
@@ -22,13 +22,14 @@ export default async function handler(
         address: String(address),
         discord: "",
         did: String(did),
-        stream: String(stream),
+        didSession: String(didSession),
       },
       update: {
         did: String(did),
-        stream: String(stream),
+        didSession: String(didSession),
       },
     });
+    res.send(200);
   } else {
     res.send({
       error:

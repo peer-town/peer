@@ -43,7 +43,7 @@ export default async function handler(
       address: "",
       discord: details.username,
       did: details.did,
-      stream: "",
+      didSession: "",
     },
     update: {
       discord: details.username,

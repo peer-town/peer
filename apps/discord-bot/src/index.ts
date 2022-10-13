@@ -7,10 +7,48 @@ import {
   ThreadChannel,
 } from "discord.js";
 import { config } from "dotenv";
+import { ComposeClient } from "@composedb/client";
+
 config();
+
+import type { RuntimeCompositeDefinition } from "@composedb/types";
+export const definition: RuntimeCompositeDefinition = {
+  models: {
+    Thread: {
+      id: "kjzl6hvfrbw6c8zwpdnjdtn16p1kkxij8w3xj5obwi21vdgfuk1lkkkm9lm1rnm",
+      accountRelation: { type: "list" },
+    },
+    Comment: {
+      id: "kjzl6hvfrbw6c7gmbi9f3xfhjeom6940ote3qdwn28new5nyayh07kinemmuv05",
+      accountRelation: { type: "list" },
+    },
+  },
+  objects: {
+    Thread: {
+      title: { type: "string", required: true },
+      author: { type: "view", viewType: "documentAccount" },
+    },
+    Comment: {
+      text: { type: "string", required: true },
+      threadID: { type: "streamid", required: true },
+      author: { type: "view", viewType: "documentAccount" },
+    },
+  },
+  enums: {},
+  accountData: {
+    threadList: { type: "connection", name: "Thread" },
+    commentList: { type: "connection", name: "Comment" },
+  },
+};
+
+export const compose = new ComposeClient({
+  ceramic: "http://localhost:7007",
+  definition,
+});
 
 import { PrismaClient } from "@prisma/client";
 import { randomString } from "@stablelib/random";
+import { DIDSession } from "did-session";
 const prisma = new PrismaClient();
 
 const DISCORD_INVOCATION_STRING = "devnode";
@@ -58,7 +96,41 @@ client.once("ready", async () => {
     let starterMessage = await channel.fetchStarterMessage();
     let owner = await channel.fetchOwner();
     let messages = await channel.messages.fetch({ limit: 100 });
-    console.log(`${owner?.user?.tag} - ${starterMessage?.content}`);
+    //console.log(`${owner?.user?.tag} - ${starterMessage?.content}`);
+
+    const user = (
+      await prisma.user.findMany({
+        where: {
+          discord: {
+            equals: owner?.user?.tag,
+          },
+        },
+      })
+    )[0];
+
+    if (!user) return;
+    const session = await DIDSession.fromSession(user.didSession);
+    compose.setDID(session.did);
+
+    const thread = await compose.executeQuery<{
+      createThread: { document: { id: string } };
+    }>(
+      `mutation CreateThread($input: CreateThreadInput!) {
+          createThread(input: $input) {
+            document {
+              title
+              id
+            }
+          }
+        }`,
+      {
+        input: {
+          content: { title: String(starterMessage?.content.slice(0, 40)) },
+        },
+      }
+    );
+
+    console.log(`thread id: ${thread.data?.createThread.document.id}`);
 
     let dbThread = await prisma.thread.upsert({
       where: { discordId: channel.id },
@@ -76,6 +148,42 @@ client.once("ready", async () => {
     });
 
     for (const message of messages) {
+      await prisma.user
+        .findMany({
+          where: {
+            discord: {
+              equals: owner?.user?.tag,
+            },
+          },
+        })
+        .then(async (user) => {
+          const session = await DIDSession.fromSession(user[0].didSession);
+          compose.setDID(session.did);
+
+          const comment = await compose.executeQuery<{
+            createComment: { document: { id: string } };
+          }>(
+            `mutation CreateComment($input: CreateCommentInput!) {
+          createComment(input: $input) {
+            document {
+              threadID
+              text
+            }
+          }
+        }`,
+            {
+              input: {
+                content: {
+                  threadID: thread.data?.createThread.document.id,
+                  text: String(message[1].content),
+                },
+              },
+            }
+          );
+
+          console.log(`comment id: ${comment.data?.createComment.document.id}`);
+        });
+
       await prisma.message.upsert({
         where: { discordId: message[1].id },
         update: {
@@ -91,7 +199,7 @@ client.once("ready", async () => {
           threadId: dbThread.id,
         },
       });
-      console.log(message[1].content);
+      //console.log(message[1].content);
     }
   }
 });

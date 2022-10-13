@@ -9,6 +9,9 @@
     },
     "dev": {
       "cache": false
+    },
+    "daemon": {
+      "cache": false
     }
   }
 }

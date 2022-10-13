@@ -1,0 +1,4 @@
+type Thread @createModel(accountRelation: LIST, description: "DevNode Thread") {
+  author: DID! @documentAccount
+  title: String! @string(minLength: 10, maxLength: 50)
+}

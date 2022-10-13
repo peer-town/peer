@@ -1,0 +1,21 @@
+{
+  "name": "@devnode/composedb",
+  "version": "1.0.0",
+  "files": [
+    "./gen/runtime-composite.json"
+  ],
+  "scripts": {
+    "daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' pnpm dlx @ceramicnetwork/cli daemon --config ./daemon.config.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "resolutions": {
+    "graphql": "^16.5.0",
+    "**/graphql": "^16.5.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@composedb/devtools": "^0.3.0",
+    "@composedb/devtools-node": "^0.3.0"
+  }
+}

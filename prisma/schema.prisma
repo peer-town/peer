@@ -20,11 +20,11 @@ model DiscordChallenge {
 }
 
 model User {
-  id      Int    @id @default(autoincrement())
-  address String @unique
-  discord String @unique
-  did     String @unique
-  stream  String @unique
+  id         Int    @id @default(autoincrement())
+  address    String @unique
+  discord    String @unique
+  did        String @unique
+  didSession String
 }
 
 model Thread {
