@@ -8,6 +8,9 @@ import {
 } from "discord.js";
 import { config } from "dotenv";
 import { ComposeClient } from "@composedb/client";
+import { randomString } from "@stablelib/random";
+import { DIDSession } from "did-session";
+import { prisma } from "@devnode/database";
 
 config();
 
@@ -45,11 +48,6 @@ export const compose = new ComposeClient({
   ceramic: "http://localhost:7007",
   definition,
 });
-
-import { PrismaClient } from "@prisma/client";
-import { randomString } from "@stablelib/random";
-import { DIDSession } from "did-session";
-const prisma = new PrismaClient();
 
 const DISCORD_INVOCATION_STRING = "devnode";
 const DISCORD_BOT_NAME = "devnode-bot";
@@ -156,7 +154,7 @@ client.once("ready", async () => {
             },
           },
         })
-        .then(async (user) => {
+        .then(async (user: any) => {
           const session = await DIDSession.fromSession(user[0].didSession);
           compose.setDID(session.did);
 

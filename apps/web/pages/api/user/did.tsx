@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
-import { unstable_getServerSession } from "next-auth/next";
 import { getServerAuthSession } from "../../../server/common/get-server-auth-session";
-
-const prisma = new PrismaClient();
+import { prisma } from "@devnode/database";
 
 export default async function handler(
   req: NextApiRequest,

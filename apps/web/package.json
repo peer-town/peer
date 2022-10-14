@@ -17,7 +17,7 @@
     "@didtools/pkh-ethereum": "^0.0.2",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^1",
-    "@prisma/client": "^4.4.0",
+    "@devnode/database": "*",
     "bip39": "^3.0.4",
     "did-session": "^1.0.0",
     "ethers": "5.7.1",
