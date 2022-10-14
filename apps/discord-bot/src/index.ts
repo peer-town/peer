@@ -9,6 +9,7 @@ import { config } from "dotenv";
 import fetch from "node-fetch";
 import { onDm } from "./handlers/onDm";
 import { onInvoke } from "./handlers/onInvoke";
+import { onMessageCreate } from "./handlers/onMessageCreate";
 import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
 
@@ -57,7 +58,7 @@ client.on("messageCreate", async (message: Message) => {
     onDm(message, client);
   } else if (message.content === DISCORD_INVOCATION_STRING) {
     onInvoke(message);
-  }
+  } else onMessageCreate(message, client);
 });
 
 client.on("threadCreate", async (thread) => {

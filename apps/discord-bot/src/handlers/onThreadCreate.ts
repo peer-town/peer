@@ -10,6 +10,6 @@ export const onThreadCreate = (
     console.log(thread.parentId); // The forum channel ID
     console.log(thread.id); // The forum post ID
     console.log(thread.name); // The name of the forum post
-    console.log(message);
+    console.log(message.content);
   }
 };
