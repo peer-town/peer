@@ -1,10 +1,17 @@
 {
   "name": "@devnode/composedb",
   "version": "1.0.0",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
-    "./gen/runtime-composite.json"
+    "dist/**"
   ],
   "scripts": {
+    "build": "tsc",
     "dev": "yarn composedb:daemon",
     "composedb:daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' pnpm dlx @ceramicnetwork/cli daemon --config ./daemon.config.json",
     "composedb:server": "composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql ./gen/runtime-composite.json",
@@ -14,9 +21,8 @@
     "graphql": "^16.5.0",
     "**/graphql": "^16.5.0"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
+    "@devnode/tsconfig": "*",
     "@composedb/devtools": "^0.3.0",
     "@composedb/devtools-node": "^0.3.0"
   }
