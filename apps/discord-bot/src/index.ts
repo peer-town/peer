@@ -213,15 +213,18 @@ client.on("messageCreate", async (message: Message) => {
     if (handle === DISCORD_BOT_NAME) return;
     const username = `${handle}#${discriminator}`;
 
+    console.log(message.content);
     let did = "";
     try {
-      did = message.content.match(/did:[a-zA-z0-9:]{65}/)![0];
+      did = message.content.match(/did🔑[a-zA-z0-9:]{48}/)![0];
     } catch (e) {
       if (!did.length) {
         user.send(DISCORD_INVALID_DID);
         return;
       }
     }
+
+    did = did.replace("🔑", ":key:");
 
     let challengeCode = randomString(32);
 

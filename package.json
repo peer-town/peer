@@ -10,7 +10,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "generate": "turbo run generate",
+    "db:push": "turbo run db:push",
+    "daemon": "turbo run daemon",
+    "studio": "turbo run studio",
+    "composedb:daemon": "turbo run composedb:daemon",
+    "composedb:server": "turbo run composedb:server"
   },
   "devDependencies": {
     "prettier": "^2.7.1",

@@ -10,7 +10,20 @@
     "dev": {
       "cache": false
     },
-    "daemon": {
+    "composedb:daemon": {
+      "cache": false
+    },
+    "composedb:server": {
+      "cache": false
+    },
+    "generate": {
+      "dependsOn": ["^generate"]
+    },
+    "db:push": {
+      "cache": false,
+      "outputs": []
+    },
+    "studio": {
       "cache": false
     }
   }
