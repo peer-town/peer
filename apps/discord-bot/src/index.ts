@@ -15,6 +15,7 @@ import { prisma } from "@devnode/database";
 config();
 
 import type { RuntimeCompositeDefinition } from "@composedb/types";
+import fetch from "node-fetch";
 export const definition: RuntimeCompositeDefinition = {
   models: {
     Thread: {
@@ -81,6 +82,19 @@ console.log("discord-bot start");
 
 client.once("ready", async () => {
   console.log("Ready!");
+
+  let nodeReady = false;
+  while (!nodeReady) {
+    console.log("ceramic node not ready");
+    await fetch("http://localhost:7007")
+      .then(() => {
+        nodeReady = true;
+      })
+      .catch(() => {
+        nodeReady = false;
+      });
+    await new Promise((r) => setTimeout(r, 1000));
+  }
 
   let threadChannels = await client.channels.cache.filter(
     (channel) => channel.type == ChannelType.PublicThread

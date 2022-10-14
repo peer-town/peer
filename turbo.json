@@ -17,11 +17,10 @@
       "cache": false
     },
     "generate": {
-      "dependsOn": ["^generate"]
+      "cache": false
     },
     "db:push": {
-      "cache": false,
-      "outputs": []
+      "cache": false
     },
     "studio": {
       "cache": false
