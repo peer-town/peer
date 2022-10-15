@@ -11,7 +11,9 @@ export const compose = new ComposeClient({
 
 export const onStart = async (client: Client) => {
   let threadChannels = await client.channels.cache.filter(
-    (channel) => channel.type == ChannelType.PublicThread
+    (channel) =>
+      channel.type == ChannelType.PublicThread &&
+      channel.parent?.name == "hello-yellow"
   );
 
   for (const threadChannel of threadChannels) {
