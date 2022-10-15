@@ -6,9 +6,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "build": "tsc",
-    "dev": "nodemon"
+    "start": "tsup && node dist/index.js",
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "@composedb/client": "^0.3.0",
@@ -27,7 +27,8 @@
   },
   "devDependencies": {
     "@devnode/tsconfig": "*",
-    "prisma": "^4.4.0"
+    "prisma": "^4.4.0",
+    "tsup": "^6.2.3"
   },
   "prisma": {
     "schema": "./../../prisma/schema.prisma"
