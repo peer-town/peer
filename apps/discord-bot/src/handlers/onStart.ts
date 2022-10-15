@@ -1,8 +1,8 @@
 import { DIDSession } from "did-session";
 import { ChannelType, Client, ThreadChannel } from "discord.js";
-import { prisma } from "@devnode/database";
 import { ComposeClient } from "@composedb/client";
-import definition from "@devnode/composedb";
+import { definition } from "@devnode/composedb";
+import { prisma } from "@devnode/database";
 
 export const compose = new ComposeClient({
   ceramic: "http://localhost:7007",
@@ -16,6 +16,7 @@ export const onStart = async (client: Client) => {
       channel.parent?.name == "hello-yellow"
   );
 
+  console.log(threadChannels);
   for (const threadChannel of threadChannels) {
     const channel = client.channels.cache.get(
       threadChannel[1].id

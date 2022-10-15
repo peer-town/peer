@@ -7,6 +7,12 @@
     "lint": {
       "outputs": []
     },
+    "clean": {
+      "cache": false
+    },
+    "start": {
+      "cache": false
+    },
     "dev": {
       "cache": false
     },

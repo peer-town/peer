@@ -4,7 +4,8 @@
   "author": "",
   "license": "MIT",
   "private": true,
-  "main": "./dist/index.js",
+  "main": "./dist/index",
+  "typings": "./dist/index",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
@@ -38,6 +39,5 @@
     "tsup": "^6.2.3",
     "tsx": "^3.9.0",
     "typescript": "^4.8.4"
-  },
-  "packageManager": "yarn@1.22.19"
+  }
 }
