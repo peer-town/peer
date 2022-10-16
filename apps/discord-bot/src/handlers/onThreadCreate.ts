@@ -1,7 +1,13 @@
 import { ChannelType, Client, ThreadChannel } from "discord.js";
 import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
-import { compose } from "./onMessageCreate";
+import { ComposeClient } from "@composedb/client";
+import { definition } from "@devnode/composedb";
+
+export const compose = new ComposeClient({
+  ceramic: "http://localhost:7007",
+  definition,
+});
 
 export const onThreadCreate = async (thread: ThreadChannel, client: Client) => {
   if (thread.type != ChannelType.PublicThread) return null;

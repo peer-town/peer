@@ -3,7 +3,7 @@ import { randomString } from "@stablelib/random";
 import { prisma } from "@devnode/database";
 
 const DISCORD_BOT_NAME = "devnode-bot";
-const API_ENDPOINT = "http://localhost:3000/api/user/discord-auth";
+const API_ENDPOINT = `${process.env.NEXTAUTH_URL}/api/user/discord-auth`;
 
 const DISCORD_CHALLENGE_SUCCESS = `Great! Your challenge code is: ${API_ENDPOINT}/`;
 const DISCORD_INVALID_DID =
