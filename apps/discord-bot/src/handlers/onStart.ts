@@ -5,7 +5,7 @@ import { definition } from "@devnode/composedb";
 import { prisma } from "@devnode/database";
 
 export const compose = new ComposeClient({
-  ceramic: "http://localhost:7007",
+  ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 

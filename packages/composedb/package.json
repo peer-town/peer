@@ -25,10 +25,6 @@
   },
   "devDependencies": {
     "@devnode/tsconfig": "*",
-    "@composedb/devtools": "^0.3.0",
-    "@composedb/devtools-node": "^0.3.0",
-    "@ceramicnetwork/cli": "next",
-    "@composedb/cli": "next",
     "tsup": "^6.2.3",
     "rimraf": "^3.0.2"
   },

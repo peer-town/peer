@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useProvider } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import React from "react";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
