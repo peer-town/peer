@@ -13,4 +13,6 @@ services:
       dockerfile: ./packages/composedb/server/Dockerfile
     ports:
       - "7008:7008"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
