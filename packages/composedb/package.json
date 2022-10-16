@@ -15,8 +15,9 @@
     "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",
     "dev": "tsup",
-    "composedb:daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' pnpm dlx @ceramicnetwork/cli daemon --config ./daemon.config.json",
-    "composedb:server": "composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql ./gen/runtime-composite.json",
+    "composedb:daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' ceramic daemon --config ./daemon.config.json",
+    "composedb:server": "composedb graphql:server --ceramic-url=http://127.0.0.1:7007 --graphiql ./gen/runtime-composite.json --port 7008",
+    "composedb:server:docker": "composedb graphql:server --ceramic-url=http://host.docker.internal:7007 --graphiql ./gen/runtime-composite.json --port 7008",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "resolutions": {
@@ -26,6 +27,8 @@
     "@devnode/tsconfig": "*",
     "@composedb/devtools": "^0.3.0",
     "@composedb/devtools-node": "^0.3.0",
+    "@ceramicnetwork/cli": "next",
+    "@composedb/cli": "next",
     "tsup": "^6.2.3",
     "rimraf": "^3.0.2"
   },

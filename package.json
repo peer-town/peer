@@ -18,7 +18,8 @@
     "daemon": "turbo run daemon",
     "studio": "turbo run studio",
     "composedb:daemon": "turbo run composedb:daemon",
-    "composedb:server": "turbo run composedb:server"
+    "composedb:server": "turbo run composedb:server",
+    "composedb:server:docker": "turbo run composedb:server:docker"
   },
   "devDependencies": {
     "prettier": "^2.7.1",

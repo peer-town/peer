@@ -22,6 +22,9 @@
     "composedb:server": {
       "cache": false
     },
+    "composedb:server:docker": {
+      "cache": false
+    },
     "generate": {
       "cache": false
     },
