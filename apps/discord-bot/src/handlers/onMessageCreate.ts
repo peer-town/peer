@@ -50,11 +50,22 @@ export const onMessageCreate = async (message: Message, client: Client) => {
 
   if (commentExists) return null;
 
-  const thread = await prisma.thread.findFirstOrThrow({
-    where: {
-      discordId: message.thread?.id,
-    },
-  });
+  let foundThread = false;
+
+  while (!foundThread) {
+    let thread = await prisma.thread
+      .findFirstOrThrow({
+        where: {
+          discordId: message.thread?.id,
+        },
+      })
+      .then(() => {
+        foundThread = true;
+      })
+      .catch(() => {
+        foundThread = false;
+      });
+  }
 
   const ceramicComment = await compose.executeQuery<{
     createComment: { document: { id: string } };
