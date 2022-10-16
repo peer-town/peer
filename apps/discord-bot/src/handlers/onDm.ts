@@ -5,7 +5,7 @@ import { prisma } from "@devnode/database";
 const DISCORD_BOT_NAME = "devnode-bot";
 const API_ENDPOINT = `${process.env.NEXTAUTH_URL}api/user/discord-auth`;
 
-const DISCORD_CHALLENGE_SUCCESS = `Great! Your challenge code is: \`${API_ENDPOINT}\` /`;
+const DISCORD_CHALLENGE_SUCCESS = `Great! Your challenge code is: \`${API_ENDPOINT}\`/`;
 const DISCORD_INVALID_DID =
   "Oops! That doesn't look right. It looks like this: `did:key:z6MkkyAkqY9bPr8gyQGuJTwQvzk8nsfywHCH4jyM1CgTq4KA`";
 
