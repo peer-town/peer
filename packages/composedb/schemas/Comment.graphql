@@ -1,6 +1,6 @@
 type Thread
   @loadModel(
-    id: "kjzl6hvfrbw6c8zwpdnjdtn16p1kkxij8w3xj5obwi21vdgfuk1lkkkm9lm1rnm"
+    id: "kjzl6hvfrbw6c8rovlhjhet6ccmf143i3ny452a12xliruruit81i105i3ck0g4"
   ) {
   id: ID!
 }

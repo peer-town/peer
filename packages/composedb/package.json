@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",
-    "dev": "yarn composedb:daemon",
+    "dev": "tsup",
     "composedb:daemon": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' pnpm dlx @ceramicnetwork/cli daemon --config ./daemon.config.json",
     "composedb:server": "composedb graphql:server --ceramic-url=http://localhost:7007 --graphiql ./gen/runtime-composite.json",
     "test": "echo \"Error: no test specified\" && exit 1"

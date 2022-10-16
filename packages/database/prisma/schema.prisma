@@ -20,25 +20,26 @@ model DiscordChallenge {
 }
 
 model User {
-  id         Int    @id @default(autoincrement())
-  address    String @unique
+  id         String @id @unique @default(cuid())
   discord    String @unique
   did        String @unique
-  didSession String
+  didSession String @unique
 }
 
 model Thread {
   id          Int       @id @default(autoincrement())
   discordId   String    @unique
+  streamId    String    @unique
   discordUser String
   timestamp   String
-  content     String
-  messages    Message[]
+  title       String
+  messages    Comment[]
 }
 
-model Message {
+model Comment {
   id          Int    @id @default(autoincrement())
   discordId   String @unique
+  streamId    String @unique
   discordUser String
   timestamp   String
   content     String

@@ -58,15 +58,14 @@ client.once("ready", async () => {
 
 client.on("messageCreate", async (message: Message) => {
   if (message.channel.type == ChannelType.DM) {
-    //onDm(message, client);
+    onDm(message, client);
   } else if (message.content === DISCORD_INVOCATION_STRING) {
-    //onInvoke(message);
+    onInvoke(message);
   } else onMessageCreate(message, client);
 });
 
 client.on("threadCreate", async (thread) => {
-  const starterMessage = await thread.fetchStarterMessage();
-  //onThreadCreate(thread, starterMessage!, client);
+  onThreadCreate(thread, client);
 });
 
 export {};

@@ -3,11 +3,11 @@ import type { RuntimeCompositeDefinition } from "@composedb/types";
 export const definition: RuntimeCompositeDefinition = {
   models: {
     Thread: {
-      id: "kjzl6hvfrbw6c8zwpdnjdtn16p1kkxij8w3xj5obwi21vdgfuk1lkkkm9lm1rnm",
+      id: "kjzl6hvfrbw6c8rovlhjhet6ccmf143i3ny452a12xliruruit81i105i3ck0g4",
       accountRelation: { type: "list" },
     },
     Comment: {
-      id: "kjzl6hvfrbw6c7gmbi9f3xfhjeom6940ote3qdwn28new5nyayh07kinemmuv05",
+      id: "kjzl6hvfrbw6catlvnyvvt1z9bwhntutqon91kzlbi82blvnt3b9b0au9six1jt",
       accountRelation: { type: "list" },
     },
   },

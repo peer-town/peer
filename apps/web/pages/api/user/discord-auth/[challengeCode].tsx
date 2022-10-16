@@ -39,7 +39,6 @@ export default async function handler(
       did: details.did,
     },
     create: {
-      address: "",
       discord: details.username,
       did: details.did,
       didSession: "",

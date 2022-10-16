@@ -1,5 +1,5 @@
 import { DIDSession } from "did-session";
-import { ChannelType, Client, ThreadChannel } from "discord.js";
+import { ChannelType, Client, Message, ThreadChannel } from "discord.js";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
 import { prisma } from "@devnode/database";
@@ -9,126 +9,175 @@ export const compose = new ComposeClient({
   definition,
 });
 
-export const onStart = async (client: Client) => {
-  let threadChannels = await client.channels.cache.filter(
-    (channel) =>
-      channel.type == ChannelType.PublicThread &&
-      channel.parent?.name == "hello-yellow"
-  );
+const foundThread = async (thread: ThreadChannel) => {
+  let author = (await thread.fetchStarterMessage())?.author;
 
-  console.log(threadChannels);
-  for (const threadChannel of threadChannels) {
-    const channel = client.channels.cache.get(
-      threadChannel[1].id
-    ) as ThreadChannel;
+  const user = await prisma.user
+    .findUniqueOrThrow({
+      where: {
+        discord: author?.tag,
+      },
+      select: {
+        didSession: true,
+      },
+    })
+    .catch(() => {
+      return null;
+    });
+  if (user == null || !user.didSession) {
+    thread.delete();
+    return null;
+  }
 
-    let starterMessage = await channel.fetchStarterMessage();
-    let owner = await channel.fetchOwner();
-    let messages = await channel.messages.fetch({ limit: 100 });
-    //console.log(`${owner?.user?.tag} - ${starterMessage?.content}`);
+  const threadExists = await prisma.thread.findUnique({
+    where: {
+      discordId: thread.id,
+    },
+  });
 
-    const user = (
-      await prisma.user.findMany({
-        where: {
-          discord: {
-            equals: owner?.user?.tag,
-          },
-        },
-      })
-    )[0];
+  if (threadExists) return threadExists.streamId;
 
-    if (!user) return;
-    const session = await DIDSession.fromSession(user.didSession);
-    compose.setDID(session.did);
+  const session = await DIDSession.fromSession(user.didSession);
+  compose.setDID(session.did);
 
-    const thread = await compose.executeQuery<{
-      createThread: { document: { id: string } };
-    }>(
-      `mutation CreateThread($input: CreateThreadInput!) {
+  const ceramicThread = await compose.executeQuery<{
+    createThread: { document: { id: string } };
+  }>(
+    `mutation CreateThread($input: CreateThreadInput!) {
           createThread(input: $input) {
             document {
-              title
               id
+              title
             }
           }
         }`,
-      {
-        input: {
-          content: { title: String(starterMessage?.content.slice(0, 40)) },
-        },
-      }
-    );
-
-    console.log(`thread id: ${thread.data?.createThread.document.id}`);
-
-    let dbThread = await prisma.thread.upsert({
-      where: { discordId: channel.id },
-      update: {
-        timestamp: String(channel.createdTimestamp),
-        discordUser: String(owner?.user?.tag),
-        content: String(starterMessage?.content),
+    {
+      input: {
+        content: { title: String(thread.name) },
       },
-      create: {
-        discordId: channel.id,
-        timestamp: String(channel.createdTimestamp),
-        discordUser: String(owner?.user?.tag),
-        content: String(starterMessage?.content),
+    }
+  );
+
+  if (!ceramicThread.data || !ceramicThread.data.createThread.document.id)
+    return null;
+
+  await prisma.thread.upsert({
+    where: { discordId: thread.id },
+    update: {
+      timestamp: String(thread.createdTimestamp),
+      discordUser: String(author?.tag),
+      title: String(thread.name),
+    },
+    create: {
+      discordId: thread.id,
+      streamId: ceramicThread.data.createThread.document.id,
+      timestamp: String(thread.createdTimestamp),
+      discordUser: String(author?.tag),
+      title: String(thread.name),
+    },
+  });
+
+  return ceramicThread.data.createThread.document.id;
+};
+
+const foundMessage = async (message: Message, threadStreamId: string) => {
+  const user = await prisma.user
+    .findUniqueOrThrow({
+      where: {
+        discord: message.author.tag,
       },
+      select: {
+        didSession: true,
+      },
+    })
+    .catch(() => {
+      return null;
     });
+  if (user == null || !user.didSession) {
+    message.delete();
+    return null;
+  }
 
-    for (const message of messages) {
-      await prisma.user
-        .findMany({
-          where: {
-            discord: {
-              equals: owner?.user?.tag,
-            },
-          },
-        })
-        .then(async (user: any) => {
-          const session = await DIDSession.fromSession(user[0].didSession);
-          compose.setDID(session.did);
+  const session = await DIDSession.fromSession(user.didSession);
+  compose.setDID(session.did);
 
-          const comment = await compose.executeQuery<{
-            createComment: { document: { id: string } };
-          }>(
-            `mutation CreateComment($input: CreateCommentInput!) {
+  const commentExists = await prisma.comment.findUnique({
+    where: {
+      discordId: message.id,
+    },
+  });
+
+  if (commentExists) return commentExists.streamId;
+
+  const ceramicComment = await compose.executeQuery<{
+    createComment: { document: { id: string } };
+  }>(
+    `mutation CreateComment($input: CreateCommentInput!) {
           createComment(input: $input) {
             document {
+              id
               threadID
               text
             }
           }
         }`,
-            {
-              input: {
-                content: {
-                  threadID: thread.data?.createThread.document.id,
-                  text: String(message[1].content),
-                },
-              },
-            }
-          );
-
-          console.log(`comment id: ${comment.data?.createComment.document.id}`);
-        });
-
-      await prisma.message.upsert({
-        where: { discordId: message[1].id },
-        update: {
-          timestamp: String(message[1].createdTimestamp),
-          discordUser: String(message[1].author.tag),
-          content: String(message[1].content),
+    {
+      input: {
+        content: {
+          threadID: threadStreamId,
+          text: String(message.content),
         },
-        create: {
-          discordId: message[1].id,
-          timestamp: String(message[1].createdTimestamp),
-          discordUser: String(message[1].author.tag),
-          content: String(message[1].content),
-          threadId: dbThread.id,
-        },
-      });
-      //console.log(message[1].content);
+      },
+    }
+  );
+
+  if (!ceramicComment.data || !ceramicComment.data.createComment.document.id)
+    return null;
+
+  const thread = await prisma.thread.findFirstOrThrow({
+    where: {
+      streamId: threadStreamId,
+    },
+  });
+
+  await prisma.comment.upsert({
+    where: { discordId: message.id },
+    update: {
+      timestamp: String(message.createdTimestamp),
+      discordUser: String(message.author.tag),
+      content: String(message.content),
+    },
+    create: {
+      discordId: message.id,
+      streamId: ceramicComment.data.createComment.document.id,
+      timestamp: String(message.createdTimestamp),
+      discordUser: String(message.author.tag),
+      content: String(message.content),
+      Thread: {
+        connect: { id: thread.id },
+      },
+    },
+  });
+};
+
+export const onStart = async (client: Client) => {
+  let threadChannels = await client.channels.cache.filter(
+    (channel) =>
+      channel.type == ChannelType.PublicThread &&
+      channel.parent?.name == process.env.DISCORD_CHANNEL_NAME
+  );
+
+  for (const threadChannel of threadChannels) {
+    const thread = client.channels.cache.get(
+      threadChannel[1].id
+    ) as ThreadChannel;
+
+    const threadCeramicStreamId = await foundThread(thread);
+
+    let messages = await thread.messages.fetch({ limit: 100 });
+
+    for (const message of messages.values()) {
+      if (threadCeramicStreamId) foundMessage(message, threadCeramicStreamId);
     }
   }
 };
