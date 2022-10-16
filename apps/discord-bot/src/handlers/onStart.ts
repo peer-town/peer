@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { DIDSession } from "did-session";
 import { ChannelType, Client, Message, ThreadChannel } from "discord.js";
 import { ComposeClient } from "@composedb/client";

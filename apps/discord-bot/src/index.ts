@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config();
+
 import {
   ChannelType,
   Client,
@@ -5,15 +8,13 @@ import {
   Message,
   Partials,
 } from "discord.js";
-import { config } from "dotenv";
+
 import { onDm } from "./handlers/onDm";
 import { onInvoke } from "./handlers/onInvoke";
 import { onMessageCreate } from "./handlers/onMessageCreate";
 import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
 import fetch from "cross-fetch";
-
-config();
 
 const DISCORD_INVOCATION_STRING = "devnode";
 

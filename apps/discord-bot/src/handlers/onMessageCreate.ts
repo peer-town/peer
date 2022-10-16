@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { ChannelType, Client, Message } from "discord.js";
 import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";

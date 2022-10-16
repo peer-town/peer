@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config();
+
 import { Client, Message } from "discord.js";
 import { randomString } from "@stablelib/random";
 import { prisma } from "@devnode/database";

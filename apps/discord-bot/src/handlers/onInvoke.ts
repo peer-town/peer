@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { Message } from "discord.js";
 
 const DISCORD_REPLY = `Please check your DMs`;
