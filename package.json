@@ -10,6 +10,7 @@
     "clean": "turbo run clean",
     "start": "turbo run start",
     "build": "turbo run build",
+    "start:bot": "turbo run start:bot",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
