@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "start:web": "next start -p 80",
+    "start:web": "next start -p 8080",
     "lint": "next lint"
   },
   "dependencies": {
