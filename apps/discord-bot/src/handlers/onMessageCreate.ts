@@ -63,8 +63,9 @@ export const onMessageCreate = async (message: Message, client: Client) => {
         foundThread = true;
         return res;
       })
-      .catch(() => {
+      .catch((e) => {
         foundThread = false;
+        console.log(e);
         return null;
       });
   }
