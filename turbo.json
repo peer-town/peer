@@ -16,6 +16,9 @@
     "start:bot": {
       "cache": false
     },
+    "start:web": {
+      "cache": false
+    },
     "dev": {
       "cache": false
     },
