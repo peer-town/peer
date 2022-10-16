@@ -4,4 +4,4 @@ WORKDIR /app
 RUN yarn global add turbo pnpm
 COPY . .
 EXPOSE 7007
-CMD ["yarn","composedb:daemon"]
+CMD ["yarn","composedb:server"]
