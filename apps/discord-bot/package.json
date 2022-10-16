@@ -16,7 +16,8 @@
     "start": "node dist/index.js",
     "start:bot": "node dist/index.js",
     "build": "tsup",
-    "dev": "tsup && node dist/index.js"
+    "dev": "tsup && node dist/index.js",
+    "dev:bot": "tsup && node dist/index.js"
   },
   "dependencies": {
     "@composedb/client": "^0.3.0",

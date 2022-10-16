@@ -13,6 +13,7 @@
     "start:bot": "turbo run start:bot",
     "start:web": "turbo run start:web",
     "dev:web": "turbo run dev:web",
+    "dev:bot": "turbo run dev:bot",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

@@ -22,6 +22,9 @@
     "dev:web": {
       "cache": false
     },
+    "dev:bot": {
+      "cache": false
+    },
     "dev": {
       "cache": false
     },

@@ -44,7 +44,7 @@ client.once("ready", async () => {
   let nodeReady = false;
   while (!nodeReady) {
     console.log("ceramic node not ready");
-    await fetch("http://plugarilor.go.ro:7007")
+    await fetch(String(process.env.CERAMIC_NODE))
       .then(() => {
         nodeReady = true;
         onStart(client);
