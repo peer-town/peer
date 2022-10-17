@@ -28,6 +28,7 @@ export const onThreadCreate = async (thread: ThreadChannel, client: Client) => {
       return null;
     });
   if (user == null || !user.didSession) {
+    await new Promise((r) => setTimeout(r, 3000));
     thread.delete();
     return null;
   }

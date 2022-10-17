@@ -37,6 +37,7 @@ export const onMessageCreate = async (message: Message, client: Client) => {
       return null;
     });
   if (user == null || !user.didSession) {
+    await new Promise((r) => setTimeout(r, 3000));
     message.delete();
     return null;
   }
