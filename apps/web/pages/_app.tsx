@@ -1,3 +1,4 @@
+import React from "react";
 import "../styles/globals.css";
 import type { AppProps, AppType } from "next/app";
 
@@ -11,10 +12,9 @@ import {
 import { publicProvider } from "wagmi/providers/public";
 
 import { InjectedConnector } from "wagmi/connectors/injected";
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
-import dynamic from "next/dynamic";
-import React from "react";
+// import dynamic from "next/dynamic";
 
 // Configure chains & p
 
