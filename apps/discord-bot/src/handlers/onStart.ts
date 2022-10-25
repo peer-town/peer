@@ -60,7 +60,11 @@ const foundThread = async (thread: ThreadChannel) => {
     }
   );
 
-  if (!ceramicThread.data || !ceramicThread.data.createThread.document.id)
+  if (
+    !ceramicThread.data ||
+    !ceramicThread.data.createThread ||
+    !ceramicThread.data.createThread.document.id
+  )
     return null;
 
   await prisma.thread.upsert({
