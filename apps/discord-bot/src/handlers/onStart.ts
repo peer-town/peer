@@ -134,8 +134,9 @@ const foundMessage = async (message: Message, threadStreamId: string) => {
     }
   );
 
-  if (!ceramicComment.data || !ceramicComment.data.createComment.document.id)
-    return null;
+  if (!ceramicComment.data || !ceramicComment.data.createComment) return null;
+
+  if (!ceramicComment.data.createComment.document.id) return null;
 
   const thread = await prisma.thread.findFirstOrThrow({
     where: {
