@@ -5,6 +5,7 @@ import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
+import { Thread } from ".prisma/client";
 
 export const compose = new ComposeClient({
   ceramic: String(process.env.CERAMIC_NODE),
@@ -54,7 +55,8 @@ export const onMessageCreate = async (message: Message, client: Client) => {
   if (commentExists) return null;
 
   let foundThread = false;
-  let thread;
+  let thread: Thread | undefined;
+
   while (!foundThread) {
     thread = await prisma.thread
       .findFirstOrThrow({
@@ -69,16 +71,17 @@ export const onMessageCreate = async (message: Message, client: Client) => {
       .catch((e) => {
         foundThread = false;
         console.log(e);
-        return null;
+        return undefined;
       });
   }
 
   if (!thread) return;
 
-  const ceramicComment = await compose.executeQuery<{
-    createComment: { document: { id: string } };
-  }>(
-    `mutation CreateComment($input: CreateCommentInput!) {
+  const ceramicComment = await compose
+    .executeQuery<{
+      createComment: { document: { id: string } };
+    }>(
+      `mutation CreateComment($input: CreateCommentInput!) {
           createComment(input: $input) {
             document {
               id
@@ -87,35 +90,36 @@ export const onMessageCreate = async (message: Message, client: Client) => {
             }
           }
         }`,
-    {
-      input: {
-        content: {
-          threadID: thread.streamId,
-          text: String(message.content),
+      {
+        input: {
+          content: {
+            threadID: thread.streamId,
+            text: String(message.content),
+          },
         },
-      },
-    }
-  );
-  if (!ceramicComment.data || !ceramicComment.data.createComment) return null;
+      }
+    )
+    .then(async (r) => {
+      if (!r || !r.data) return;
+      if (!thread) return;
 
-  if (!ceramicComment.data.createComment.document.id) return null;
-
-  await prisma.comment.upsert({
-    where: { discordId: message.id },
-    update: {
-      timestamp: String(message.createdTimestamp),
-      discordUser: String(message.author.tag),
-      content: String(message.content),
-    },
-    create: {
-      discordId: message.id,
-      streamId: ceramicComment.data.createComment.document.id,
-      timestamp: String(message.createdTimestamp),
-      discordUser: String(message.author.tag),
-      content: String(message.content),
-      Thread: {
-        connect: { id: thread.id },
-      },
-    },
-  });
+      await prisma.comment.upsert({
+        where: { discordId: message.id },
+        update: {
+          timestamp: String(message.createdTimestamp),
+          discordUser: String(message.author.tag),
+          content: String(message.content),
+        },
+        create: {
+          discordId: message.id,
+          streamId: r.data.createComment.document.id,
+          timestamp: String(message.createdTimestamp),
+          discordUser: String(message.author.tag),
+          content: String(message.content),
+          Thread: {
+            connect: { id: thread.id },
+          },
+        },
+      });
+    });
 };

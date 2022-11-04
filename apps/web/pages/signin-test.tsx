@@ -58,10 +58,10 @@ const AuthPage = () => {
     );
 
     console.log(accountId);
-    const oneWeek = 60 * 60 * 24 * 7;
+    const oneHundredWeeks = 60 * 60 * 24 * 7 * 100;
     const session = await DIDSession.authorize(authMethod, {
       resources: [`ceramic://*`],
-      expiresInSecs: oneWeek,
+      expiresInSecs: oneHundredWeeks,
     });
 
     fetch(

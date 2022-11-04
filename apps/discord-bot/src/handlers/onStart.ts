@@ -112,10 +112,11 @@ const foundMessage = async (message: Message, threadStreamId: string) => {
 
   if (commentExists) return commentExists.streamId;
 
-  const ceramicComment = await compose.executeQuery<{
-    createComment: { document: { id: string } };
-  }>(
-    `mutation CreateComment($input: CreateCommentInput!) {
+  const ceramicComment = await compose
+    .executeQuery<{
+      createComment: { document: { id: string } };
+    }>(
+      `mutation CreateComment($input: CreateCommentInput!) {
           createComment(input: $input) {
             document {
               id
@@ -124,44 +125,43 @@ const foundMessage = async (message: Message, threadStreamId: string) => {
             }
           }
         }`,
-    {
-      input: {
-        content: {
-          threadID: threadStreamId,
-          text: String(message.content),
+      {
+        input: {
+          content: {
+            threadID: threadStreamId,
+            text: String(message.content),
+          },
         },
-      },
-    }
-  );
+      }
+    )
+    .then(async (r) => {
+      if (!r || !r.data) return;
 
-  if (!ceramicComment.data || !ceramicComment.data.createComment) return null;
+      const thread = await prisma.thread.findFirstOrThrow({
+        where: {
+          streamId: threadStreamId,
+        },
+      });
 
-  if (!ceramicComment.data.createComment.document.id) return null;
-
-  const thread = await prisma.thread.findFirstOrThrow({
-    where: {
-      streamId: threadStreamId,
-    },
-  });
-
-  await prisma.comment.upsert({
-    where: { discordId: message.id },
-    update: {
-      timestamp: String(message.createdTimestamp),
-      discordUser: String(message.author.tag),
-      content: String(message.content),
-    },
-    create: {
-      discordId: message.id,
-      streamId: ceramicComment.data.createComment.document.id,
-      timestamp: String(message.createdTimestamp),
-      discordUser: String(message.author.tag),
-      content: String(message.content),
-      Thread: {
-        connect: { id: thread.id },
-      },
-    },
-  });
+      await prisma.comment.upsert({
+        where: { discordId: message.id },
+        update: {
+          timestamp: String(message.createdTimestamp),
+          discordUser: String(message.author.tag),
+          content: String(message.content),
+        },
+        create: {
+          discordId: message.id,
+          streamId: r.data.createComment.document.id,
+          timestamp: String(message.createdTimestamp),
+          discordUser: String(message.author.tag),
+          content: String(message.content),
+          Thread: {
+            connect: { id: thread.id },
+          },
+        },
+      });
+    });
 };
 
 export const onStart = async (client: Client) => {

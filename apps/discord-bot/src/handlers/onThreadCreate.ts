@@ -44,10 +44,11 @@ export const onThreadCreate = async (thread: ThreadChannel, client: Client) => {
   const session = await DIDSession.fromSession(user.didSession);
   compose.setDID(session.did);
 
-  const ceramicThread = await compose.executeQuery<{
-    createThread: { document: { id: string } };
-  }>(
-    `mutation CreateThread($input: CreateThreadInput!) {
+  const ceramicThread = await compose
+    .executeQuery<{
+      createThread: { document: { id: string } };
+    }>(
+      `mutation CreateThread($input: CreateThreadInput!) {
           createThread(input: $input) {
             document {
               id
@@ -55,30 +56,28 @@ export const onThreadCreate = async (thread: ThreadChannel, client: Client) => {
             }
           }
         }`,
-    {
-      input: {
-        content: { title: String(thread.name) },
-      },
-    }
-  );
-
-  if (!ceramicThread.data || !ceramicThread.data.createThread) return null;
-
-  if (!ceramicThread.data.createThread.document.id) return null;
-
-  await prisma.thread.upsert({
-    where: { discordId: thread.id },
-    update: {
-      timestamp: String(thread.createdTimestamp),
-      discordUser: String((await thread.fetchOwner())?.user?.tag),
-      title: String(thread.name),
-    },
-    create: {
-      discordId: thread.id,
-      streamId: ceramicThread.data.createThread.document.id,
-      timestamp: String(thread.createdTimestamp),
-      discordUser: String((await thread.fetchOwner())?.user?.tag),
-      title: String(thread.name),
-    },
-  });
+      {
+        input: {
+          content: { title: String(thread.name) },
+        },
+      }
+    )
+    .then(async (r) => {
+      if (!r || !r.data) return;
+      await prisma.thread.upsert({
+        where: { discordId: thread.id },
+        update: {
+          timestamp: String(thread.createdTimestamp),
+          discordUser: String((await thread.fetchOwner())?.user?.tag),
+          title: String(thread.name),
+        },
+        create: {
+          discordId: thread.id,
+          streamId: r.data.createThread.document.id,
+          timestamp: String(thread.createdTimestamp),
+          discordUser: String((await thread.fetchOwner())?.user?.tag),
+          title: String(thread.name),
+        },
+      });
+    });
 };
