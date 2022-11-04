@@ -60,12 +60,9 @@ const foundThread = async (thread: ThreadChannel) => {
     }
   );
 
-  if (
-    !ceramicThread.data ||
-    !ceramicThread.data.createThread ||
-    !ceramicThread.data.createThread.document.id
-  )
-    return null;
+  if (!ceramicThread.data || !ceramicThread.data.createThread) return null;
+
+  if (!ceramicThread.data.createThread.document.id) return null;
 
   await prisma.thread.upsert({
     where: { discordId: thread.id },
