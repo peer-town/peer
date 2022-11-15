@@ -26,23 +26,30 @@ model User {
   didSession String @unique
 }
 
+model Community {
+  id        Int    @id @default(autoincrement())
+  discordId String @unique
+  name      String
+}
+
 model Thread {
-  id          Int       @id @default(autoincrement())
-  discordId   String    @unique
-  streamId    String    @unique
-  discordUser String
-  timestamp   String
-  title       String
-  messages    Comment[]
+  id               Int       @id @default(autoincrement())
+  discordId        String    @unique
+  streamId         String    @unique
+  discordAuthor    String
+  discordCommunity String
+  title            String
+  createdAt        DateTime
+  messages         Comment[]
 }
 
 model Comment {
-  id          Int    @id @default(autoincrement())
-  discordId   String @unique
-  streamId    String @unique
-  discordUser String
-  timestamp   String
-  content     String
-  Thread      Thread @relation(fields: [threadId], references: [id])
-  threadId    Int
+  id            Int      @id @default(autoincrement())
+  discordId     String   @unique
+  streamId      String   @unique
+  discordAuthor String
+  text          String
+  createdAt     DateTime
+  Thread        Thread   @relation(fields: [threadId], references: [id])
+  threadId      Int
 }

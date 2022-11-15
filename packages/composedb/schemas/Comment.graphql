@@ -1,6 +1,6 @@
 type Thread
   @loadModel(
-    id: "kjzl6hvfrbw6c8rovlhjhet6ccmf143i3ny452a12xliruruit81i105i3ck0g4"
+    id: "kjzl6hvfrbw6c9aofa8penmje3t7ulzvrgdsm7mqiep6h2p7xps46717pl5vk73"
   ) {
   id: ID!
 }
@@ -10,4 +10,5 @@ type Comment
   threadID: StreamID! @documentReference(model: "Thread")
   author: DID! @documentAccount
   text: String! @string(maxLength: 2000)
+  createdAt: DateTime! @string(maxLength: 100)
 }

@@ -57,7 +57,6 @@ const AuthPage = () => {
       accountId
     );
 
-    console.log(accountId);
     const oneHundredWeeks = 60 * 60 * 24 * 7 * 100;
     const session = await DIDSession.authorize(authMethod, {
       resources: [`ceramic://*`],

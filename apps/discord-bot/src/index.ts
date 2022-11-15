@@ -16,7 +16,8 @@ import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
 import fetch from "cross-fetch";
 
-const DISCORD_INVOCATION_STRING = "devnode";
+const INVOCATION_STRING = "devnode";
+const INVOCATION_CHANNEL = "devnode_signin";
 
 //devnode invite link
 // https://discord.com/api/oauth2/authorize?client_id=1005099848988627055&permissions=3072&scope=bot
@@ -48,7 +49,8 @@ client.once("ready", async () => {
     await fetch(String(process.env.CERAMIC_NODE))
       .then(() => {
         nodeReady = true;
-        onStart(client);
+        console.log("ceramic node connected");
+        //onStart(client);
       })
       .catch(() => {
         nodeReady = false;
@@ -59,14 +61,21 @@ client.once("ready", async () => {
 
 client.on("messageCreate", async (message: Message) => {
   if (message.channel.type == ChannelType.DM) {
-    onDm(message, client);
-  } else if (message.content === DISCORD_INVOCATION_STRING) {
+    onDm(message);
+  } else if (
+    message.content === INVOCATION_STRING &&
+    message.channel.name == INVOCATION_CHANNEL
+  ) {
     onInvoke(message);
-  } else onMessageCreate(message, client);
+  } else {
+    console.log("messageCreate");
+    onMessageCreate(message);
+  }
 });
 
 client.on("threadCreate", async (thread) => {
-  onThreadCreate(thread, client);
+  console.log("threadCreate");
+  onThreadCreate(thread);
 });
 
 export {};

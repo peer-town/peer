@@ -1,4 +1,6 @@
 type Thread @createModel(accountRelation: LIST, description: "DevNode Thread") {
   author: DID! @documentAccount
+  community: String! @string(maxLength: 100)
   title: String! @string(maxLength: 2000)
+  createdAt: DateTime! @string(maxLength: 100)
 }
