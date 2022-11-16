@@ -50,7 +50,7 @@ client.once("ready", async () => {
       .then(() => {
         nodeReady = true;
         console.log("ceramic node connected");
-        //onStart(client);
+        onStart(client);
       })
       .catch(() => {
         nodeReady = false;
@@ -68,13 +68,11 @@ client.on("messageCreate", async (message: Message) => {
   ) {
     onInvoke(message);
   } else {
-    console.log("messageCreate");
     onMessageCreate(message);
   }
 });
 
 client.on("threadCreate", async (thread) => {
-  console.log("threadCreate");
   onThreadCreate(thread);
 });
 

@@ -1,187 +1,47 @@
 import { config } from "dotenv";
 config();
-import { DIDSession } from "did-session";
-import { ChannelType, Client, Message, ThreadChannel } from "discord.js";
-import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
-import { prisma } from "@devnode/database";
-
-export const compose = new ComposeClient({
-  ceramic: String(process.env.CERAMIC_NODE),
-  definition,
-});
-
-const foundThread = async (thread: ThreadChannel) => {
-  let author = (await thread.fetchStarterMessage())?.author;
-
-  const user = await prisma.user
-    .findUniqueOrThrow({
-      where: {
-        discord: author?.tag,
-      },
-      select: {
-        didSession: true,
-      },
-    })
-    .catch(() => {
-      return null;
-    });
-  if (user == null || !user.didSession) {
-    thread.delete();
-    return null;
-  }
-
-  const threadExists = await prisma.thread.findUnique({
-    where: {
-      discordId: thread.id,
-    },
-  });
-
-  if (threadExists) return threadExists.streamId;
-
-  const session = await DIDSession.fromSession(user.didSession);
-  compose.setDID(session.did);
-
-  const ceramicThread = await compose.executeQuery<{
-    createThread: { document: { id: string } };
-  }>(
-    `mutation CreateThread($input: CreateThreadInput!) {
-          createThread(input: $input) {
-            document {
-              id
-              title
-            }
-          }
-        }`,
-    {
-      input: {
-        content: { title: String(thread.name) },
-      },
-    }
-  );
-
-  if (!ceramicThread.data || !ceramicThread.data.createThread) return null;
-
-  if (!ceramicThread.data.createThread.document.id) return null;
-
-  await prisma.thread.upsert({
-    where: { discordId: thread.id },
-    update: {
-      timestamp: String(thread.createdTimestamp),
-      discordUser: String(author?.tag),
-      title: String(thread.name),
-    },
-    create: {
-      discordId: thread.id,
-      streamId: ceramicThread.data.createThread.document.id,
-      timestamp: String(thread.createdTimestamp),
-      discordUser: String(author?.tag),
-      title: String(thread.name),
-    },
-  });
-
-  return ceramicThread.data.createThread.document.id;
-};
-
-const foundMessage = async (message: Message, threadStreamId: string) => {
-  const user = await prisma.user
-    .findUniqueOrThrow({
-      where: {
-        discord: message.author.tag,
-      },
-      select: {
-        didSession: true,
-      },
-    })
-    .catch(() => {
-      return null;
-    });
-  if (user == null || !user.didSession) {
-    message.delete();
-    return null;
-  }
-
-  const session = await DIDSession.fromSession(user.didSession);
-  compose.setDID(session.did);
-
-  const commentExists = await prisma.comment.findUnique({
-    where: {
-      discordId: message.id,
-    },
-  });
-
-  if (commentExists) return commentExists.streamId;
-
-  const ceramicComment = await compose
-    .executeQuery<{
-      createComment: { document: { id: string } };
-    }>(
-      `mutation CreateComment($input: CreateCommentInput!) {
-          createComment(input: $input) {
-            document {
-              id
-              threadID
-              text
-            }
-          }
-        }`,
-      {
-        input: {
-          content: {
-            threadID: threadStreamId,
-            text: String(message.content),
-          },
-        },
-      }
-    )
-    .then(async (r) => {
-      if (!r || !r.data) return;
-
-      const thread = await prisma.thread.findFirstOrThrow({
-        where: {
-          streamId: threadStreamId,
-        },
-      });
-
-      await prisma.comment.upsert({
-        where: { discordId: message.id },
-        update: {
-          timestamp: String(message.createdTimestamp),
-          discordUser: String(message.author.tag),
-          content: String(message.content),
-        },
-        create: {
-          discordId: message.id,
-          streamId: r.data.createComment.document.id,
-          timestamp: String(message.createdTimestamp),
-          discordUser: String(message.author.tag),
-          content: String(message.content),
-          Thread: {
-            connect: { id: thread.id },
-          },
-        },
-      });
-    });
-};
+import { ChannelType, Client, TextChannel, ThreadChannel } from "discord.js";
+import { onThreadCreate } from "./onThreadCreate";
+import { onMessageCreate } from "./onMessageCreate";
+import { channel } from "diagnostics_channel";
 
 export const onStart = async (client: Client) => {
-  let threadChannels = await client.channels.cache.filter(
-    (channel) =>
-      channel.type == ChannelType.PublicThread &&
-      channel.parent?.name == process.env.DISCORD_CHANNEL_NAME
-  );
+  //Find our devnode channel
+  let devnodeChannel = (await client.channels.cache
+    .filter(
+      (channel) =>
+        channel.type == ChannelType.GuildText &&
+        channel.name == process.env.DISCORD_CHANNEL_NAME
+    )
+    .first()) as TextChannel;
+
+  //Get all stray messages
+  let strayMessages = await devnodeChannel.messages.fetch({ limit: 100 });
+  for (const strayMessage of strayMessages.values()) {
+    await onMessageCreate(strayMessage);
+  }
+
+  //Find all threads inside our devnode channel
+  let threadChannels = await client.channels.cache
+    .filter(
+      (channel) =>
+        channel.type == ChannelType.PublicThread &&
+        channel.parent?.name == process.env.DISCORD_CHANNEL_NAME
+    )
+    .values();
 
   for (const threadChannel of threadChannels) {
-    const thread = client.channels.cache.get(
-      threadChannel[1].id
-    ) as ThreadChannel;
+    const thread = client.channels.cache.get(threadChannel.id) as ThreadChannel;
 
-    const threadCeramicStreamId = await foundThread(thread);
+    await onThreadCreate(thread);
 
-    let messages = await thread.messages.fetch({ limit: 100 });
+    try {
+      //If thread still exists after onThreadCreate. It might not exist anymore if it didn't meet the rules
+      let messages = await thread.messages.fetch({ limit: 100 });
 
-    for (const message of messages.values()) {
-      if (threadCeramicStreamId) foundMessage(message, threadCeramicStreamId);
-    }
+      for (const message of messages.values()) {
+        await onMessageCreate(message);
+      }
+    } catch {}
   }
 };

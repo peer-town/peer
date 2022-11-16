@@ -7,6 +7,9 @@ const DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS =
 const DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED =
   "You must sign in on DevNode to create threads.";
 
+const DISCORD_LOST_SESSION =
+  "Ops! Looks like you used DevNode before but we lost your DID session. Can you please log in again?";
+
 const DISCORD_BOT_NAME = "devnode-bot";
 const API_ENDPOINT = `${process.env.NEXTAUTH_URL}api/user/discord-auth`;
 
@@ -19,6 +22,7 @@ export {
   DISCORD_CANNOT_DELETE_MESSAGE_PERMISSIONS,
   DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS,
   DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED,
+  DISCORD_LOST_SESSION,
   DISCORD_DM_CHALLENGE_SUCCESS,
   DISCORD_DM_INVALID_DID,
 };

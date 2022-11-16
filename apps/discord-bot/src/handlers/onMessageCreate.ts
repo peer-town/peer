@@ -10,6 +10,7 @@ import {
   DISCORD_CANNOT_DELETE_MESSAGE_PERMISSIONS,
   DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED,
   DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS,
+  DISCORD_LOST_SESSION,
 } from "../consts/replyMessages";
 
 export const compose = new ComposeClient({
@@ -41,6 +42,7 @@ export const onMessageCreate = async (message: Message) => {
     message.type != MessageType.ThreadCreated
   ) {
     await new Promise((r) => setTimeout(r, 3000));
+
     message.delete().catch((e) => {
       message.reply(DISCORD_CANNOT_DELETE_MESSAGE_PERMISSIONS);
     });
@@ -51,15 +53,11 @@ export const onMessageCreate = async (message: Message) => {
 
   //If it's a thread message, now we care about it
   if (message.channel.type == ChannelType.PublicThread) {
-    //If we already stored this message for some reason, ignore it
-    if (
-      await prisma.comment.findUnique({
-        where: {
-          discordId: message.id,
-        },
-      })
-    )
-      return null;
+    const existingMessage = await prisma.comment.findUnique({
+      where: {
+        discordId: message.id,
+      },
+    });
 
     const user = await prisma.user
       .findUniqueOrThrow({
@@ -77,10 +75,19 @@ export const onMessageCreate = async (message: Message) => {
     //If the user does not have a devnode account, delete it and tell the user to create one
     if (user == null || !user.didSession) {
       await new Promise((r) => setTimeout(r, 3000));
-      message.delete();
-      message.author.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
-      return;
+
+      if (existingMessage) {
+        message.author.send(DISCORD_LOST_SESSION);
+        return;
+      } else {
+        message.delete().catch((e) => console.log());
+        message.author.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
+        return;
+      }
     }
+
+    //If we already stored this message for some reason, ignore it
+    if (existingMessage) return null;
 
     // Find the thread for this message in our DB.
     // If this is the first message of a thread, the thread entry in the DB is probably not yet ready

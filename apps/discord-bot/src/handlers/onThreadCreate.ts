@@ -5,7 +5,10 @@ import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
-import { DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED } from "../consts/replyMessages";
+import {
+  DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED,
+  DISCORD_LOST_SESSION,
+} from "../consts/replyMessages";
 
 export const compose = new ComposeClient({
   ceramic: String(process.env.CERAMIC_NODE),
@@ -23,6 +26,12 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
   //We only care about threads in our channel
   if (thread.parent?.name != process.env.DISCORD_CHANNEL_NAME) return null;
 
+  const existingThread = await prisma.thread.findUnique({
+    where: {
+      discordId: thread.id,
+    },
+  });
+
   //If the user does not have a devnode account, delete it and tell the user to create one
   const user = await prisma.user
     .findUniqueOrThrow({
@@ -37,21 +46,21 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
       return null;
     });
   if (user == null || !user.didSession) {
+    //User account does not exist at all
     await new Promise((r) => setTimeout(r, 3000));
-    thread.delete();
-    threadOwner?.user?.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
-    return null;
+
+    if (existingThread) {
+      threadOwner?.user?.send(DISCORD_LOST_SESSION);
+      return null;
+    } else {
+      thread.delete();
+      threadOwner?.user?.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
+      return null;
+    }
   }
 
   //If we already stored this thread for some reason, ignore it
-  if (
-    await prisma.thread.findUnique({
-      where: {
-        discordId: thread.id,
-      },
-    })
-  )
-    return;
+  if (existingThread) return;
 
   //Getting ready to store in Ceramic
   const session = await DIDSession.fromSession(user.didSession);
