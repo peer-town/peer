@@ -100,7 +100,7 @@ export const onMessageCreate = async (message: Message) => {
       thread = await prisma.thread
         .findFirstOrThrow({
           where: {
-            discordId: message.thread?.id,
+            discordId: message.channel.id,
           },
         })
         .then((res) => {
@@ -112,6 +112,8 @@ export const onMessageCreate = async (message: Message) => {
           return null;
         });
     }
+
+    console.log(thread);
 
     if (propagationDelay) await new Promise((r) => setTimeout(r, 5000));
 
