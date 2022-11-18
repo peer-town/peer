@@ -3,7 +3,6 @@ config();
 import { ChannelType, Client, TextChannel, ThreadChannel } from "discord.js";
 import { onThreadCreate } from "./onThreadCreate";
 import { onMessageCreate } from "./onMessageCreate";
-import { channel } from "diagnostics_channel";
 
 export const onStart = async (client: Client) => {
   //Find our devnode channel
