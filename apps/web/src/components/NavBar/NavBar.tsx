@@ -176,13 +176,6 @@ const NavBar = () => {
                       Create DID
                     </button>
                   )}
-
-                  {/* <a
-                    href="#"
-                    className="flex h-[50px] w-[80px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                  >
-                    <MoonIcon className="h-[23px] w-[23px]" />
-                  </a> */}
                 </div>
               </div>
             </div>
