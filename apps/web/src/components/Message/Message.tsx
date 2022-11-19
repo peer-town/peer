@@ -49,7 +49,7 @@ const Message: React.FC<MessageProps> = ({ data }) => {
           </svg>
         </div> */}
         <div className="ml-[10px] text-[12px]  text-[#A39DAA] lg:ml-[40px] lg:text-[16px]">
-          {data.createdAt}
+          {new Date(data.createdAt).toLocaleString()}
         </div>
       </div>
 
