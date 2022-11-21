@@ -15,9 +15,13 @@ export const onStart = async (client: Client) => {
     .first()) as TextChannel;
 
   //Get all stray messages
-  let strayMessages = await devnodeChannel.messages.fetch({ limit: 100 });
-  for (const strayMessage of strayMessages.values()) {
-    await onMessageCreate(strayMessage);
+  try {
+    let strayMessages = await devnodeChannel.messages.fetch({ limit: 100 });
+    for (const strayMessage of strayMessages.values()) {
+      await onMessageCreate(strayMessage);
+    }
+  } catch {
+    console.log("no stray messages?");
   }
 
   //Find all threads inside our devnode channel
