@@ -36,5 +36,4 @@ apps/indexer/tsconfig.tsbuildinfo
 prisma/dev.db
 .env
 
-yarn.lock
 packages/composedb/.ceramic
