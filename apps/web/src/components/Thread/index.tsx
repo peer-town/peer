@@ -1,6 +1,15 @@
-import { MessageProps } from "./Message.d";
+export interface ThreadProps {
+  data: {
+    id: number;
+    author: {
+      id: string;
+    };
+    title: string;
+    createdAt: string;
+  };
+}
 
-const Message: React.FC<MessageProps> = ({ data }) => {
+const Thread: React.FC<ThreadProps> = ({ data }) => {
   return (
     <div className="space-y-[23px]">
       <div className="flex items-center gap-[11px]">
@@ -13,11 +22,9 @@ const Message: React.FC<MessageProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="text-[#716D76]">
-        {data.title ? data.title : data.text}{" "}
-      </div>
+      <div className="text-[#716D76]">{data.title}</div>
     </div>
   );
 };
 
-export default Message;
+export default Thread;

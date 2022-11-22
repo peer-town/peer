@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import { Layout } from "../components/Layout";
-import { QuestionCard } from "../components/QuestionCard";
+import ThreadCard from "../components/ThreadCard";
 
 import { trpc } from "../utils/trpc";
 
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
           </div>
           <div className="flex flex-col space-y-[36px] py-[40px]">
             {threads.data.map((thread) => (
-              <QuestionCard key={thread.id} thread={thread.node} />
+              <ThreadCard key={thread.id} thread={thread.node} />
             ))}
           </div>
         </div>

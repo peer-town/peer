@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { trpc } from "../../utils/trpc";
 
-const QuestionCard = ({ thread }) => {
+const ThreadCard = ({ thread }) => {
   const { id, title, author, createdAt } = thread;
 
   const allComments = trpc.public.getAllComments.useQuery();
@@ -32,4 +32,4 @@ const QuestionCard = ({ thread }) => {
   );
 };
 
-export default QuestionCard;
+export default ThreadCard;
