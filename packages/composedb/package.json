@@ -22,11 +22,16 @@
     "graphql": "^16.5.0"
   },
   "devDependencies": {
-    "@devnode/tsconfig": "*",
-    "tsup": "^6.2.3",
-    "rimraf": "^3.0.2",
     "@ceramicnetwork/cli": "next",
-    "@composedb/cli": "next"
+    "@composedb/cli": "next",
+    "@devnode/tsconfig": "*",
+    "rimraf": "^3.0.2",
+    "tsup": "^6.2.3"
   },
-  "packageManager": "yarn@1.22.19"
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "cross-var": "^1.1.0",
+    "dotenv": "^16.0.3",
+    "dotenv-cli": "^6.0.0"
+  }
 }
