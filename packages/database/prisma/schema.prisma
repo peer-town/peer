@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRESQL_DB")
+  provider = "mysql"
+  url      = env("MYSQL_URL")
 }
 
 model DiscordChallenge {
