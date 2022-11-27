@@ -13,7 +13,8 @@ export default async function handler(
       did: String(did),
     },
     create: {
-      discord: "",
+      discordUsername: "",
+      discordAvatar: "",
       did: String(did),
       didSession: String(didSession),
     },

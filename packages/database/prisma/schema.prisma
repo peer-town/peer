@@ -11,25 +11,28 @@ datasource db {
 }
 
 model DiscordChallenge {
-  id            Int      @id @default(autoincrement())
-  did           String   @unique
-  username      String
-  timestamp     DateTime
-  challengeCode String   @unique
-  userId        String   @unique
+  id              Int      @id @default(autoincrement())
+  did             String   @unique
+  discordUsername String
+  discordAvatar   String
+  timestamp       DateTime
+  challengeCode   String   @unique
+  userId          String   @unique
 }
 
 model User {
-  id         String @id @unique @default(cuid())
-  discord    String @unique
-  did        String @unique
-  didSession String @db.Text
+  id              String @id @unique @default(cuid())
+  discordUsername String @unique
+  discordAvatar   String
+  did             String @unique
+  didSession      String @db.Text
 }
 
 model Community {
-  id        Int    @id @default(autoincrement())
-  discordId String @unique
-  name      String
+  id              Int    @id @default(autoincrement())
+  discordId       String @unique
+  communityName   String
+  communityAvatar String
 }
 
 model Thread {

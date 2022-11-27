@@ -36,7 +36,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
   const user = await prisma.user
     .findUniqueOrThrow({
       where: {
-        discord: (await thread.fetchOwner())?.user?.tag,
+        discordUsername: (await thread.fetchOwner())?.user?.tag,
       },
       select: {
         didSession: true,
@@ -50,11 +50,15 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
     await new Promise((r) => setTimeout(r, 3000));
 
     if (existingThread) {
-      threadOwner?.user?.send(DISCORD_LOST_SESSION);
+      threadOwner?.user
+        ?.send(DISCORD_LOST_SESSION)
+        .catch((e) => console.log(e));
       return null;
     } else {
       thread.delete();
-      threadOwner?.user?.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
+      threadOwner?.user
+        ?.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED)
+        .catch((e) => console.log(e));
       return null;
     }
   }

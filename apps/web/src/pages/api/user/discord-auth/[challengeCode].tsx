@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const { challengeCode } = req.query;
 
-  let details = await prisma.discordChallenge
+  let challenge = await prisma.discordChallenge
     .findFirstOrThrow({
       where: {
         challengeCode: String(challengeCode),
@@ -18,12 +18,12 @@ export default async function handler(
       return;
     });
 
-  if (!details || !details.username) {
+  if (!challenge || !challenge.discordUsername) {
     res.status(200).json({ error: "No db entry" });
     return;
   }
 
-  if (challengeCode != details.challengeCode) {
+  if (challengeCode != challenge.challengeCode) {
     res.status(200).json({ error: "Challenge code incorrect" });
     return;
   }
@@ -36,19 +36,21 @@ export default async function handler(
 
   let user = await prisma.user.upsert({
     where: {
-      did: details.did,
+      did: challenge.did,
     },
     create: {
-      discord: details.username,
-      did: details.did,
+      discordUsername: challenge.discordUsername,
+      discordAvatar: challenge.discordAvatar,
+      did: challenge.did,
       didSession: "",
     },
     update: {
-      discord: details.username,
+      discordUsername: challenge.discordUsername,
+      discordAvatar: challenge.discordAvatar,
     },
   });
 
   res.status(200).json({
-    success: `Challenge code correct: ${user.did}, ${user.discord}`,
+    success: `Challenge code correct: ${user.did}, ${user.discordUsername}`,
   });
 }

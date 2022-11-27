@@ -14,6 +14,7 @@ export const onDm = async (message: Message) => {
   const { username: handle, discriminator, id: userId } = message.author;
   if (handle === DISCORD_BOT_NAME) return;
   const username = `${handle}#${discriminator}`;
+  const avatar = message.author.avatarURL() ?? "";
 
   console.log(message.content);
   let did = "";
@@ -36,14 +37,16 @@ export const onDm = async (message: Message) => {
     },
     update: {
       did: did,
-      username: username,
+      discordUsername: username,
+      discordAvatar: avatar,
       timestamp: new Date(),
       challengeCode: challengeCode,
       userId: userId,
     },
     create: {
       did: did,
-      username: username,
+      discordUsername: username,
+      discordAvatar: avatar,
       timestamp: new Date(),
       challengeCode: challengeCode,
       userId: userId,

@@ -1,6 +1,7 @@
 import { GraphQLClient, gql } from "graphql-request";
 import { router, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { prisma } from "@devnode/database";
 
 const client = new GraphQLClient(process.env.CERAMIC_GRAPH, {});
 
@@ -48,4 +49,40 @@ export const publicRouter = router({
     const comments = await client.request(query);
     return comments.commentIndex?.edges;
   }),
+
+  getAuthorDiscordForThread: publicProcedure
+    .input(z.object({ threadStreamId: z.string() }))
+    .query(async ({ input }) => {
+      let thread = await prisma.thread.findFirstOrThrow({
+        where: {
+          streamId: input.threadStreamId,
+        },
+      });
+
+      let user = await prisma.user.findFirstOrThrow({
+        where: {
+          discordUsername: thread.discordAuthor,
+        },
+      });
+
+      return user;
+    }),
+
+  getAuthorDiscordForComment: publicProcedure
+    .input(z.object({ commentStreamId: z.string() }))
+    .query(async ({ input }) => {
+      let thread = await prisma.comment.findFirstOrThrow({
+        where: {
+          streamId: input.commentStreamId,
+        },
+      });
+
+      let user = await prisma.user.findFirstOrThrow({
+        where: {
+          discordUsername: thread.discordAuthor,
+        },
+      });
+
+      return user;
+    }),
 });
