@@ -16,6 +16,8 @@ import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
 import fetch from "cross-fetch";
 
+import { prisma } from "@devnode/database";
+
 const INVOCATION_STRING = "devnode";
 const INVOCATION_CHANNEL = "devnode_signin";
 
@@ -42,6 +44,24 @@ client.login(process.env.DISCORD_TOKEN!).catch((e) => console.log(e));
 
 client.once("ready", async () => {
   console.log("Ready!");
+
+  //Update all guilds in prisma
+  (await client.guilds.fetch()).map(async (guild) => {
+    await prisma.community.upsert({
+      where: {
+        discordId: guild.id,
+      },
+      update: {
+        communityName: guild.name,
+        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
+      },
+      create: {
+        discordId: guild.id,
+        communityName: guild.name,
+        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
+      },
+    });
+  });
 
   let nodeReady = false;
   while (!nodeReady) {

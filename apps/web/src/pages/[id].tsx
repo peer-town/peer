@@ -2,9 +2,11 @@ import { Layout } from "../components/Layout";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Message } from "../components/Message";
-
+import Thread from "../components/Thread";
+import Comment from "../components/Comment";
 import { trpc } from "../utils/trpc";
+import ThreadInformation from "../components/Thread/ThreadInformation";
+import CommentInput from "../components/ThreadCard/CommentInput";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -51,55 +53,23 @@ const QuestionPage = () => {
           </Link>
           <div className="mt-[80px] lg:mr-[50px]">
             <div>
-              <Message data={thisThread} />
+              <Thread data={thisThread} />
             </div>
             <div className="mt-[94px] pb-[40px]">
               <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
               <div className="mt-[40px] space-y-[40px]">
                 {commentsForThread.map((item) => (
-                  <Message key={item.id} data={item} />
+                  <Comment key={item.id} data={item} />
                 ))}
               </div>
             </div>
+            <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
+            <CommentInput threadId={id} />
           </div>
         </div>
 
         {/* Right column */}
-        <div className="hidden lg:flex lg:h-full lg:min-w-[25%] lg:pt-[165px]">
-          <div className="h-full w-full space-y-[35px]">
-            <div className="text-[24px] text-[#08010D]">Thread Information</div>
-            <hr className="border-[#EAEAEA]" />
-            <div className="space-y-[30px]">
-              <div className="text-[20px] text-[#08010D]">Contributors</div>
-              <div className="space-y-[24px] text-[16px] font-[500] text-[#716D76]">
-                {allComments.data
-                  .map((comment) => comment.node)
-                  .map((commentNode) => commentNode.author.id)
-                  .filter((item, i, ar) => ar.indexOf(item) === i)
-                  .map((contributor) => {
-                    return (
-                      <div className="flex items-center gap-[11px]">
-                        {/* <div className="flex items-center">
-                          <Image
-                            width="28"
-                            height="28"
-                            src={contributor.profilePic}
-                            alt="contributor pfp"
-                          />
-                        </div>
-                        <div className="text-[#211F31]">
-                          {contributor.nickname}
-                        </div> */}
-                        <div className="rounded-[15px] border-[1px] border-[#EBEAEB] bg-white py-[4px] px-[9px] text-[14px]">
-                          {contributor.slice(17, 25)}...
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ThreadInformation allComments={allComments} />
       </main>
     </Layout>
   );

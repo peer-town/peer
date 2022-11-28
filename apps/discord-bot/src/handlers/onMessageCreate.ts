@@ -47,7 +47,9 @@ export const onMessageCreate = async (message: Message) => {
       message.reply(DISCORD_CANNOT_DELETE_MESSAGE_PERMISSIONS);
     });
 
-    message.author.send(DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS);
+    message.author
+      .send(DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS)
+      .catch((e) => console.log(e));
     return;
   }
 
@@ -62,7 +64,7 @@ export const onMessageCreate = async (message: Message) => {
     const user = await prisma.user
       .findUniqueOrThrow({
         where: {
-          discord: message.author.tag,
+          discordUsername: message.author.tag,
         },
         select: {
           didSession: true,
@@ -77,11 +79,13 @@ export const onMessageCreate = async (message: Message) => {
       await new Promise((r) => setTimeout(r, 3000));
 
       if (existingMessage) {
-        message.author.send(DISCORD_LOST_SESSION);
+        message.author.send(DISCORD_LOST_SESSION).catch((e) => console.log(e));
         return;
       } else {
         message.delete().catch((e) => console.log());
-        message.author.send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED);
+        message.author
+          .send(DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED)
+          .catch((e) => console.log(e));
         return;
       }
     }
