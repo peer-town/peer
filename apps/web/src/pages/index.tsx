@@ -1,5 +1,6 @@
 import { type NextPage } from "next";
 import { Layout } from "../components/Layout";
+import NewThread from "../components/Thread/NewThread";
 import ThreadCard from "../components/ThreadCard";
 
 import { trpc } from "../utils/trpc";
@@ -22,6 +23,14 @@ const Home: NextPage = () => {
             {threads.data.map((thread) => (
               <ThreadCard key={thread.id} thread={thread.node} />
             ))}
+          </div>
+
+          <div className="flex flex-col space-y-[36px] py-[40px]">
+            <NewThread
+              refresh={() => {
+                threads.refetch();
+              }}
+            />
           </div>
         </div>
       </main>

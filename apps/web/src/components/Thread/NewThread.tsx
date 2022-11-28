@@ -1,43 +1,48 @@
+import { ComposeClient } from "@composedb/client";
+import { definition } from "@devnode/composedb";
+import { DIDSession } from "did-session";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { definition } from "@devnode/composedb";
-import { ComposeClient } from "@composedb/client";
-import { DIDSession } from "did-session";
+import { trpc } from "../../utils/trpc";
 
 export const compose = new ComposeClient({
   ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
   definition,
 });
 
-const CommentInput = (props: { threadId: string }) => {
+const NewThread = (props: { refresh: () => void }) => {
   const { isConnected } = useAccount();
   const [did, setDid] = useState("");
   const [didSession] = useLocalStorage("didSession", "");
+  const [community, setCommunity] = useState("");
 
-  const [comment, setComment] = useState("");
+  const allCommunities = trpc.public.getAllCommunities.useQuery();
+
+  const [thread, setThread] = useState("");
 
   useEffect(() => {
     const getData = async () => {
+      if (!didSession || !isConnected) return;
       const session = await DIDSession.fromSession(didSession);
       setDid(session.did.id);
     };
     getData();
-  }, [didSession]);
+  }, [didSession, isConnected]);
 
-  const onCommentSubmit = async () => {
+  const onThreadSumbit = async () => {
     const session = await DIDSession.fromSession(didSession);
     compose.setDID(session.did);
     await compose
       .executeQuery<{
-        createComment: { document: { id: string } };
+        createThread: { document: { id: string } };
       }>(
-        `mutation CreateComment($input: CreateCommentInput!) {
-          createComment(input: $input) {
+        `mutation CreateThread($input: CreateThreadInput!) {
+          createThread(input: $input) {
             document {
               id
-              threadID
-              text
+              title
+              community
               createdAt
             }
           }
@@ -45,14 +50,17 @@ const CommentInput = (props: { threadId: string }) => {
         {
           input: {
             content: {
-              threadID: props.threadId,
-              text: String(comment),
+              title: String(thread),
+              community: community,
               createdAt: new Date().toISOString(),
             },
           },
         }
       )
-      .then((r) => console.log(r))
+      .then((r) => {
+        props.refresh();
+        console.log(r);
+      })
       .catch((e) => console.log(e));
   };
 
@@ -61,16 +69,33 @@ const CommentInput = (props: { threadId: string }) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onCommentSubmit();
+          onThreadSumbit();
         }}
       >
         <div>Posting as {did}</div>
+        <select
+          id="fromDao"
+          onChange={(e) => {
+            setCommunity(e.target.value);
+          }}
+        >
+          <option key="any" value="any">
+            Any
+          </option>
+          {allCommunities.data?.map((community) => {
+            return (
+              <option key={community.id} value={community.discordId}>
+                {community.communityName}
+              </option>
+            );
+          })}
+        </select>
         <div className="form-group mb-6">
           <textarea
             className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
             id="exampleFormControlTextarea13"
-            placeholder="Message"
-            onChange={(e) => setComment(e.target.value)}
+            placeholder="Thread title"
+            onChange={(e) => setThread(e.target.value)}
           />
         </div>
         <button
@@ -89,4 +114,5 @@ const CommentInput = (props: { threadId: string }) => {
     </div>
   );
 };
-export default CommentInput;
+
+export default NewThread;

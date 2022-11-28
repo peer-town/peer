@@ -7,6 +7,11 @@ import { Fragment } from "react";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import { Resolver } from "did-resolver";
+import { getResolver } from "pkh-did-resolver";
+
+const pkhResolver = getResolver();
+const resolver = new Resolver(pkhResolver);
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -52,6 +57,7 @@ const NavBar = () => {
     );
 
     setDidSession(session.serialize());
+
     setDid(session.did.id);
   };
 

@@ -45,7 +45,11 @@ const ThreadCard = ({ thread }) => {
           <div>{new Date(createdAt).toLocaleString()}</div>
         </div>
         <div className="px-5 pb-5 text-[16px] font-medium  text-gray-500">
-          <div>{commentsForThread[0].text}</div>
+          {commentsForThread.length ? (
+            <div>{commentsForThread[0].text}</div>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </Link>

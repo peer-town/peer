@@ -6,6 +6,11 @@ import { prisma } from "@devnode/database";
 const client = new GraphQLClient(process.env.CERAMIC_GRAPH, {});
 
 export const publicRouter = router({
+  getAllCommunities: publicProcedure.query(async () => {
+    const communities = await prisma.community.findMany({});
+    return communities;
+  }),
+
   getAllThreads: publicProcedure.query(async () => {
     const query = gql`
       {
