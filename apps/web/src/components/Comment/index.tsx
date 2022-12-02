@@ -13,8 +13,8 @@ export interface CommentProps {
 }
 
 const Comment: React.FC<CommentProps> = ({ data }) => {
-  const authorDiscord = trpc.public.getAuthorDiscordForComment.useQuery({
-    commentStreamId: data.id,
+  const user = trpc.public.getAuthor.useQuery({
+    pkh: data.author.id,
   });
 
   return (
@@ -26,15 +26,12 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
             width="32"
             height="32"
             className="rounded-full"
-            src={
-              authorDiscord.data?.discordAvatar ??
-              "http://placekitten.com/200/200"
-            }
+            src={user.data?.discordAvatar ?? "http://placekitten.com/200/200"}
             alt=""
           />
           <div>
             <div className="font-semibold">
-              {authorDiscord.data?.discordUsername ?? "Anonymous"}
+              {user.data?.discordUsername ?? "Anonymous"}
             </div>
             <div className="font-light text-gray-400">{data.author.id}</div>
           </div>

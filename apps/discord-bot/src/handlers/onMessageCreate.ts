@@ -174,10 +174,7 @@ export const onMessageCreate = async (message: Message) => {
           },
         });
 
-        await prisma.user.update({
-          where: { discordUsername: String(message.author.tag) },
-          data: { didpkh: r.data.createComment.document.id },
-        });
+     
       })
       .catch((e) => console.log(e));
   }
