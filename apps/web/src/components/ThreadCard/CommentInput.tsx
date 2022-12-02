@@ -10,7 +10,7 @@ export const compose = new ComposeClient({
   definition,
 });
 
-const CommentInput = (props: { threadId: string }) => {
+const CommentInput = (props: { threadId: string; refresh: () => void }) => {
   const { isConnected } = useAccount();
   const [did, setDid] = useState("");
   const [didSession] = useLocalStorage("didSession", "");
@@ -52,7 +52,11 @@ const CommentInput = (props: { threadId: string }) => {
           },
         }
       )
-      .then((r) => console.log(r))
+      .then((r) => {
+        props.refresh();
+        setComment("");
+        console.log(r);
+      })
       .catch((e) => console.log(e));
   };
 
@@ -70,6 +74,7 @@ const CommentInput = (props: { threadId: string }) => {
             className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
             id="exampleFormControlTextarea13"
             placeholder="Message"
+            value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
         </div>

@@ -36,12 +36,13 @@ export default async function handler(
 
   let user = await prisma.user.upsert({
     where: {
-      did: challenge.did,
+      didkey: challenge.did,
     },
     create: {
       discordUsername: challenge.discordUsername,
       discordAvatar: challenge.discordAvatar,
-      did: challenge.did,
+      didkey: challenge.did,
+      didpkh: "",
       didSession: "",
     },
     update: {
@@ -51,6 +52,6 @@ export default async function handler(
   });
 
   res.status(200).json({
-    success: `Challenge code correct: ${user.did}, ${user.discordUsername}`,
+    success: `Challenge code correct: ${user.didkey}, ${user.discordUsername}`,
   });
 }

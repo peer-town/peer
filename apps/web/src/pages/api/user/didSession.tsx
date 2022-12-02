@@ -6,20 +6,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { did, didSession } = req.query;
+  const { did, didSession, didpkh } = req.query;
 
   await prisma.user.upsert({
     where: {
-      did: String(did),
+      didkey: String(did),
     },
     create: {
       discordUsername: "",
       discordAvatar: "",
-      did: String(did),
+      didkey: String(did),
+      didpkh: String(didpkh),
       didSession: String(didSession),
     },
     update: {
-      did: String(did),
+      didkey: String(did),
       didSession: String(didSession),
     },
   });

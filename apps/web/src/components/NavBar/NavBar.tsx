@@ -53,7 +53,7 @@ const NavBar = () => {
     fetch(
       `/api/user/didSession?&did=${
         session.did.id
-      }&didSession=${session.serialize()}`
+      }&didSession=${session.serialize()}&didpkh=did:pkh:eip155:1:${address}`
     );
 
     setDidSession(session.serialize());
