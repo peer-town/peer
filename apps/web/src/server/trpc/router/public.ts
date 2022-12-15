@@ -90,4 +90,16 @@ export const publicRouter = router({
 
       return user;
     }),
+
+    getDiscordUser: publicProcedure
+    .input(z.object({ didSession: z.string() }))
+    .query(async ({ input }) => {
+      let  discordUsername = await prisma.user.findFirstOrThrow({
+        where: {
+          didSession: input.didSession,
+        },
+      });
+
+      return discordUsername;
+    }),
 });

@@ -116,7 +116,9 @@ app.post('/webcomment', async (req, res) => {
   if(response.result){
     res.status(400).send(response);
   }
-  res.status(200).send(response);
+  else{
+    res.status(200).send(response.value);
+  }
   
 })
 
@@ -127,7 +129,9 @@ app.post('/webThread', async (req, res) => {
   if(response.result){
     res.status(400).send(response.value);
   }
-  res.status(200).send(response.value);
+  else{
+    res.status(200).send(response.value);
+  }
 })
 
 app.listen(port, () => {
