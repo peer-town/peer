@@ -32,7 +32,7 @@ const NewThread = (props: { refresh: () => void }) => {
   
   const onThreadSumbit = async () => {
     
-    await fetch(`${String(process.env.DISCORD_BOT_URL)}webThread`,
+    await fetch(`${String(process.env.DISCORD_BOT_URL)}webthread`,
     {
       body:JSON.stringify({
         community:String(community),
