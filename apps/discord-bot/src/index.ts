@@ -114,10 +114,10 @@ app.post('/webcomment', async (req, res) => {
   console.log({thredId:threadId, comment:comment})
   const response = await onCommentCreateWeb(client, threadId, comment, discordUserName);
   if(response.result){
-    res.status(400).send(response);
+    res.status(200).send(response.value);
   }
   else{
-    res.status(200).send(response.value);
+    res.status(400).send(response.value);
   }
   
 })
@@ -127,10 +127,10 @@ app.post('/webthread', async (req, res) => {
   console.log({threadTitle:threadTitle})
   const response = await onThredCreateWeb(client, threadTitle, community, discordUserName);
   if(response.result){
-    res.status(400).send(response.value);
+    res.status(200).send(response.value);
   }
   else{
-    res.status(200).send(response.value);
+    res.status(400).send(response.value);
   }
 })
 
