@@ -28,6 +28,7 @@ const NewThread = (props: { refresh: () => void }) => {
     didSession: didSession
   });
 
+  const isDiscordUser = authorDiscord.data?.discordUsername;
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
   
   const onThreadSumbit = async () => {
@@ -46,7 +47,7 @@ const NewThread = (props: { refresh: () => void }) => {
     })
   };
 
-  return isConnected && didSession ? (
+  return isConnected && didSession && isDiscordUser ? (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {

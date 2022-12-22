@@ -23,6 +23,7 @@ const CommentInput = (props: { threadId: string }) => {
     didSession: didSession
   });
 
+  const isDiscordUser = authorDiscord.data?.discordUsername;
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
 
   const onCommentSubmit = async () => {
@@ -41,7 +42,7 @@ const CommentInput = (props: { threadId: string }) => {
     })
   };
 
-  return isConnected && didSession ? (
+  return isConnected && didSession && isDiscordUser ? (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {
