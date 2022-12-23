@@ -6,10 +6,6 @@ import { DIDSession } from "did-session";
 import { Response } from "../type"
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
-import {
-  DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED,
-  DISCORD_LOST_SESSION,
-} from "../consts/replyMessages";
 
 export const compose = new ComposeClient({
   ceramic: String(process.env.CERAMIC_NODE),
@@ -48,8 +44,10 @@ export const onCommentCreateWeb = async (client:Client, threadId:string, comment
       const session = await DIDSession.fromSession(user.didSession);
       compose.setDID(session.did);
 
+      let composeResponse;
+
       try{
-        await compose
+        composeResponse = await compose
         .executeQuery<{
           createComment: { document: { id: string } };
         }>(
@@ -78,6 +76,30 @@ export const onCommentCreateWeb = async (client:Client, threadId:string, comment
         message.delete();
         return {result: 'false', value:'compose failed'};
       }
+
+      if (!composeResponse || !composeResponse.data) {
+        await message.delete();
+        return {result:'false', value:'composedb failed'};
+      }
+
+      await prisma.comment.upsert({
+        where: { discordId: message.id },
+        update: {
+          createdAt: message.createdAt,
+          discordAuthor: discordUserName,
+          text: comment,
+        },
+        create: {
+          discordId: message.id,
+          streamId: composeResponse.data.createComment.document.id,
+          createdAt: message.createdAt,
+          discordAuthor: discordUserName,
+          text: comment,
+          Thread: {
+            connect: { id: existhreaingThread.id },
+          },
+        },
+      }); 
     }
 
     return {result: 'true', value:'comment added'};
