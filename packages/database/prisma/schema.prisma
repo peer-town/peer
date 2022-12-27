@@ -24,7 +24,8 @@ model User {
   id              String @id @unique @default(cuid())
   discordUsername String @unique
   discordAvatar   String
-  did             String @unique
+  didkey          String @unique
+  didpkh          String @unique
   didSession      String @db.Text
 }
 

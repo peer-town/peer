@@ -8,10 +8,6 @@ import { trpc } from "../utils/trpc";
 import ThreadInformation from "../components/Thread/ThreadInformation";
 import CommentInput from "../components/ThreadCard/CommentInput";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const QuestionPage = () => {
   const router = useRouter();
   const id = router.query.id as string;
@@ -30,9 +26,6 @@ const QuestionPage = () => {
   return (
     <Layout>
       <main className="absolute inset-0 m-5 lg:m-0 lg:flex lg:gap-[50px]">
-        {/* Main 3 column grid */}
-
-        {/* Left column */}
         <div className="pt-[50px] lg:max-w-[75%] lg:border-r-[1px]">
           <Link href="/" legacyBehavior>
             <a className="flex w-fit items-center gap-[3px] text-[16px] font-[500] text-[#BAB2C4] hover:text-[#08010D]">
@@ -64,7 +57,13 @@ const QuestionPage = () => {
               </div>
             </div>
             <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
-            <CommentInput threadId={id} />
+            <CommentInput
+              threadId={id}
+              refresh={() => {
+                allThreads.refetch();
+                allComments.refetch();
+              }}
+            />
           </div>
         </div>
 

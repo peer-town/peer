@@ -10,7 +10,7 @@ const DISCORD_DO_NOT_CREATE_THREADS_IF_NOT_SIGNED =
 const DISCORD_LOST_SESSION =
   "Ops! Looks like you used DevNode before but we lost your DID session. Can you please log in again?";
 
-const DISCORD_BOT_NAME = "devnode-bot";
+const DISCORD_BOT_NAME = process.env.DISCORD_BOT_NAME;
 const API_ENDPOINT = `${process.env.NEXTAUTH_URL}api/user/discord-auth`;
 
 const DISCORD_DM_CHALLENGE_SUCCESS = `Great! Your challenge code is: \`${API_ENDPOINT}\`/`;

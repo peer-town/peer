@@ -13,12 +13,15 @@ export interface ThreadProps {
 }
 
 const Thread: React.FC<ThreadProps> = ({ data }) => {
-  const authorDiscord = trpc.public.getAuthorDiscordForThread.useQuery({
-    threadStreamId: data.id,
+  const user = trpc.public.getAuthor.useQuery({
+    pkh: data.author.id,
   });
 
-  const avatar = authorDiscord.data?.discordAvatar !== "" ? authorDiscord.data?.discordAvatar : "http://placekitten.com/200/200";
-  
+  const avatar =
+    authorDiscord.data?.discordAvatar !== ""
+      ? authorDiscord.data?.discordAvatar
+      : "http://placekitten.com/200/200";
+
   return (
     <div className="space-y-[23px]">
       <div className="flex items-center gap-[11px]">
@@ -28,12 +31,12 @@ const Thread: React.FC<ThreadProps> = ({ data }) => {
             width="32"
             height="32"
             className="rounded-full"
-            src={avatar}
+            src={user.data?.discordAvatar ?? "http://placekitten.com/200/200"}
             alt=""
           />
           <div>
             <div className="font-semibold">
-              {authorDiscord.data?.discordUsername ?? "Anonymous"}
+              {user.data?.discordUsername ?? "Anonymous"}
             </div>
             <div className="font-light text-gray-400">{data.author.id}</div>
           </div>

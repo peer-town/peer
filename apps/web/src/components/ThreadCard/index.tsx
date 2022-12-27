@@ -7,8 +7,8 @@ const ThreadCard = ({ thread }) => {
 
   const allComments = trpc.public.getAllComments.useQuery();
 
-  const authorDiscord = trpc.public.getAuthorDiscordForThread.useQuery({
-    threadStreamId: id,
+  const user = trpc.public.getAuthor.useQuery({
+    pkh: author.id,
   });
 
   if (!allComments.data) return <div>Loading</div>;
@@ -17,7 +17,10 @@ const ThreadCard = ({ thread }) => {
     .filter((comment) => comment.node.threadID == id)
     .map((comment) => comment.node);
 
-  const avatar = authorDiscord.data?.discordAvatar !== "" ? authorDiscord.data?.discordAvatar : "http://placekitten.com/200/200";
+  const avatar =
+    authorDiscord.data?.discordAvatar !== ""
+      ? authorDiscord.data?.discordAvatar
+      : "http://placekitten.com/200/200";
 
   return (
     <Link href={`/${id}`} passHref>
@@ -28,12 +31,12 @@ const ThreadCard = ({ thread }) => {
               width={32}
               height={32}
               className="rounded-full"
-              src={avatar}
+              src={user.data?.discordAvatar ?? "http://placekitten.com/200/200"}
               alt=""
             />
             <div>
               <div className="font-semibold">
-                {authorDiscord.data?.discordUsername ?? "Anonymous"}
+                {user.data?.discordUsername ?? "Anonymous"}
               </div>
               <div className="font-light text-gray-400">{author.id}</div>
             </div>

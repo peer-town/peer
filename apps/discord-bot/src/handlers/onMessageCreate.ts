@@ -173,6 +173,8 @@ export const onMessageCreate = async (message: Message) => {
             },
           },
         });
+
+     
       })
       .catch((e) => console.log(e));
   }

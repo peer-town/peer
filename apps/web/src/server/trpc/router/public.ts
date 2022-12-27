@@ -55,46 +55,22 @@ export const publicRouter = router({
     return comments.commentIndex?.edges;
   }),
 
-  getAuthorDiscordForThread: publicProcedure
-    .input(z.object({ threadStreamId: z.string() }))
+  getAuthor: publicProcedure
+    .input(z.object({ pkh: z.string() }))
     .query(async ({ input }) => {
-      let thread = await prisma.thread.findFirstOrThrow({
-        where: {
-          streamId: input.threadStreamId,
-        },
-      });
-
       let user = await prisma.user.findFirstOrThrow({
         where: {
-          discordUsername: thread.discordAuthor,
+          didpkh: input.pkh,
         },
       });
 
       return user;
     }),
 
-  getAuthorDiscordForComment: publicProcedure
-    .input(z.object({ commentStreamId: z.string() }))
-    .query(async ({ input }) => {
-      let comment = await prisma.comment.findFirstOrThrow({
-        where: {
-          streamId: input.commentStreamId,
-        },
-      });
-
-      let user = await prisma.user.findFirstOrThrow({
-        where: {
-          discordUsername: comment.discordAuthor,
-        },
-      });
-
-      return user;
-    }),
-
-    getDiscordUser: publicProcedure
+  getDiscordUser: publicProcedure
     .input(z.object({ didSession: z.string() }))
     .query(async ({ input }) => {
-      let  discordUsername = await prisma.user.findFirstOrThrow({
+      let discordUsername = await prisma.user.findFirstOrThrow({
         where: {
           didSession: input.didSession,
         },
