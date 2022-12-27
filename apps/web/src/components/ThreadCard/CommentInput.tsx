@@ -3,6 +3,13 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { DIDSession } from "did-session";
 import { trpc } from "../../utils/trpc";
+import { ComposeClient } from "@composedb/client";
+import { definition } from "@devnode/composedb";
+
+export const compose = new ComposeClient({
+  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  definition,
+});
 
 const CommentInput = (props: { threadId: string; refresh: () => void }) => {
   const { isConnected } = useAccount();

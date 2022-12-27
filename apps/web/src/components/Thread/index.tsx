@@ -17,11 +17,6 @@ const Thread: React.FC<ThreadProps> = ({ data }) => {
     pkh: data.author.id,
   });
 
-  const avatar =
-    authorDiscord.data?.discordAvatar !== ""
-      ? authorDiscord.data?.discordAvatar
-      : "http://placekitten.com/200/200";
-
   return (
     <div className="space-y-[23px]">
       <div className="flex items-center gap-[11px]">

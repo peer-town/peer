@@ -17,11 +17,6 @@ const ThreadCard = ({ thread }) => {
     .filter((comment) => comment.node.threadID == id)
     .map((comment) => comment.node);
 
-  const avatar =
-    authorDiscord.data?.discordAvatar !== ""
-      ? authorDiscord.data?.discordAvatar
-      : "http://placekitten.com/200/200";
-
   return (
     <Link href={`/${id}`} passHref>
       <div className="min-h-[180px] cursor-pointer rounded-[16px] border-[1px] border-[#EBEAEB] bg-white hover:border-[#08010D]">
