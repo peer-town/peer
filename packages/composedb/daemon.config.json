@@ -18,7 +18,9 @@
   "network": {
     "name": "testnet-clay"
   },
-  "node": {},
+  "node": {
+    "streamCacheLimit": 10
+  },
   "state-store": {
     "mode": "fs",
     "local-directory": "./.ceramic/statestore/"
