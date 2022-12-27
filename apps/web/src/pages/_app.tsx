@@ -9,16 +9,13 @@ import { publicProvider } from "wagmi/providers/public";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 import { Session } from "next-auth";
-import {
-  configureChains,
-  defaultChains,
-  createClient,
-  WagmiConfig,
-} from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { mainnet, optimism } from "wagmi/chains";
 
-const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
-  publicProvider(),
-]);
+const { chains, provider, webSocketProvider } = configureChains(
+  [mainnet],
+  [publicProvider()]
+);
 
 const client = createClient({
   autoConnect: true,

@@ -19,7 +19,7 @@
     "name": "testnet-clay"
   },
   "node": {
-    "streamCacheLimit": 10
+    "stream-cache-limit": 10
   },
   "state-store": {
     "mode": "fs",

@@ -26,7 +26,7 @@
     "@composedb/cli": "next",
     "@devnode/tsconfig": "*",
     "rimraf": "^3.0.2",
-    "tsup": "^6.2.3"
+    "tsup": "^6.5.0"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {

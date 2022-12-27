@@ -26,17 +26,17 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^4.4.0"
+    "@prisma/client": "^4.8.0"
   },
   "devDependencies": {
     "@devnode/config": "*",
     "@devnode/tsconfig": "*",
-    "eslint": "^8.24.0",
-    "prisma": "^4.4.0",
-    "prisma-dbml-generator": "^0.9.1",
+    "eslint": "^8.30.0",
+    "prisma": "^4.8.0",
+    "prisma-dbml-generator": "^0.10.0",
     "rimraf": "^3.0.2",
-    "tsup": "^6.2.3",
-    "tsx": "^3.9.0",
-    "typescript": "^4.8.4"
+    "tsup": "^6.5.0",
+    "tsx": "^3.12.1",
+    "typescript": "^4.9.4"
   }
 }
