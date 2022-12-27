@@ -1,15 +1,9 @@
-import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
 import { DIDSession } from "did-session";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
 
-export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
-  definition,
-});
 
 const NewThread = (props: { refresh: () => void }) => {
   const { isConnected } = useAccount();
@@ -20,7 +14,7 @@ const NewThread = (props: { refresh: () => void }) => {
   const allCommunities = trpc.public.getAllCommunities.useQuery();
 
   const [thread, setThread] = useState("");
-
+  
   useEffect(() => {
     const getData = async () => {
       if (!didSession || !isConnected) return;
@@ -30,41 +24,30 @@ const NewThread = (props: { refresh: () => void }) => {
     getData();
   }, [didSession, isConnected]);
 
+  const authorDiscord = trpc.public.getDiscordUser.useQuery({
+    didSession: didSession
+  });
+
+  const isDiscordUser = authorDiscord.data?.discordUsername;
+  const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
+  
   const onThreadSumbit = async () => {
-    const session = await DIDSession.fromSession(didSession);
-    compose.setDID(session.did);
-    await compose
-      .executeQuery<{
-        createThread: { document: { id: string } };
-      }>(
-        `mutation CreateThread($input: CreateThreadInput!) {
-          createThread(input: $input) {
-            document {
-              id
-              title
-              community
-              createdAt
-            }
-          }
-        }`,
-        {
-          input: {
-            content: {
-              title: String(thread),
-              community: community,
-              createdAt: new Date().toISOString(),
-            },
-          },
-        }
-      )
-      .then((r) => {
-        props.refresh();
-        console.log(r);
-      })
-      .catch((e) => console.log(e));
+    
+    await fetch(`${String(process.env.DISCORD_BOT_URL)}webthread`,
+    {
+      body:JSON.stringify({
+        community:String(community),
+        threadTitle: String(thread),
+        discordUserName: String(discordUserName)
+      }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
   };
 
-  return isConnected && didSession ? (
+  return isConnected && didSession && isDiscordUser ? (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {

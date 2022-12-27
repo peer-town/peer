@@ -1,14 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { definition } from "@devnode/composedb";
-import { ComposeClient } from "@composedb/client";
 import { DIDSession } from "did-session";
-
-export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
-  definition,
-});
+import { trpc } from "../../utils/trpc";
 
 const CommentInput = (props: { threadId: string }) => {
   const { isConnected } = useAccount();
@@ -25,38 +19,30 @@ const CommentInput = (props: { threadId: string }) => {
     getData();
   }, [didSession]);
 
+  const authorDiscord = trpc.public.getDiscordUser.useQuery({
+    didSession: didSession
+  });
+
+  const isDiscordUser = authorDiscord.data?.discordUsername;
+  const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
+
   const onCommentSubmit = async () => {
-    const session = await DIDSession.fromSession(didSession);
-    compose.setDID(session.did);
-    await compose
-      .executeQuery<{
-        createComment: { document: { id: string } };
-      }>(
-        `mutation CreateComment($input: CreateCommentInput!) {
-          createComment(input: $input) {
-            document {
-              id
-              threadID
-              text
-              createdAt
-            }
-          }
-        }`,
-        {
-          input: {
-            content: {
-              threadID: props.threadId,
-              text: String(comment),
-              createdAt: new Date().toISOString(),
-            },
-          },
-        }
-      )
-      .then((r) => console.log(r))
-      .catch((e) => console.log(e));
+    // api to add comment to discord
+   await fetch(`${String(process.env.DISCORD_BOT_URL)}webcomment`,
+    {
+      body:JSON.stringify({
+        threadId:props.threadId,
+        comment: String(comment),
+        discordUserName: String(discordUserName)
+      }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
   };
 
-  return isConnected && didSession ? (
+  return isConnected && didSession && isDiscordUser ? (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {

@@ -14,9 +14,19 @@ import { onInvoke } from "./handlers/onInvoke";
 import { onMessageCreate } from "./handlers/onMessageCreate";
 import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
+import { onCommentCreateWeb } from "./handlers/onCommentCreateWeb";
+import { onThredCreateWeb } from "./handlers/onThreadCreateWeb";
 import fetch from "cross-fetch";
 
 import { prisma } from "@devnode/database";
+
+import express, { response } from 'express';
+import cors from 'cors';
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+const port = 4000
 
 const INVOCATION_STRING = "devnode";
 const INVOCATION_CHANNEL = "devnode_signin";
@@ -96,4 +106,35 @@ client.on("threadCreate", async (thread) => {
   onThreadCreate(thread);
 });
 
+
+// apis
+
+app.post('/webcomment', async (req, res) => {
+  const { threadId, comment, discordUserName } = req.body;
+  console.log({thredId:threadId, comment:comment})
+  const response = await onCommentCreateWeb(client, threadId, comment, discordUserName);
+  if(response.result){
+    res.status(200).send(response.value);
+  }
+  else{
+    res.status(400).send(response.value);
+  }
+  
+})
+
+app.post('/webthread', async (req, res) => {
+  const { threadTitle, community, discordUserName} = req.body;
+  console.log({threadTitle:threadTitle})
+  const response = await onThredCreateWeb(client, threadTitle, community, discordUserName);
+  if(response.result){
+    res.status(200).send(response.value);
+  }
+  else{
+    res.status(400).send(response.value);
+  }
+})
+
+app.listen(port, () => {
+  console.log(`server listening on port ${port}`)
+})
 export {};

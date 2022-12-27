@@ -16,8 +16,8 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
   const authorDiscord = trpc.public.getAuthorDiscordForComment.useQuery({
     commentStreamId: data.id,
   });
-
-  return (
+  const avatar = authorDiscord.data?.discordAvatar !== "" ? authorDiscord.data?.discordAvatar : "http://placekitten.com/200/200";
+  return ( 
     <div className="space-y-[23px]">
       <div className="flex items-center gap-[11px]">
         <div className="flex items-center"></div>
@@ -26,10 +26,7 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
             width="32"
             height="32"
             className="rounded-full"
-            src={
-              authorDiscord.data?.discordAvatar ??
-              "http://placekitten.com/200/200"
-            }
+            src={avatar}
             alt=""
           />
           <div>
