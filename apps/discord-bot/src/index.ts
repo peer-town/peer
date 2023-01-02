@@ -92,24 +92,6 @@ client.on("threadCreate", async (thread) => {
   onThreadCreate(thread);
 });
 
-// apis
-
-app.post("/webcomment", async (req, res) => {
-  const { threadId, comment, discordUserName } = req.body;
-  console.log({ thredId: threadId, comment: comment });
-  const response = await onCommentCreateWeb(
-    client,
-    threadId,
-    comment,
-    discordUserName
-  );
-  if (response.result) {
-    res.status(200).send(response.value);
-  } else {
-    res.status(400).send(response.value);
-  }
-});
-
 const updateCommunities = async () => {
   (await client.guilds.fetch()).map(async (guild) => {
     await prisma.community.upsert({
@@ -129,6 +111,23 @@ const updateCommunities = async () => {
   });
 };
 
+// apis
+app.post("/webcomment", async (req, res) => {
+  const { threadId, comment, discordUserName } = req.body;
+  console.log({ thredId: threadId, comment: comment });
+  const response = await onCommentCreateWeb(
+    client,
+    threadId,
+    comment,
+    discordUserName
+  );
+  if (response.result) {
+    res.status(200).send(response.value);
+  } else {
+    res.status(400).send(response.value);
+  }
+});
+
 app.post("/webthread", async (req, res) => {
   const { threadTitle, community, discordUserName } = req.body;
   console.log({ threadTitle: threadTitle });
@@ -141,8 +140,7 @@ app.post("/webthread", async (req, res) => {
   if (response.result) {
     res.status(200).send(response.value);
   } else {
-    console.log(response.value);
-    res.status(400).json({ err: response.value });
+    res.status(400).send(response.value);
   }
 });
 

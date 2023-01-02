@@ -3,7 +3,6 @@ config();
 import { ChannelType, Client, TextChannel, ThreadChannel } from "discord.js";
 import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
-import { Response } from "../type"
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
 
@@ -12,46 +11,61 @@ export const compose = new ComposeClient({
   definition,
 });
 
-export const onCommentCreateWeb = async (client:Client, threadId:string, comment:string, discordUserName:string):Promise<Response> => {
+export type Response = {
+  result: boolean;
+  value: string | object;
+};
 
-  const existhreaingThread = await prisma.thread.findUnique({
+export const onCommentCreateWeb = async (
+  client: Client,
+  threadId: string,
+  comment: string,
+  discordUserName: string
+): Promise<Response> => {
+  const existhreaingThread = await prisma.thread
+    .findUnique({
+      where: {
+        streamId: threadId,
+      },
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+
+  const user = await prisma.user.findUniqueOrThrow({
     where: {
-      streamId: threadId,
+      discordUsername: discordUserName,
     },
-  }).catch((e)=>{
-    console.log(e);
+    select: {
+      didSession: true,
+    },
   });
 
-  const user = await prisma.user
-      .findUniqueOrThrow({
-        where: {
-          discordUsername: discordUserName,
-        },
-        select: {
-          didSession: true,
-        },
-      })
+  if (user == null || !user.didSession) {
+    return {
+      result: false,
+      value: "user not signed in from discord or did session has expired",
+    };
+  }
 
-    if (user == null || !user.didSession) {
-        return {result: 'false', value:'user not signed in from discord or did session has expired'};
-    }
+  if (existhreaingThread) {
+    const thread = client.channels.cache.get(
+      existhreaingThread?.discordId
+    ) as ThreadChannel;
+    const message = await thread.send(
+      `From WEB \n ${discordUserName} : ${comment}`
+    );
 
-    if(existhreaingThread){
-      
-      const thread = client.channels.cache.get(existhreaingThread?.discordId) as ThreadChannel;
-      const message = await thread.send(`From WEB \n ${discordUserName} : ${comment}`);
+    const session = await DIDSession.fromSession(user.didSession);
+    compose.setDID(session.did);
 
-      const session = await DIDSession.fromSession(user.didSession);
-      compose.setDID(session.did);
+    let composeResponse;
 
-      let composeResponse;
-
-      try{
-        composeResponse = await compose
-        .executeQuery<{
-          createComment: { document: { id: string } };
-        }>(
-          `mutation CreateComment($input: CreateCommentInput!) {
+    try {
+      composeResponse = await compose.executeQuery<{
+        createComment: { document: { id: string } };
+      }>(
+        `mutation CreateComment($input: CreateCommentInput!) {
             createComment(input: $input) {
               document {
                 id
@@ -61,46 +75,45 @@ export const onCommentCreateWeb = async (client:Client, threadId:string, comment
               }
             }
           }`,
-          {
-            input: {
-              content: {
-                threadID: threadId,
-                text: comment,
-                createdAt: new Date().toISOString(),
-              },
+        {
+          input: {
+            content: {
+              threadID: threadId,
+              text: comment,
+              createdAt: new Date().toISOString(),
             },
-          }
-        )
-      }
-      catch{
-        message.delete();
-        return {result: 'false', value:'compose failed'};
-      }
-
-      if (!composeResponse || !composeResponse.data) {
-        await message.delete();
-        return {result:'false', value:'composedb failed'};
-      }
-
-      await prisma.comment.upsert({
-        where: { discordId: message.id },
-        update: {
-          createdAt: message.createdAt,
-          discordAuthor: discordUserName,
-          text: comment,
-        },
-        create: {
-          discordId: message.id,
-          streamId: composeResponse.data.createComment.document.id,
-          createdAt: message.createdAt,
-          discordAuthor: discordUserName,
-          text: comment,
-          Thread: {
-            connect: { id: existhreaingThread.id },
           },
-        },
-      }); 
+        }
+      );
+    } catch {
+      message.delete();
+      return { result: false, value: "compose failed" };
     }
 
-    return {result: 'true', value:'comment added'};
+    if (!composeResponse || !composeResponse.data) {
+      await message.delete();
+      return { result: false, value: "composedb failed" };
+    }
+
+    await prisma.comment.upsert({
+      where: { discordId: message.id },
+      update: {
+        createdAt: message.createdAt,
+        discordAuthor: discordUserName,
+        text: comment,
+      },
+      create: {
+        discordId: message.id,
+        streamId: composeResponse.data.createComment.document.id,
+        createdAt: message.createdAt,
+        discordAuthor: discordUserName,
+        text: comment,
+        Thread: {
+          connect: { id: existhreaingThread.id },
+        },
+      },
+    });
+  }
+
+  return { result: true, value: "comment added" };
 };

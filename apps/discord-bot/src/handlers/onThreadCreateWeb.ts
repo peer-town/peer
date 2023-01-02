@@ -58,11 +58,8 @@ export const onThredCreateWeb = async (
       name: threadTitle,
       reason: "Created in Web",
     });
-  } catch (e) {
-    return {
-      result: false,
-      value: JSON.stringify(e),
-    };
+  } catch {
+    return { result: false, value: "could not create thread" };
   }
 
   const session = await DIDSession.fromSession(user.didSession);

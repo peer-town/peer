@@ -38,6 +38,22 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
   const onCommentSubmit = async () => {
     const session = await DIDSession.fromSession(didSession);
     compose.setDID(session.did);
+
+    await fetch(
+      `${String(process.env.NEXT_PUBLIC_DISCORD_BOT_URL)}webcomment`,
+      {
+        body: JSON.stringify({
+          threadID: props.threadId,
+          comment: String(comment),
+          discordUserName: String(discordUserName),
+        }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     await compose
       .executeQuery<{
         createComment: { document: { id: string } };
