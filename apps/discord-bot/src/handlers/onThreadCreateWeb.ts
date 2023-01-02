@@ -20,7 +20,9 @@ export const onThredCreateWeb = async (
   let channel = client.channels.cache
     .filter(
       (channel) =>
-        channel.type == ChannelType.GuildText && channel.id == community
+        channel.type == ChannelType.GuildText &&
+        channel.name == process.env.DISCORD_CHANNEL_NAME &&
+        channel.id == community
     )
     .first() as TextChannel;
 
