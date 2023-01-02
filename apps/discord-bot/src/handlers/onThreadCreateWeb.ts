@@ -94,10 +94,12 @@ export const onThredCreateWeb = async (
         },
       }
     );
-  } catch {
+  } catch (res) {
     await thread.delete();
     return { result: false, value: "composedb failed" };
   }
+
+  if (composeResponse.errors) console.log(composeResponse.errors);
 
   if (!composeResponse || !composeResponse.data) {
     await thread.delete();
