@@ -141,7 +141,8 @@ app.post("/webthread", async (req, res) => {
   if (response.result) {
     res.status(200).send(response.value);
   } else {
-    res.status(400).send(response.value);
+    console.log(response.value);
+    res.status(400).json({ err: response.value });
   }
 });
 
