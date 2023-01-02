@@ -5,11 +5,15 @@ import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
-import { Response } from "../type";
 export const compose = new ComposeClient({
   ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
+
+export type Response = {
+  result: boolean;
+  value: string | object;
+};
 
 export const onThredCreateWeb = async (
   client: Client,
@@ -21,7 +25,7 @@ export const onThredCreateWeb = async (
     .filter((guild) => guild.id == community)
     .first();
 
-  if (!guild) return { result: "false", value: "community missing" };
+  if (!guild) return { result: false, value: "community missing" };
 
   let channel = guild.channels.cache
     .filter(
@@ -42,7 +46,7 @@ export const onThredCreateWeb = async (
 
   if (user == null || !user.didSession) {
     return {
-      result: "false",
+      result: false,
       value: "user not signed in from discord or did session has expired",
     };
   }
@@ -56,7 +60,7 @@ export const onThredCreateWeb = async (
     });
   } catch (e) {
     return {
-      result: "false",
+      result: false,
       value: JSON.stringify(e),
     };
   }
@@ -91,12 +95,12 @@ export const onThredCreateWeb = async (
     );
   } catch {
     await thread.delete();
-    return { result: "false", value: "composedb failed" };
+    return { result: false, value: "composedb failed" };
   }
 
   if (!composeResponse || !composeResponse.data) {
     await thread.delete();
-    return { result: "false", value: "composedb failed" };
+    return { result: false, value: "composedb failed" };
   }
 
   await prisma.thread.upsert({
@@ -117,5 +121,5 @@ export const onThredCreateWeb = async (
     },
   });
 
-  return { result: "true", value: "thread added" };
+  return { result: true, value: "thread added" };
 };
