@@ -41,6 +41,9 @@ const NewThread = (props: { refresh: () => void }) => {
       headers: {
         "Content-Type": "application/json",
       },
+    }).then(() => {
+      setThread("");
+      props.refresh();
     });
   };
 

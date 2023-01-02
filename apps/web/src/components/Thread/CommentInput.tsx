@@ -52,38 +52,10 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           "Content-Type": "application/json",
         },
       }
-    );
-
-    await compose
-      .executeQuery<{
-        createComment: { document: { id: string } };
-      }>(
-        `mutation CreateComment($input: CreateCommentInput!) {
-          createComment(input: $input) {
-            document {
-              id
-              threadID
-              text
-              createdAt
-            }
-          }
-        }`,
-        {
-          input: {
-            content: {
-              threadID: props.threadId,
-              text: String(comment),
-              createdAt: new Date().toISOString(),
-            },
-          },
-        }
-      )
-      .then((r) => {
-        props.refresh();
-        setComment("");
-        console.log(r);
-      })
-      .catch((e) => console.log(e));
+    ).then(() => {
+      setComment("");
+      props.refresh();
+    });
   };
 
   if (!isConnected)
