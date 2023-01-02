@@ -17,12 +17,17 @@ export const onThredCreateWeb = async (
   community: string,
   discordUserName: string
 ): Promise<Response> => {
-  let channel = client.channels.cache
+  let guild = await client.guilds.cache
+    .filter((guild) => guild.id == community)
+    .first();
+
+  if (!guild) return { result: "false", value: "community missing" };
+
+  let channel = guild.channels.cache
     .filter(
       (channel) =>
         channel.type == ChannelType.GuildText &&
-        channel.name == process.env.DISCORD_CHANNEL_NAME &&
-        channel.id == community
+        channel.name == process.env.DISCORD_CHANNEL_NAME
     )
     .first() as TextChannel;
 
