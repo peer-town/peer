@@ -53,16 +53,17 @@ export const onThreadCreateWeb = async (
     };
   }
 
-  let thread: ThreadChannel;
-
-  try {
-    thread = await channel.threads.create({
+  const thread = await channel.threads
+    .create({
       name: threadTitle,
       reason: "Created in Web",
+    })
+    .catch((e) => {
+      console.log(e);
     });
-  } catch {
+
+  if (!(thread instanceof ThreadChannel))
     return { result: false, value: "could not create thread" };
-  }
 
   const session = await DIDSession.fromSession(user.didSession);
   compose.setDID(session.did);
