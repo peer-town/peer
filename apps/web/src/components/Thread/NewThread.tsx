@@ -31,7 +31,7 @@ const NewThread = (props: { refresh: () => void }) => {
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
 
   const onThreadSumbit = async () => {
-    await fetch(`${String(process.env.DISCORD_BOT_URL)}webthread`, {
+    await fetch(`${String(process.env.NEXT_PUBLIC_DISCORD_BOT_URL)}webthread`, {
       body: JSON.stringify({
         community: String(community),
         threadTitle: String(thread),

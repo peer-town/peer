@@ -10,7 +10,7 @@ export default async function handler(
 
   await prisma.user.upsert({
     where: {
-      didkey: String(did),
+      didpkh: String(didpkh),
     },
     create: {
       discordUsername: "",
