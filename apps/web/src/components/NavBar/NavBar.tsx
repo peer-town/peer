@@ -1,6 +1,4 @@
 import { Popover, Transition } from "@headlessui/react";
-import { SearchIcon } from "@heroicons/react/solid";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { useConnect, useAccount, useDisconnect } from "wagmi";
 import Image from "next/image";
 import { Fragment, useState } from "react";
@@ -10,7 +8,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { Resolver } from "did-resolver";
 import { getResolver } from "pkh-did-resolver";
 import { trpc } from "../../utils/trpc";
-import { Modal }  from "../Modal"
+import { Modal } from "../Modal";
 
 const pkhResolver = getResolver();
 const resolver = new Resolver(pkhResolver);
@@ -30,9 +28,9 @@ const NavBar = () => {
   const [didSession, setDidSession] = useLocalStorage("didSession", "");
 
   const [isOpen, setOpen] = useState(false);
-  
+
   const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession
+    didSession: didSession,
   });
   const discordUserName = authorDiscord.data?.discordUsername;
 
@@ -70,9 +68,9 @@ const NavBar = () => {
     setDid(session.did.id);
   };
 
-  const handleClick = () =>{
+  const handleClick = () => {
     setOpen((state) => !state);
-  }
+  };
 
   return (
     <>
@@ -106,10 +104,20 @@ const NavBar = () => {
                       </label>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <SearchIcon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="h-6 w-6"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                            />
+                          </svg>
                         </div>
                         <input
                           id="search"
@@ -192,7 +200,7 @@ const NavBar = () => {
                       Create DID
                     </button>
                   )}
-                  
+
                   {discordUserName ? (
                     <Popover className="relative">
                       <Popover.Button
@@ -224,10 +232,10 @@ const NavBar = () => {
                       onClick={handleClick}
                       className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                     >
-                     Connect with Discord bot
+                      Connect with Discord bot
                     </button>
                   )}
-                  {isOpen && <Modal handleClick={handleClick}/>}
+                  {isOpen && <Modal handleClick={handleClick} />}
                 </div>
               </div>
             </div>

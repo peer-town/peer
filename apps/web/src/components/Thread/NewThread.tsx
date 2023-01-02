@@ -4,7 +4,6 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
 
-
 const NewThread = (props: { refresh: () => void }) => {
   const { isConnected } = useAccount();
   const [did, setDid] = useState("");
@@ -14,7 +13,7 @@ const NewThread = (props: { refresh: () => void }) => {
   const allCommunities = trpc.public.getAllCommunities.useQuery();
 
   const [thread, setThread] = useState("");
-  
+
   useEffect(() => {
     const getData = async () => {
       if (!didSession || !isConnected) return;
@@ -25,29 +24,54 @@ const NewThread = (props: { refresh: () => void }) => {
   }, [didSession, isConnected]);
 
   const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession
+    didSession: didSession,
   });
 
   const isDiscordUser = authorDiscord.data?.discordUsername;
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
-  
+
   const onThreadSumbit = async () => {
-    
-    await fetch(`${String(process.env.DISCORD_BOT_URL)}webthread`,
-    {
-      body:JSON.stringify({
-        community:String(community),
+    await fetch(`${String(process.env.DISCORD_BOT_URL)}webthread`, {
+      body: JSON.stringify({
+        community: String(community),
         threadTitle: String(thread),
-        discordUserName: String(discordUserName)
+        discordUserName: String(discordUserName),
       }),
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-    })
+    });
   };
 
-  return isConnected && didSession && isDiscordUser ? (
+  if (!isConnected)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please connect to publish comments.
+        </div>
+      </div>
+    );
+
+  if (!didSession)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please create a DID session
+        </div>
+      </div>
+    );
+
+  if (!isDiscordUser)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please connect to Discord
+        </div>
+      </div>
+    );
+
+  return (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {
@@ -88,12 +112,6 @@ const NewThread = (props: { refresh: () => void }) => {
           Send
         </button>
       </form>
-    </div>
-  ) : (
-    <div className="flex w-full justify-center bg-white py-6">
-      <div className=" bg-white text-base font-normal text-gray-700">
-        Please connect to publish comments.
-      </div>
     </div>
   );
 };

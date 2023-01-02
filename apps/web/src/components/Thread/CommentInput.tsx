@@ -20,8 +20,10 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const session = await DIDSession.fromSession(didSession);
-      setDid(session.did.id);
+      if (didSession) {
+        let session = await DIDSession.fromSession(didSession);
+        setDid(session.did.id);
+      }
     };
     getData();
   }, [didSession]);
@@ -68,7 +70,34 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
       .catch((e) => console.log(e));
   };
 
-  return isConnected && didSession && isDiscordUser ? (
+  if (!isConnected)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please connect to publish comments.
+        </div>
+      </div>
+    );
+
+  if (!didSession)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please create a DID session
+        </div>
+      </div>
+    );
+
+  if (!isDiscordUser)
+    return (
+      <div className="flex w-full justify-center bg-white py-6">
+        <div className=" bg-white text-base font-normal text-gray-700">
+          Please connect to Discord
+        </div>
+      </div>
+    );
+
+  return (
     <div className="block w-full bg-white p-6">
       <form
         onSubmit={(e) => {
@@ -93,12 +122,6 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           Send
         </button>
       </form>
-    </div>
-  ) : (
-    <div className="flex w-full justify-center bg-white py-6">
-      <div className=" bg-white text-base font-normal text-gray-700">
-        Please connect to publish comments.
-      </div>
     </div>
   );
 };

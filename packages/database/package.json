@@ -31,7 +31,7 @@
   "devDependencies": {
     "@devnode/config": "*",
     "@devnode/tsconfig": "*",
-    "eslint": "^8.30.0",
+    "eslint": "^8.31.0",
     "prisma": "^4.8.0",
     "prisma-dbml-generator": "^0.10.0",
     "rimraf": "^3.0.2",

@@ -20,13 +20,13 @@ import fetch from "cross-fetch";
 
 import { prisma } from "@devnode/database";
 
-import express, { response } from 'express';
-import cors from 'cors';
+import express, { response } from "express";
+import cors from "cors";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-const port = 4000
+const port = 4000;
 
 const INVOCATION_STRING = "devnode";
 const INVOCATION_CHANNEL = "devnode_signin";
@@ -54,25 +54,7 @@ client.login(process.env.DISCORD_TOKEN!).catch((e) => console.log(e));
 
 client.once("ready", async () => {
   console.log("Ready!");
-
-  //Update all guilds in prisma
-  (await client.guilds.fetch()).map(async (guild) => {
-    await prisma.community.upsert({
-      where: {
-        discordId: guild.id,
-      },
-      update: {
-        communityName: guild.name,
-        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
-      },
-      create: {
-        discordId: guild.id,
-        communityName: guild.name,
-        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
-      },
-    });
-  });
-
+  await updateCommunities();
   let nodeReady = false;
   while (!nodeReady) {
     console.log("ceramic node not ready");
@@ -87,6 +69,10 @@ client.once("ready", async () => {
       });
     await new Promise((r) => setTimeout(r, 1000));
   }
+});
+
+client.on("guildCreate", async () => {
+  await updateCommunities();
 });
 
 client.on("messageCreate", async (message: Message) => {
@@ -106,35 +92,60 @@ client.on("threadCreate", async (thread) => {
   onThreadCreate(thread);
 });
 
-
 // apis
 
-app.post('/webcomment', async (req, res) => {
+app.post("/webcomment", async (req, res) => {
   const { threadId, comment, discordUserName } = req.body;
-  console.log({thredId:threadId, comment:comment})
-  const response = await onCommentCreateWeb(client, threadId, comment, discordUserName);
-  if(response.result){
+  console.log({ thredId: threadId, comment: comment });
+  const response = await onCommentCreateWeb(
+    client,
+    threadId,
+    comment,
+    discordUserName
+  );
+  if (response.result) {
     res.status(200).send(response.value);
-  }
-  else{
+  } else {
     res.status(400).send(response.value);
   }
-  
-})
+});
 
-app.post('/webthread', async (req, res) => {
-  const { threadTitle, community, discordUserName} = req.body;
-  console.log({threadTitle:threadTitle})
-  const response = await onThredCreateWeb(client, threadTitle, community, discordUserName);
-  if(response.result){
+const updateCommunities = async () => {
+  (await client.guilds.fetch()).map(async (guild) => {
+    await prisma.community.upsert({
+      where: {
+        discordId: guild.id,
+      },
+      update: {
+        communityName: guild.name,
+        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
+      },
+      create: {
+        discordId: guild.id,
+        communityName: guild.name,
+        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
+      },
+    });
+  });
+};
+
+app.post("/webthread", async (req, res) => {
+  const { threadTitle, community, discordUserName } = req.body;
+  console.log({ threadTitle: threadTitle });
+  const response = await onThredCreateWeb(
+    client,
+    threadTitle,
+    community,
+    discordUserName
+  );
+  if (response.result) {
     res.status(200).send(response.value);
-  }
-  else{
+  } else {
     res.status(400).send(response.value);
   }
-})
+});
 
 app.listen(port, () => {
-  console.log(`server listening on port ${port}`)
-})
+  console.log(`server listening on port ${port}`);
+});
 export {};

@@ -6,7 +6,7 @@ import Thread from "../components/Thread";
 import Comment from "../components/Comment";
 import { trpc } from "../utils/trpc";
 import ThreadInformation from "../components/Thread/ThreadInformation";
-import CommentInput from "../components/ThreadCard/CommentInput";
+import CommentInput from "../components/Thread/CommentInput";
 
 const QuestionPage = () => {
   const router = useRouter();
