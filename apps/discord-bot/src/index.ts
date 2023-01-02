@@ -130,7 +130,11 @@ app.post("/webcomment", async (req, res) => {
 
 app.post("/webthread", async (req, res) => {
   const { threadTitle, community, discordUserName } = req.body;
-  console.log({ threadTitle: threadTitle });
+  console.log({
+    threadTitle: threadTitle,
+    community: community,
+    discordUserName: discordUserName,
+  });
   const response = await onThreadCreateWeb(
     client,
     threadTitle,
