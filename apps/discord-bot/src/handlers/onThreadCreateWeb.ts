@@ -27,6 +27,8 @@ export const onThredCreateWeb = async (
 
   if (!guild) return { result: false, value: "community missing" };
 
+  console.log(guild.id);
+
   let channel = guild.channels.cache
     .filter(
       (channel) =>
@@ -34,6 +36,8 @@ export const onThredCreateWeb = async (
         channel.name == process.env.DISCORD_CHANNEL_NAME
     )
     .first() as TextChannel;
+
+  console.log(channel.id);
 
   const user = await prisma.user.findUniqueOrThrow({
     where: {
