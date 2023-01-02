@@ -21,9 +21,7 @@ export const onThredCreateWeb = async (
   community: string,
   discordUserName: string
 ): Promise<Response> => {
-  let guild = await client.guilds.cache
-    .filter((guild) => guild.id == community)
-    .first();
+  let guild = await client.guilds.cache.get(community);
 
   if (!guild) return { result: false, value: "community missing" };
 
