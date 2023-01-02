@@ -25,6 +25,7 @@ import cors from "cors";
 
 const app = express();
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const port = process.env.PORT ?? 4000;
 
@@ -121,6 +122,7 @@ app.post("/webcomment", async (req, res) => {
     comment,
     discordUserName
   );
+  console.log(response);
   if (response.result) {
     res.status(200).send(response.value);
   } else {
@@ -141,6 +143,7 @@ app.post("/webthread", async (req, res) => {
     community,
     discordUserName
   );
+  console.log(response);
   if (response.result) {
     res.status(200).send(response.value);
   } else {

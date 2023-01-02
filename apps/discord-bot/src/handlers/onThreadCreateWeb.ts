@@ -1,6 +1,13 @@
 import { config } from "dotenv";
 config();
-import { ChannelType, Client, TextChannel, ThreadChannel } from "discord.js";
+import {
+  ChannelType,
+  Client,
+  ForumChannel,
+  TextChannel,
+  ThreadAutoArchiveDuration,
+  ThreadChannel,
+} from "discord.js";
 import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
@@ -25,17 +32,11 @@ export const onThreadCreateWeb = async (
 
   if (!guild) return { result: false, value: "community missing" };
 
-  console.log(guild.id);
+  let channel = guild.channels.cache.find(
+    (channel) => channel.name == "devnode" && channel.guildId == community
+  ) as ForumChannel;
 
-  let channel = guild.channels.cache
-    .filter(
-      (channel) =>
-        channel.type == ChannelType.GuildText &&
-        channel.name == process.env.DISCORD_CHANNEL_NAME
-    )
-    .first() as TextChannel;
-
-  console.log(channel.id);
+  if (!channel) return { result: false, value: "channel missing" };
 
   const user = await prisma.user.findUniqueOrThrow({
     where: {
@@ -56,6 +57,10 @@ export const onThreadCreateWeb = async (
   const thread = await channel.threads
     .create({
       name: threadTitle,
+      autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+      message: {
+        content: "This message was posted on web",
+      },
       reason: "Created in Web",
     })
     .catch((e) => {

@@ -51,7 +51,6 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: "no-cors",
       }
     );
 
