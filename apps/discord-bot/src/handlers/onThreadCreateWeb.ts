@@ -87,7 +87,7 @@ export const onThredCreateWeb = async (
       {
         input: {
           content: {
-            community: thread.guild.id,
+            community: community,
             title: String(thread.name),
             createdAt: thread.createdAt?.toISOString(),
           },
