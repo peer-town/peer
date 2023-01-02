@@ -5,59 +5,61 @@ import { prisma } from "@devnode/database";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
-import { Response } from "../type"
+import { Response } from "../type";
 export const compose = new ComposeClient({
   ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 
-export const onThredCreateWeb = async (client:Client, threadTitle:string, community:string, discordUserName:string):Promise<Response> => {
-
-  let devnodeChannel = client.channels.cache
+export const onThredCreateWeb = async (
+  client: Client,
+  threadTitle: string,
+  community: string,
+  discordUserName: string
+): Promise<Response> => {
+  let channel = client.channels.cache
     .filter(
       (channel) =>
-        channel.type == ChannelType.GuildText &&
-        channel.name == process.env.DISCORD_CHANNEL_NAME
+        channel.type == ChannelType.GuildText && channel.id == community
     )
     .first() as TextChannel;
-    
-    
-    const user = await prisma.user
-    .findUniqueOrThrow({
-      where: {
-        discordUsername: discordUserName
-      },
-      select: {
-        didSession: true,
-      },
-    })
-    
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      discordUsername: discordUserName,
+    },
+    select: {
+      didSession: true,
+    },
+  });
+
   if (user == null || !user.didSession) {
-    return {result: 'false', value:'user not signed in from discord or did session has expired'};
+    return {
+      result: "false",
+      value: "user not signed in from discord or did session has expired",
+    };
   }
 
-  let thread:ThreadChannel;
+  let thread: ThreadChannel;
 
-  try{
-    thread = await devnodeChannel.threads.create({
-      name: threadTitle ,
-      reason: 'Created in Web',
+  try {
+    thread = await channel.threads.create({
+      name: threadTitle,
+      reason: "Created in Web",
     });
+  } catch {
+    return { result: "false", value: "could not create thread" };
   }
-  catch{
-    return {result: 'false', value:'could not create thread'};
-  }
-  
+
   const session = await DIDSession.fromSession(user.didSession);
   compose.setDID(session.did);
-  
+
   let composeResponse;
-  try{
-    composeResponse = await compose
-      .executeQuery<{
-        createThread: { document: { id: string } };
-      }>(
-        `mutation CreateThread($input: CreateThreadInput!) {
+  try {
+    composeResponse = await compose.executeQuery<{
+      createThread: { document: { id: string } };
+    }>(
+      `mutation CreateThread($input: CreateThreadInput!) {
             createThread(input: $input) {
               document {
                 id
@@ -67,25 +69,24 @@ export const onThredCreateWeb = async (client:Client, threadTitle:string, commun
               }
             }
           }`,
-        {
-          input: {
-            content: {
-              community: thread.guild.id,
-              title: String(thread.name),
-              createdAt: thread.createdAt?.toISOString(),
-            },
+      {
+        input: {
+          content: {
+            community: thread.guild.id,
+            title: String(thread.name),
+            createdAt: thread.createdAt?.toISOString(),
           },
-        }
-      )
-  }
-  catch{
+        },
+      }
+    );
+  } catch {
     await thread.delete();
-    return {result:'false', value:'composedb failed'};
+    return { result: "false", value: "composedb failed" };
   }
-   
+
   if (!composeResponse || !composeResponse.data) {
     await thread.delete();
-    return {result:'false', value:'composedb failed'};
+    return { result: "false", value: "composedb failed" };
   }
 
   await prisma.thread.upsert({
@@ -106,5 +107,5 @@ export const onThredCreateWeb = async (client:Client, threadTitle:string, commun
     },
   });
 
-  return {result:'true', value:'thread added'};
+  return { result: "true", value: "thread added" };
 };
