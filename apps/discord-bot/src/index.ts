@@ -114,7 +114,7 @@ const updateCommunities = async () => {
 // apis
 app.post("/webcomment", async (req, res) => {
   const { threadId, comment, discordUserName } = req.body;
-  console.log({ thredId: threadId, comment: comment });
+  console.log({ threadId: threadId, comment: comment });
   const response = await onCommentCreateWeb(
     client,
     threadId,

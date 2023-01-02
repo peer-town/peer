@@ -43,7 +43,7 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
       `${String(process.env.NEXT_PUBLIC_DISCORD_BOT_URL)}webcomment`,
       {
         body: JSON.stringify({
-          threadID: props.threadId,
+          threadId: props.threadId,
           comment: String(comment),
           discordUserName: String(discordUserName),
         }),
