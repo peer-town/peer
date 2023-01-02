@@ -15,7 +15,7 @@ import { onMessageCreate } from "./handlers/onMessageCreate";
 import { onStart } from "./handlers/onStart";
 import { onThreadCreate } from "./handlers/onThreadCreate";
 import { onCommentCreateWeb } from "./handlers/onCommentCreateWeb";
-import { onThredCreateWeb } from "./handlers/onThreadCreateWeb";
+import { onThreadCreateWeb } from "./handlers/onThreadCreateWeb";
 import fetch from "cross-fetch";
 
 import { prisma } from "@devnode/database";
@@ -131,7 +131,7 @@ app.post("/webcomment", async (req, res) => {
 app.post("/webthread", async (req, res) => {
   const { threadTitle, community, discordUserName } = req.body;
   console.log({ threadTitle: threadTitle });
-  const response = await onThredCreateWeb(
+  const response = await onThreadCreateWeb(
     client,
     threadTitle,
     community,

@@ -15,7 +15,7 @@ export type Response = {
   value: string | object;
 };
 
-export const onThredCreateWeb = async (
+export const onThreadCreateWeb = async (
   client: Client,
   threadTitle: string,
   community: string,

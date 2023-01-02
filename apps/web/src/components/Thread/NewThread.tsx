@@ -33,9 +33,9 @@ const NewThread = (props: { refresh: () => void }) => {
   const onThreadSumbit = async () => {
     await fetch(`${String(process.env.NEXT_PUBLIC_DISCORD_BOT_URL)}webthread`, {
       body: JSON.stringify({
-        threadTitle: String(thread),
-        community: String(community),
-        discordUserName: String(discordUserName),
+        threadTitle: thread,
+        community: community,
+        discordUserName: discordUserName,
       }),
       method: "POST",
       headers: {
