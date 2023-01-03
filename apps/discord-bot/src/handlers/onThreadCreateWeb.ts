@@ -26,7 +26,8 @@ export const onThreadCreateWeb = async (
   client: Client,
   threadTitle: string,
   community: string,
-  discordUserName: string
+  discordUserName: string,
+  didSession: string
 ): Promise<Response> => {
   let guild = await client.guilds.cache.get(community);
 
@@ -47,7 +48,7 @@ export const onThreadCreateWeb = async (
     },
   });
 
-  if (user == null || !user.didSession) {
+  if (user == null || !user.didSession || user.didSession!==didSession) {
     return {
       result: false,
       value: "user not signed in from discord or did session has expired",

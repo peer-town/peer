@@ -36,6 +36,7 @@ const NewThread = (props: { refresh: () => void }) => {
         threadTitle: thread,
         community: community,
         discordUserName: discordUserName,
+        didSession: String(didSession)
       }),
       method: "POST",
       headers: {

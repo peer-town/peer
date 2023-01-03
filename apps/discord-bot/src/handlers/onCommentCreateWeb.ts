@@ -20,7 +20,8 @@ export const onCommentCreateWeb = async (
   client: Client,
   threadId: string,
   comment: string,
-  discordUserName: string
+  discordUserName: string,
+  didSession: string
 ): Promise<Response> => {
   const existhreaingThread = await prisma.thread
     .findUnique({
@@ -41,7 +42,7 @@ export const onCommentCreateWeb = async (
     },
   });
 
-  if (user == null || !user.didSession) {
+  if (user == null || !user.didSession || user.didSession!==didSession) {
     return {
       result: false,
       value: "user not signed in from discord or did session has expired",

@@ -46,6 +46,7 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           threadId: props.threadId,
           comment: String(comment),
           discordUserName: String(discordUserName),
+          didSession:String(didSession)
         }),
         method: "POST",
         headers: {

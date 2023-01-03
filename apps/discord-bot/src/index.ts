@@ -114,13 +114,14 @@ const updateCommunities = async () => {
 
 // apis
 app.post("/webcomment", async (req, res) => {
-  const { threadId, comment, discordUserName } = req.body;
+  const { threadId, comment, discordUserName, didSession } = req.body;
   console.log({ threadId: threadId, comment: comment });
   const response = await onCommentCreateWeb(
     client,
     threadId,
     comment,
-    discordUserName
+    discordUserName,
+    didSession
   );
   console.log(response);
   if (response.result) {
@@ -131,7 +132,7 @@ app.post("/webcomment", async (req, res) => {
 });
 
 app.post("/webthread", async (req, res) => {
-  const { threadTitle, community, discordUserName } = req.body;
+  const { threadTitle, community, discordUserName, didSession } = req.body;
   console.log({
     threadTitle: threadTitle,
     community: community,
@@ -141,7 +142,8 @@ app.post("/webthread", async (req, res) => {
     client,
     threadTitle,
     community,
-    discordUserName
+    discordUserName,
+    didSession
   );
   console.log(response);
   if (response.result) {
