@@ -105,7 +105,7 @@ export const onCommentCreateWeb = async (
       },
       create: {
         discordId: message.id,
-        streamId: composeResponse.data.createComment.document.id,
+        streamId: composeResponse.data.createComment?.document.id,
         createdAt: message.createdAt,
         discordAuthor: discordUserName,
         text: comment,

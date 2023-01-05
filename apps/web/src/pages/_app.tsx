@@ -12,6 +12,10 @@ import { Session } from "next-auth";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { mainnet, optimism } from "wagmi/chains";
 
+import { ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+
 const { chains, provider, webSocketProvider } = configureChains(
   [mainnet],
   [publicProvider()]
@@ -35,6 +39,18 @@ const client = createClient({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <WagmiConfig client={client}>
+       <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Component {...pageProps} />
     </WagmiConfig>
   );

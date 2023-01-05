@@ -59,33 +59,6 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
     });
   };
 
-  if (!isConnected)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please connect to publish comments.
-        </div>
-      </div>
-    );
-
-  if (!didSession)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please create a DID session
-        </div>
-      </div>
-    );
-
-  if (!isDiscordUser)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please connect to Discord
-        </div>
-      </div>
-    );
-
   return (
     <div className="block w-full bg-white p-6">
       <form

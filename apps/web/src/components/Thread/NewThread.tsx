@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
+import { toast } from 'react-toastify';
 
-const NewThread = (props: { refresh: () => void }) => {
+const NewThread = (props) => {
   const { isConnected } = useAccount();
   const [did, setDid] = useState("");
   const [didSession] = useLocalStorage("didSession", "");
   const [community, setCommunity] = useState("");
 
   const allCommunities = trpc.public.getAllCommunities.useQuery();
-
+  
   const [thread, setThread] = useState("");
-
   useEffect(() => {
     const getData = async () => {
       if (!didSession || !isConnected) return;
@@ -27,7 +27,6 @@ const NewThread = (props: { refresh: () => void }) => {
     didSession: didSession,
   });
 
-  const isDiscordUser = authorDiscord.data?.discordUsername;
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
 
   const onThreadSumbit = async () => {
@@ -42,38 +41,14 @@ const NewThread = (props: { refresh: () => void }) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(() => {
+    }).then(async (response) => {
+      if(!response.ok){
+        toast.error("Community missing or Api failed");
+      }
       setThread("");
       props.refresh();
-    });
+    })
   };
-
-  if (!isConnected)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please connect to publish comments.
-        </div>
-      </div>
-    );
-
-  if (!didSession)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please create a DID session
-        </div>
-      </div>
-    );
-
-  if (!isDiscordUser)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please connect to Discord
-        </div>
-      </div>
-    );
 
   return (
     <div className="block w-full bg-white p-6">

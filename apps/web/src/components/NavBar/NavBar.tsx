@@ -19,7 +19,7 @@ function classNames(...classes: string[]) {
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
-const NavBar = () => {
+const NavBar = (props) => {
   const { disconnectAsync } = useDisconnect();
   const { connectors, connectAsync } = useConnect();
   const { address, isConnected } = useAccount();
@@ -34,6 +34,7 @@ const NavBar = () => {
   });
   const discordUserName = authorDiscord.data?.discordUsername;
 
+  discordUserName && props.handleDiscordUser(true);
   const connectWallet = async () => {
     await Promise.all(
       connectors.map(async (connector) => {
@@ -64,7 +65,7 @@ const NavBar = () => {
     );
 
     setDidSession(session.serialize());
-
+    props.handleDidSession(true);
     setDid(session.did.id);
   };
 
