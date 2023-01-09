@@ -17,6 +17,11 @@ const ThreadCard = ({ thread }) => {
     .filter((comment) => comment.node.threadID == id)
     .map((comment) => comment.node);
 
+  const avatar =
+    user.data?.discordAvatar !== ""
+      ? user.data?.discordAvatar
+      : "http://placekitten.com/200/200";
+
   return (
     <Link href={`/${id}`} passHref>
       <div className="min-h-[180px] cursor-pointer rounded-[16px] border-[1px] border-[#EBEAEB] bg-white hover:border-[#08010D]">
@@ -26,7 +31,7 @@ const ThreadCard = ({ thread }) => {
               width={32}
               height={32}
               className="rounded-full"
-              src={user.data?.discordAvatar ?? "http://placekitten.com/200/200"}
+              src={avatar}
               alt=""
             />
             <div>

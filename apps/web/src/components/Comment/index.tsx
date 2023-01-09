@@ -17,6 +17,11 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
     pkh: data.author.id,
   });
 
+  const avatar =
+    user.data?.discordAvatar !== ""
+      ? user.data?.discordAvatar
+      : "http://placekitten.com/200/200";
+
   return (
     <div className="space-y-[23px]">
       <div className="flex items-center gap-[11px]">
@@ -26,7 +31,7 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
             width="32"
             height="32"
             className="rounded-full"
-            src={user.data?.discordAvatar ?? "http://placekitten.com/200/200"}
+            src={avatar}
             alt=""
           />
           <div>
