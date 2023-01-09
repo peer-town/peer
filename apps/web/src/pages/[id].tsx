@@ -1,4 +1,5 @@
 import { Layout } from "../components/Layout";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -7,6 +8,8 @@ import Comment from "../components/Comment";
 import { trpc } from "../utils/trpc";
 import ThreadInformation from "../components/Thread/ThreadInformation";
 import CommentInput from "../components/Thread/CommentInput";
+import { useAccount } from "wagmi";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const QuestionPage = () => {
   const router = useRouter();
@@ -15,6 +18,11 @@ const QuestionPage = () => {
   const allThreads = trpc.public.getAllThreads.useQuery();
   const allComments = trpc.public.getAllComments.useQuery();
 
+  const [didSession] = useLocalStorage("didSession","");
+  const { isConnected } = useAccount();
+  const [isDidSession, setDidSession] = useState(didSession?true:false);
+  const [isDiscordUser, setDiscordUser] = useState(false);
+  
   if (!allComments.data || !allThreads.data) return <div>Loading</div>;
 
   const thisThread = allThreads.data.filter((thread) => thread.node.id == id)[0]
@@ -23,8 +31,47 @@ const QuestionPage = () => {
     .filter((comment) => comment.node.threadID == id)
     .map((comment) => comment.node);
 
+  const handleDidSession = (value) =>{
+    setDidSession(value)
+  }
+  const handleDiscordUser = (value) => {
+    setDiscordUser(value)
+  }
+
+  const checkConnected = () =>{
+    if (!isConnected)
+      return (
+        <div className="flex w-full justify-center bg-white py-6">
+          <div className=" bg-white text-base font-normal text-gray-700">
+            Please connect to publish comments.
+          </div>
+        </div>
+      );
+
+    if (!isDidSession)
+      return (
+        <div className="flex w-full justify-center bg-white py-6">
+          <div className=" bg-white text-base font-normal text-gray-700">
+            Please create a DID session
+          </div>
+        </div>
+      );
+
+    if (!isDiscordUser)
+      return (
+        <div className="flex w-full justify-center bg-white py-6">
+          <div className=" bg-white text-base font-normal text-gray-700">
+            Please connect to Discord
+          </div>
+        </div>
+      );
+    }
+
   return (
-    <Layout>
+    <Layout
+      handleDiscordUser = {handleDiscordUser}
+      handleDidSession = {handleDidSession}
+    >
       <main className="absolute inset-0 m-5 lg:m-0 lg:flex lg:gap-[50px]">
         <div className="pt-[50px] lg:max-w-[75%] lg:border-r-[1px]">
           <Link href="/" legacyBehavior>
@@ -57,13 +104,13 @@ const QuestionPage = () => {
               </div>
             </div>
             <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
-            <CommentInput
+            {isConnected && isDidSession && isDiscordUser ?<CommentInput
               threadId={id}
               refresh={() => {
                 allThreads.refetch();
                 allComments.refetch();
               }}
-            />
+            /> : checkConnected()}
           </div>
         </div>
 
