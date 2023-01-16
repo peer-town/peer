@@ -9,6 +9,7 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "pkh-did-resolver";
 import { trpc } from "../../utils/trpc";
 import { Modal } from "../Modal";
+import Link from "next/link";
 
 const pkhResolver = getResolver();
 const resolver = new Resolver(pkhResolver);
@@ -90,13 +91,15 @@ const NavBar = (props) => {
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
               <div className="flex h-full items-center gap-[34px] lg:gap-[50px]">
                 <div className="flex min-w-0 grow items-center justify-center gap-[30px] lg:max-w-[75%]">
-                  <Image
-                    width="44"
-                    height="44"
-                    className="rounded-full"
-                    src="/logo.svg"
-                    alt=""
-                  />
+                  <Link href="/">
+                    <Image
+                      width="44"
+                      height="44"
+                      className="rounded-full"
+                      src="/logo.svg"
+                      alt=""
+                    />
+                  </Link>
 
                   <div className="flex grow items-center lg:mx-0 lg:max-w-none xl:px-0">
                     <div className="w-full">
