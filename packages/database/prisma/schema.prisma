@@ -22,7 +22,7 @@ model DiscordChallenge {
 
 model User {
   id              String @id @unique @default(cuid())
-  discordUsername String @unique
+  discordUsername String 
   discordAvatar   String
   didkey          String @unique
   didpkh          String @unique
