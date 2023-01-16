@@ -58,6 +58,9 @@ export const publicRouter = router({
   getAuthor: publicProcedure
     .input(z.object({ pkh: z.string() }))
     .query(async ({ input }) => {
+      if(!input.pkh || input.pkh === ""){
+        return null;
+      }
       let user = await prisma.user.findFirstOrThrow({
         where: {
           didpkh: input.pkh,
@@ -70,6 +73,9 @@ export const publicRouter = router({
   getDiscordUser: publicProcedure
     .input(z.object({ didSession: z.string() }))
     .query(async ({ input }) => {
+      if(!input.didSession || input.didSession === ""){
+        return null;
+      }
       let discordUsername = await prisma.user.findFirstOrThrow({
         where: {
           didSession: input.didSession,

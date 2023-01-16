@@ -5,6 +5,7 @@ import { DIDSession } from "did-session";
 import { trpc } from "../../utils/trpc";
 import { ComposeClient } from "@composedb/client";
 import { definition } from "@devnode/composedb";
+import { toast } from 'react-toastify';
 
 export const compose = new ComposeClient({
   ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
@@ -36,6 +37,12 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
   const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
 
   const onCommentSubmit = async () => {
+
+    if(comment.length === 0){
+      toast.error("Empty comment");
+      return;
+    }
+
     const session = await DIDSession.fromSession(didSession);
     compose.setDID(session.did);
 
@@ -53,7 +60,10 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           "Content-Type": "application/json",
         },
       }
-    ).then(() => {
+    ).then((response) => {
+      if(!response.ok){
+        toast.error("Invalid thread or Api failed");
+      }
       setComment("");
       props.refresh();
     });

@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 import { trpc } from "../utils/trpc";
+import Modal from "../components/Modal/Modal";
 
 const Home: NextPage = () => {
   const threads = trpc.public.getAllThreads.useQuery();
@@ -14,6 +15,7 @@ const Home: NextPage = () => {
   const { isConnected } = useAccount();
   const [isDidSession, setDidSession] = useState(didSession?true:false);
   const [isDiscordUser, setDiscordUser] = useState(false);
+  const [isOpen, setOpen] = useState(false);
 
   if (!threads.data) return <div>Loading...</div>;
 
@@ -24,6 +26,10 @@ const Home: NextPage = () => {
     setDiscordUser(value)
   }
   
+  const handleClick = () => {
+    setOpen((state) => !state);
+  };
+
   const checkConnected = () =>{
     if (!isConnected)
     return (
@@ -46,12 +52,13 @@ const Home: NextPage = () => {
     if (!isDiscordUser)
       return (
         <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700">
+          <div className=" bg-white text-base font-normal text-gray-700 cursor-pointer" onClick={handleClick}>
             Please connect to Discord
           </div>
         </div>
       );
   }
+
   return (
     <Layout
     handleDiscordUser = {handleDiscordUser}
@@ -81,6 +88,7 @@ const Home: NextPage = () => {
           </div>
         </div>
       </main>
+      {isOpen && <Modal handleClick={handleClick} />}
     </Layout>
   );
 };

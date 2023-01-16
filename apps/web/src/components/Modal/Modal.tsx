@@ -23,7 +23,7 @@ const Modal = ({handleClick}) => {
               <li>Go to devnode server.</li>
               <li>In &quot;devnode_signin&quot; channel type &quot;devnode&quot;.</li>
               <li>Check your DM. You will be asked to reply with your did. It should look similar to this example: &quot;did:key:z6MkkyAkqY9bPr8gyQGuJTwQvzk8nsfywHCH4jyM1CgTq4KA&quot;. You can copy the DID by clicking on the created DID.</li>
-              <li>You will get a challenge link. Copy that link and paste it in your browser.</li>
+              <li>You will get a challenge code. Copy that URL and paste it in your browser.</li>
               <li>Once you get the success message, you are good to go. Head back to the application and start exploring.</li>
             </ol>
           </div>
