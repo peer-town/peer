@@ -7,27 +7,28 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "turbo run clean",
-    "start": "turbo run start",
-    "build": "turbo run build",
-    "start:bot": "turbo run start:bot",
-    "start:web": "turbo run start:web",
-    "dev:web": "turbo run dev:web",
-    "dev:bot": "turbo run dev:bot",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
+    "clean": "dotenv -- turbo run clean",
+    "start": "dotenv -- turbo run start",
+    "build": "dotenv -- turbo run build",
+    "start:bot": "dotenv -- turbo run start:bot",
+    "start:web": "dotenv -- turbo run start:web",
+    "dev:web": "dotenv -- turbo run dev:web",
+    "dev:bot": "dotenv -- turbo run dev:bot",
+    "dev": "dotenv -- turbo run dev --parallel",
+    "lint": "dotenv -- turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "generate": "turbo run generate",
-    "db:push": "turbo run db:push",
-    "daemon": "turbo run daemon",
-    "studio": "turbo run studio",
-    "composedb:daemon": "turbo run composedb:daemon",
-    "composedb:server": "turbo run composedb:server",
-    "composedb:server:docker": "turbo run composedb:server:docker"
+    "generate": "dotenv -- turbo run generate",
+    "db:push": "dotenv -- turbo run db:push",
+    "daemon": "dotenv -- turbo run daemon",
+    "studio": "dotenv -- turbo run studio",
+    "composedb:daemon": "dotenv -- turbo run composedb:daemon",
+    "composedb:server": "dotenv -- turbo run composedb:server",
+    "composedb:server:docker": "dotenv -- turbo run composedb:server:docker"
   },
   "devDependencies": {
     "prettier": "^2.8.1",
-    "turbo": "^1.6.3"
+    "turbo": "^1.6.3",
+    "dotenv-cli": "latest"
   },
   "engines": {
     "npm": ">=7.0.0",
