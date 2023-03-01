@@ -1,7 +1,7 @@
 import { Popover, Transition } from "@headlessui/react";
 import { useConnect, useAccount, useDisconnect } from "wagmi";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
@@ -10,6 +10,9 @@ import { getResolver } from "pkh-did-resolver";
 import { trpc } from "../../utils/trpc";
 import { Modal } from "../Modal";
 import Link from "next/link";
+import {getDiscordAuthUrl} from "../../config";
+import {useRouter} from "next/router";
+import {toast} from "react-toastify";
 
 const pkhResolver = getResolver();
 const resolver = new Resolver(pkhResolver);
@@ -21,6 +24,9 @@ function classNames(...classes: string[]) {
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
+  const router = useRouter();
+  const code = router.query.code as string;
+
   const { disconnectAsync } = useDisconnect();
   const { connectors, connectAsync } = useConnect();
   const { address, isConnected } = useAccount();
@@ -36,6 +42,14 @@ const NavBar = (props) => {
   const discordUserName = authorDiscord.data?.discordUsername;
 
   discordUserName && props.handleDiscordUser(true);
+
+  useEffect(() => {
+    const profile = localStorage.getItem("discord");
+    if (code && !profile) {
+      handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
+    }
+  }, [code]);
+
   const connectWallet = async () => {
     await Promise.all(
       connectors.map(async (connector) => {
@@ -73,6 +87,18 @@ const NavBar = (props) => {
   const handleClick = () => {
     setOpen((state) => !state);
   };
+
+  const handleDiscordConnect = () => {
+    const redirect = getDiscordAuthUrl()
+    window.location.replace(redirect)
+  }
+
+  const handleDiscordAuthCallback = async (code: string) => {
+    const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
+    const profile = await response.json();
+    localStorage.setItem("discord", JSON.stringify(profile));
+    toast.success("Successfully logged in with discord");
+  }
 
   return (
     <>
@@ -233,7 +259,7 @@ const NavBar = (props) => {
                     </Popover>
                   ) : (
                     <button
-                      onClick={handleClick}
+                      onClick={handleDiscordConnect}
                       className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                     >
                       Connect with Discord bot
