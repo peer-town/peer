@@ -18,12 +18,16 @@ export const ConnectWalletButton = () => {
     isConnected ? disconnect() : await onOpen()
   }
 
+  const getAddress = () => {
+    return address ? address.slice(0, 8).concat("...") : "";
+  }
+
   return (
     <button
       className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
       onClick={onClick}
       disabled={loading}>
-      { isConnected ? address.slice(0, 8) + "..." : "Connect Wallet"}
+      { isConnected ? getAddress() : "Connect Wallet"}
     </button>
   )
 }
