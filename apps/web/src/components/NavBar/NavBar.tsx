@@ -1,21 +1,17 @@
 import { Popover, Transition } from "@headlessui/react";
-import { useConnect, useAccount, useDisconnect } from "wagmi";
+import { useAccount } from "wagmi";
 import Image from "next/image";
 import {Fragment, useEffect, useState} from "react";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { Resolver } from "did-resolver";
-import { getResolver } from "pkh-did-resolver";
 import { trpc } from "../../utils/trpc";
 import { Modal } from "../Modal";
 import Link from "next/link";
 import {getDiscordAuthUrl} from "../../config";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
-
-const pkhResolver = getResolver();
-const resolver = new Resolver(pkhResolver);
+import {ConnectWalletButton} from "../Button";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -26,9 +22,6 @@ const navigation = [{ name: "Ask a question", href: "#", current: true }];
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-
-  const { disconnectAsync } = useDisconnect();
-  const { connectors, connectAsync } = useConnect();
   const { address, isConnected } = useAccount();
 
   const [did, setDid] = useLocalStorage("did", "");
@@ -49,14 +42,6 @@ const NavBar = (props) => {
       handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
     }
   }, [code]);
-
-  const connectWallet = async () => {
-    await Promise.all(
-      connectors.map(async (connector) => {
-        if (!isConnected) await connectAsync({ connector });
-      })
-    );
-  };
 
   const handleDIDSession = async () => {
     if (!isConnected) return;
@@ -98,6 +83,7 @@ const NavBar = (props) => {
     const profile = await response.json();
     localStorage.setItem("discord", JSON.stringify(profile));
     toast.success("Successfully logged in with discord");
+    props.handleDiscordUser(true);
   }
 
   return (
@@ -172,25 +158,7 @@ const NavBar = (props) => {
                   </Popover.Button> */}
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-[40%] lg:items-center lg:justify-start">
-                  {isConnected ? (
-                    <button
-                      onClick={() => {
-                        disconnectAsync();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      {address.slice(0, 8) + "..."}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        connectWallet();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Connect wallet
-                    </button>
-                  )}
+                  <ConnectWalletButton />
 
                   {isConnected && did.length > 0 ? (
                     <Popover className="relative">
