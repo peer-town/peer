@@ -6,6 +6,9 @@ export const config = {
     clientSecret: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_SECRET || "",
     redirectUrl: process.env.NEXT_PUBLIC_DISCORD_OAUTH_REDIRECT_URL || "",
   },
+  walletConnect: {
+    projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "",
+  }
 }
 
 export const getDiscordAuthUrl = (): string => {
