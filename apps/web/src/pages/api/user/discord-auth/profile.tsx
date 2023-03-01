@@ -15,7 +15,11 @@ const getAccessToken = async (code: string) => {
   const headers = {
     "Content-Type": "application/x-www-form-urlencoded",
   }
-  return axios.post(url, body.toString(), {headers});
+  try {
+    return await axios.post(url, body.toString(), {headers});
+  } catch (e) {
+    return e.response
+  }
 }
 
 const getDiscordUserProfile = async (tokenType: string, token: string) => {
@@ -23,18 +27,22 @@ const getDiscordUserProfile = async (tokenType: string, token: string) => {
   const headers = {
     authorization: `${tokenType} ${token}`,
   };
-  return axios.get(url, {headers: headers});
+  try {
+    return await axios.get(url, {headers: headers});
+  } catch (e) {
+    return e.response;
+  }
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {code} = req.query;
   if (!code) {
-    res.redirect("http://localhost:3000");
+    return res.send(400);
   }
 
   const tokenResp = await getAccessToken(code as string);
   if (tokenResp.status !== 200) {
-    res.status(400).json(tokenResp.data);
+    return res.status(400).json(tokenResp.data);
   }
 
   const profile = await getDiscordUserProfile(
@@ -42,8 +50,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     tokenResp.data.access_token
   );
   if (profile.status !== 200) {
-    res.status(400).json(profile.data);
+    return res.status(400).json(profile.data);
   }
 
-  res.status(200).json(profile.data);
+  return res.status(200).json(profile.data);
 }
