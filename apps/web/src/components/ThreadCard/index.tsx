@@ -31,7 +31,7 @@ const ThreadCard = ({ thread }) => {
               width={32}
               height={32}
               className="rounded-full"
-              src={avatar}
+              src={avatar || "http://placekitten.com/200/200"}
               alt=""
             />
             <div>

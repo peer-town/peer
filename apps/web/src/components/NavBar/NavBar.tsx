@@ -6,7 +6,7 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
-import { Modal } from "../Modal";
+import {InterfacesModal, Modal, WebOnBoardModal} from "../Modal";
 import Link from "next/link";
 import {getDiscordAuthUrl} from "../../config";
 import {useRouter} from "next/router";
@@ -22,12 +22,12 @@ const navigation = [{ name: "Ask a question", href: "#", current: true }];
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-  const { address, isConnected } = useAccount();
-
   const [did, setDid] = useLocalStorage("did", "");
   const [didSession, setDidSession] = useLocalStorage("didSession", "");
-
   const [isOpen, setOpen] = useState(false);
+  const [isWebOnboardingOpen, setIsWebOnboardingOpen] = useState(false);
+  const [isAddInterfacesOpen, setAddInterfacesOpen] = useState(false);
+  const { address, isConnected } = useAccount();
 
   const authorDiscord = trpc.public.getDiscordUser.useQuery({
     didSession: didSession,
@@ -42,6 +42,13 @@ const NavBar = (props) => {
       handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
     }
   }, [code]);
+
+  useEffect(() => {
+    if(isConnected) {
+      // TODO: handle is user exists or not
+      setIsWebOnboardingOpen(true);
+    }
+  }, [isConnected])
 
   const handleDIDSession = async () => {
     if (!isConnected) return;
@@ -74,8 +81,8 @@ const NavBar = (props) => {
   };
 
   const handleDiscordConnect = () => {
-    const redirect = getDiscordAuthUrl()
-    window.location.replace(redirect)
+    const redirect = getDiscordAuthUrl();
+    window.location.replace(redirect);
   }
 
   const handleDiscordAuthCallback = async (code: string) => {
@@ -260,6 +267,18 @@ const NavBar = (props) => {
           </>
         )}
       </Popover>
+      <WebOnBoardModal
+        open={isWebOnboardingOpen}
+        onClose={() => setIsWebOnboardingOpen(false)}
+        onSubmit={(data) => {
+          console.log(data);
+          setIsWebOnboardingOpen(false);
+          setAddInterfacesOpen(true);
+      }} />
+      <InterfacesModal
+        onClose={() => setAddInterfacesOpen(false)}
+        open={isAddInterfacesOpen}
+      />
     </>
   );
 };
