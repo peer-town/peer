@@ -15,6 +15,7 @@
     "dev:web": "dotenv -- turbo run dev:web",
     "dev:bot": "dotenv -- turbo run dev:bot",
     "dev": "dotenv -- turbo run dev --parallel",
+    "test:web": "dotenv -- turbo run test:web",
     "lint": "dotenv -- turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "dotenv -- turbo run generate",

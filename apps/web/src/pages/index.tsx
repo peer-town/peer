@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 import { trpc } from "../utils/trpc";
-import Modal from "../components/Modal/Modal";
+import {Modal} from "../components/Modal";
 
 const Home: NextPage = () => {
   const threads = trpc.public.getAllThreads.useQuery();

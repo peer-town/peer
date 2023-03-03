@@ -1,7 +1,7 @@
 import {Dialog, Transition} from '@headlessui/react'
 import {Fragment} from 'react'
-import {ModalProps} from "./types";
-import {getDiscordAuthUrl} from "../../config";
+import {ModalProps} from "../types";
+import {getDiscordAuthUrl} from "../../../config";
 
 export const InterfacesModal = (props: ModalProps) => {
   const connectDiscord = () => {
@@ -25,7 +25,7 @@ export const InterfacesModal = (props: ModalProps) => {
             <div className="fixed inset-0 bg-black bg-opacity-60"/>
           </Transition.Child>
 
-          <div className="fixed inset-0 overflow-y-auto">
+          <div id="interface-modal" className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
@@ -45,6 +45,7 @@ export const InterfacesModal = (props: ModalProps) => {
                     add interfaces
                   </Dialog.Title>
                     <button
+                      id="discord-button"
                       className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
                       onClick={connectDiscord}
                     >

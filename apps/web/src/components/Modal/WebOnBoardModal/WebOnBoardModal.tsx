@@ -1,6 +1,6 @@
 import {Dialog, Transition} from '@headlessui/react'
 import {Fragment, useState} from 'react'
-import {WebOnBoardProps} from "./types";
+import {WebOnBoardProps} from "../types";
 
 export const WebOnBoardModal = (props: WebOnBoardProps) => {
   const [name, setName] = useState<string>();
