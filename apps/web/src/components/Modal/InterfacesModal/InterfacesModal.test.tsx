@@ -9,6 +9,7 @@ describe("<InterfacesModal />", () => {
   it("should render modal with no issues", () => {
     const result = render(<InterfacesModal open={true} onClose={onClose} />);
     expect(result.container).toBeInTheDocument();
+    expect(document.getElementById("interface-modal")).toBeTruthy();
   });
 
   it("should not render dialog if open is false", () => {
