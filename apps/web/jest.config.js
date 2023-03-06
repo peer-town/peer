@@ -9,6 +9,8 @@ const customJestConfig = {
   collectCoverageFrom: [
     'src/components/**/*.{js,jsx,ts,tsx}',
     '!src/components/**/index.{js,jsx,ts,tsx}',
+    // library issue, cannot test connect wallet
+    '!src/components/Button/ConnectWallet/ConnectWalletButton.tsx'
   ],
   coverageDirectory: 'coverage',
   testEnvironment: 'jsdom',

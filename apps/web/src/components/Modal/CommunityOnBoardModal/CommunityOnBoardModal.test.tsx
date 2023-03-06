@@ -4,7 +4,7 @@ import {mockWindow} from "../../../../test/utils";
 
 describe("<CommunityOnBoardModel />", () => {
   let rendered;
-  const onSubmit = jest.fn().mockImplementation((data) => data);
+  const onSubmit = jest.fn();
 
   beforeAll(() => mockWindow());
 
@@ -39,6 +39,6 @@ describe("<CommunityOnBoardModel />", () => {
     fireEvent.change(tags, {target: {value: "web3"}});
     fireEvent.click(save);
     expect(onSubmit).toBeCalled();
-    expect(onSubmit).toReturnWith({name: "abc", imageUrl: "https://xyz", tags: "web3"})
+    expect(onSubmit).toBeCalledWith({name: "abc", imageUrl: "https://xyz", tags: "web3"})
   });
 });

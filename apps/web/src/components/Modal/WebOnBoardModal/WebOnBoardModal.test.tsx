@@ -4,7 +4,7 @@ import {mockWindow} from "../../../../test/utils";
 
 describe("<WebOnBoardModal />", () => {
   let rendered;
-  const onSubmit = jest.fn().mockImplementation((data) => data);
+  const onSubmit = jest.fn();
 
   beforeAll(() => mockWindow());
 
@@ -35,6 +35,6 @@ describe("<WebOnBoardModal />", () => {
     fireEvent.change(url, { target: { value: "https://xyz" }});
     fireEvent.click(save);
     expect(onSubmit).toBeCalled();
-    expect(onSubmit).toReturnWith({name: "abc", imageUrl: "https://xyz"})
+    expect(onSubmit).toBeCalledWith({name: "abc", imageUrl: "https://xyz"})
   });
 });
