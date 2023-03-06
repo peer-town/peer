@@ -1,11 +1,12 @@
 import {AvatarCardProps} from "./types";
 import Image from "next/image";
 import {Badge} from "../Badge";
+import * as utils from "../../utils";
 
 export const AvatarCard = (props: AvatarCardProps) => {
   const handleAddressClick = () => {
-    if (props.addressOnClick) {
-      props.addressOnClick(props.address);
+    if (props.onAddressClick) {
+      props.onAddressClick(props.address);
     }
   }
 
@@ -19,7 +20,7 @@ export const AvatarCard = (props: AvatarCardProps) => {
         alt={`${props.name} avatar`}
       />
       {props.name && <div className="font-medium">{props.name} </div>}
-      {props.address && <Badge text={props.address} onClick={handleAddressClick}/>}
+      {props.address && <Badge text={utils.formatWalletAddress(props.address)} onClick={handleAddressClick}/>}
     </div>
   )
 }

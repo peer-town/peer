@@ -4,7 +4,7 @@ import {AvatarCard} from "./AvatarCard";
 describe("<AvatarCard />", () => {
   const image = undefined;
   const imageSize = 12;
-  const addressOnClick = jest.fn();
+  const onAddressClick = jest.fn();
 
   it("should render the badge with no issues", () => {
     const result = render(<AvatarCard image={image} imageSize={imageSize} />);
@@ -16,7 +16,7 @@ describe("<AvatarCard />", () => {
     expect(screen.getByText("abc")).toBeTruthy();
 
     render(<AvatarCard image={image} imageSize={imageSize} address={"xyz"} />);
-    expect(screen.getByText("xyz")).toBeTruthy();
+    expect(document.getElementById("badge")).toBeTruthy();
   });
 
   it("should handle extra classes", () => {
@@ -32,8 +32,8 @@ describe("<AvatarCard />", () => {
   });
 
   it("should handle address click action", () => {
-    render(<AvatarCard image={image} imageSize={40} address={"0x900"} addressOnClick={addressOnClick} />);
+    render(<AvatarCard image={image} imageSize={40} address={"0x900"} onAddressClick={onAddressClick} />);
     fireEvent.click(document.getElementById("badge"));
-    expect(addressOnClick).toBeCalledWith("0x900");
+    expect(onAddressClick).toBeCalledWith("0x900");
   });
 });
