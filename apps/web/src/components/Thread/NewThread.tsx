@@ -1,19 +1,20 @@
 import { DIDSession } from "did-session";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
-import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
+import { Platform } from "./type";
 const NewThread = (props) => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [did, setDid] = useState("");
   const [didSession] = useLocalStorage("didSession", "");
   const [community, setCommunity] = useState("");
-
-  const allCommunities = trpc.public.getAllCommunities.useQuery();
-  
   const [thread, setThread] = useState("");
+  
+  const communities = trpc.public.fetchCommunities.useQuery();
+  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({address:address});
+
   useEffect(() => {
     const getData = async () => {
       if (!didSession || !isConnected) return;
@@ -23,14 +24,10 @@ const NewThread = (props) => {
     getData();
   }, [didSession, isConnected]);
 
-  const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession,
-  });
-
-  const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
+  const discordUserName = authorPlatformDetails.data?.platformUsername;
 
   const onThreadSumbit = async () => {
-    if(thread.length === 0){
+    if (thread.length === 0) {
       toast.error("Empty thread");
       return;
     }
@@ -39,19 +36,20 @@ const NewThread = (props) => {
         threadTitle: thread,
         community: community,
         discordUserName: discordUserName,
-        didSession: String(didSession)
+        didSession: String(didSession),
+        platformId: authorPlatformDetails.data.platformId,
       }),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     }).then((response) => {
-      if(!response.ok){
+      if (!response.ok) {
         toast.error("Community missing or Api failed");
       }
       setThread("");
       props.refresh();
-    })
+    });
   };
 
   return (
@@ -72,10 +70,10 @@ const NewThread = (props) => {
           <option key="any" value="any">
             Any
           </option>
-          {allCommunities.data?.map((community) => {
+          {communities.data.map((community) => {
             return (
-              <option key={community.id} value={community.discordId}>
-                {community.communityName}
+              <option key={community.node.id} value={community.node.platformId}>
+                {community.node.communityName}
               </option>
             );
           })}

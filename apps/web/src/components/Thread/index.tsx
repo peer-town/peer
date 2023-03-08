@@ -1,25 +1,12 @@
-import { trpc } from "../../utils/trpc";
 import Image from "next/image";
+ 
+const Thread = ({ thread }) => {
 
-export interface ThreadProps {
-  data: {
-    id: string;
-    author: {
-      id: string;
-    };
-    title: string;
-    createdAt: string;
-  };
-}
-
-const Thread: React.FC<ThreadProps> = ({ data }) => {
-  const user = trpc.public.getAuthor.useQuery({
-    pkh: data.author.id,
-  });
+  const user = thread.User.user.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
 
   const avatar =
-    user.data?.discordAvatar !== ""
-      ? user.data?.discordAvatar
+    user.platformAvatar !== ""
+      ? user.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
@@ -38,16 +25,16 @@ const Thread: React.FC<ThreadProps> = ({ data }) => {
             <div className="font-semibold">
               {user.data?.discordUsername ?? "Anonymous"}
             </div>
-            <div className="font-light text-gray-400">{data.author.id}</div>
+            <div className="font-light text-gray-400">{thread.author.id}</div>
           </div>
         </div>
         <div className="ml-[10px] text-[12px]  text-[#A39DAA] lg:ml-[40px] lg:text-[16px]">
-          {new Date(data.createdAt).toLocaleString()}
+          {new Date(thread.createdAt).toLocaleString()}
         </div>
       </div>
 
       <div className="text-[48px] font-semibold text-gray-700">
-        {data.title}
+        {thread.title}
       </div>
     </div>
   );

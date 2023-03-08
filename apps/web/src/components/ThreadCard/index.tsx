@@ -5,21 +5,15 @@ import Image from "next/image";
 const ThreadCard = ({ thread }) => {
   const { id, title, author, createdAt } = thread;
 
-  const allComments = trpc.public.getAllComments.useQuery();
+  const commentsForThread = thread.comments.edge;
 
-  const user = trpc.public.getAuthor.useQuery({
-    pkh: author.id,
-  });
+  const user = thread.User.user.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
 
-  if (!allComments.data) return <div>Loading</div>;
-
-  const commentsForThread = allComments.data
-    .filter((comment) => comment.node.threadID == id)
-    .map((comment) => comment.node);
+  if (commentsForThread.length<=0) return <div>Loading</div>;
 
   const avatar =
-    user.data?.discordAvatar !== ""
-      ? user.data?.discordAvatar
+    user.platformAvatar !== ""
+      ? user.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
