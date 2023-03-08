@@ -1,0 +1,13 @@
+type Comment 
+  @loadModel(
+     id: "kjzl6hvfrbw6c76j8qt2p5dpb3xxm9taqrudgcbdaf95i91pqbpl5jelq2ipp3q"
+    ) {
+  id: ID!
+}
+
+type Thread 
+  @loadModel(
+     id: "kjzl6hvfrbw6c7tuznyikjds1bmmbap2k38vxjaggtey8wgnuxfadn0cps2frpf"
+    ) {
+  comments: [Comment] @relationFrom(model: "Comment", property: "threadID")
+}
