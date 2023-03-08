@@ -18,10 +18,12 @@ import { onCommentCreateWeb } from "./handlers/onCommentCreateWeb";
 import { onThreadCreateWeb } from "./handlers/onThreadCreateWeb";
 import fetch from "cross-fetch";
 
-import { prisma } from "@devnode/database";
 
 import express, { response } from "express";
 import cors from "cors";
+import { DIDSession } from "did-session";
+import { ComposeClient } from "@composedb/client";
+import { definition, composeMutationHandler } from "@devnode/composedb";
 
 const app = express();
 app.use(cors());
@@ -31,6 +33,11 @@ const port = process.env.PORT ?? 4000;
 
 const INVOCATION_STRING = "devnode";
 const INVOCATION_CHANNEL = "devnode_signin";
+
+const compose = new ComposeClient({
+  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  definition,
+});
 
 //devnode invite link
 // https://discord.com/api/oauth2/authorize?client_id=1005099848988627055&permissions=3072&scope=bot
@@ -59,7 +66,7 @@ client.once("ready", async () => {
   let nodeReady = false;
   while (!nodeReady) {
     console.log("ceramic node not ready");
-    await fetch(String(process.env.CERAMIC_NODE))
+    await fetch(String(process.env.NEXT_PUBLIC_CERAMIC_NODE))
       .then(() => {
         nodeReady = true;
         console.log("ceramic node connected");
@@ -94,34 +101,57 @@ client.on("threadCreate", async (thread) => {
 });
 
 const updateCommunities = async () => {
-  (await client.guilds.fetch()).map(async (guild) => {
-    await prisma.community.upsert({
-      where: {
-        discordId: guild.id,
-      },
-      update: {
-        communityName: guild.name,
-        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
-      },
-      create: {
-        discordId: guild.id,
-        communityName: guild.name,
-        communityAvatar: guild.iconURL() ?? "http://placekitten.com/200/200",
-      },
-    });
-  });
-};
 
+  (await client.guilds.fetch()).map(async (guild) => {
+    
+    const session = await DIDSession.fromSession("eyJzZXNzaW9uS2V5U2VlZCI6InN3b0l1TE4zTXpESmc2WjhPS25pZ0Rmc1AwU1hpQS9mU3lmOXBFd2F2Yjg9IiwiY2FjYW8iOnsiaCI6eyJ0IjoiZWlwNDM2MSJ9LCJwIjp7ImRvbWFpbiI6ImRldm5vZGUtd2ViLXN0YWdpbmcudXAucmFpbHdheS5hcHAiLCJpYXQiOiIyMDIzLTAxLTE2VDE0OjM2OjIzLjAwMVoiLCJpc3MiOiJkaWQ6cGtoOmVpcDE1NToxOjB4OGIyYTZhMjJlYzA1NTIyNUM0YzRiNTgxNWU3ZDlGNTY2YjhiZTY4RiIsImF1ZCI6ImRpZDprZXk6ejZNa3RLNG1wNXhld29WZlM3cXlCWE01THRtczNEQ2dYU0NkSHlLenB4R2dGVGVrIiwidmVyc2lvbiI6IjEiLCJub25jZSI6ImY5RVg2QmM3V1QiLCJleHAiOiIyMDI0LTEyLTE2VDE0OjM2OjIzLjAwMVoiLCJzdGF0ZW1lbnQiOiJHaXZlIHRoaXMgYXBwbGljYXRpb24gYWNjZXNzIHRvIHNvbWUgb2YgeW91ciBkYXRhIG9uIENlcmFtaWMiLCJyZXNvdXJjZXMiOlsiY2VyYW1pYzovLyoiXX0sInMiOnsidCI6ImVpcDE5MSIsInMiOiIweDU4MGE3Njg4M2U0ZmQyNGZmNzkzMGVhMWM5NDRhOGFjZGQ1YjBhZjc5OTRiNDJkMDU4NTczYjE2Y2E3NzM2YWU0YWZlZTE5YjNmYWY0MTRhNWQ4MThhNGVjZTdkYmI3MTUzZDY4MjUwZWM0OTI4MzdlMDUxZDQ0OGM1ZmJmODFlMWIifX19");
+    compose.setDID(session.did);
+    const handler = await composeMutationHandler(compose) 
+
+    const owner = await (await guild.fetch()).fetchOwner();
+
+    const userDetails ={
+        platformId: owner.user.id,
+        platormName: "discord",
+        platformAvatar: owner.user.avatarURL() as string || owner.user.defaultAvatarURL,
+        platformUsername: `${owner.user.username}#${owner.user.discriminator}`
+    }
+    const userRespose = await handler.createUser(userDetails,"not Added");
+    if (!userRespose || !userRespose.data) {
+      return ;
+    } 
+    console.log("userRespose",userRespose);
+    const communityRespose = await handler.createCommunity(guild.name);
+    if (!communityRespose || !communityRespose.data) {
+      return ;
+    } 
+
+    const channel = (await guild.fetch()).channels.cache.filter((guild) => guild.name === "devnode").first();
+
+    const socialPlatformInput = {
+      userID: userRespose.data.createUser.document.id as string,
+      platform: "discord",
+      platformId: channel?.id as string,
+      communityID: communityRespose.data.createCommunity.document.id as string,
+      communityName: guild.name,
+      communityAvatar: guild.iconURL() || "",
+  };
+
+  const socialPlatform =  await handler.createSocialPlatform(socialPlatformInput);
+
+})
+}
 // apis
 app.post("/webcomment", async (req, res) => {
-  const { threadId, comment, discordUserName, didSession } = req.body;
+  const { threadId, comment, discordUserName, didSession,platformId } = req.body;
   console.log({ threadId: threadId, comment: comment });
   const response = await onCommentCreateWeb(
     client,
     threadId,
     comment,
     discordUserName,
-    didSession
+    didSession,
+    platformId
   );
   console.log(response);
   if (response.result) {
@@ -132,7 +162,7 @@ app.post("/webcomment", async (req, res) => {
 });
 
 app.post("/webthread", async (req, res) => {
-  const { threadTitle, community, discordUserName, didSession } = req.body;
+  const { threadTitle, community, discordUserName, didSession, platformId } = req.body;
   console.log({
     threadTitle: threadTitle,
     community: community,
@@ -143,7 +173,8 @@ app.post("/webthread", async (req, res) => {
     threadTitle,
     community,
     discordUserName,
-    didSession
+    didSession,
+    platformId
   );
   console.log(response);
   if (response.result) {

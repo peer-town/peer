@@ -1,13 +1,12 @@
 import { config } from "dotenv";
 config();
 import { ChannelType, Client, TextChannel, ThreadChannel } from "discord.js";
-import { prisma } from "@devnode/database";
-import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
+import { definition ,composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
+import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: String(process.env.CERAMIC_NODE),
+  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
   definition,
 });
 
@@ -21,71 +20,53 @@ export const onCommentCreateWeb = async (
   threadId: string,
   comment: string,
   discordUserName: string,
-  didSession: string
+  didSession: string,
+  platformId:string
 ): Promise<Response> => {
-  const existhreaingThread = await prisma.thread
-    .findUnique({
-      where: {
-        streamId: threadId,
-      },
-    })
+
+  const session = await DIDSession.fromSession(didSession);
+  compose.setDID(session.did);
+
+  const queryHandler = await composeQueryHandler();
+  const mutationhandler = await composeMutationHandler(compose);
+
+  const existhreaingThread = await queryHandler
+    .fetchThreadDetails(threadId)
     .catch((e) => {
       console.log(e);
     });
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      discordUsername: discordUserName,
-    },
-    select: {
-      didSession: true,
-    },
-  });
+  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord",platformId )
 
-  if (user == null || !user.didSession || user.didSession!==didSession) {
+  if (user == null || !user.node ) {
     return {
       result: false,
       value: "user not signed in from discord or did session has expired",
     };
   }
 
+  const {id} = user.node;
+
   if (existhreaingThread) {
     const thread = client.channels.cache.get(
-      existhreaingThread?.discordId
+      existhreaingThread.node.threadID
     ) as ThreadChannel;
     const message = await thread.send(
       `From WEB \n ${discordUserName} : ${comment}`
     );
 
-    const session = await DIDSession.fromSession(user.didSession);
-    compose.setDID(session.did);
+  const commentInput ={
+    threadId: String(thread!.id) ,
+    userID:id as string,//streamId of User
+    comment:String(message.content),//comment text
+    createdFrom:"discord", //platform name
+    createdAt: thread.createdAt?.toISOString() as string,
+  }
 
     let composeResponse;
 
     try {
-      composeResponse = await compose.executeQuery<{
-        createComment: { document: { id: string } };
-      }>(
-        `mutation CreateComment($input: CreateCommentInput!) {
-            createComment(input: $input) {
-              document {
-                id
-                threadID
-                text
-                createdAt
-              }
-            }
-          }`,
-        {
-          input: {
-            content: {
-              threadID: threadId,
-              text: comment,
-              createdAt: new Date().toISOString(),
-            },
-          },
-        }
-      );
+      composeResponse = await mutationhandler.createComment(commentInput)
     } catch {
       message.delete();
       return { result: false, value: "compose failed" };
@@ -95,25 +76,6 @@ export const onCommentCreateWeb = async (
       await message.delete();
       return { result: false, value: "composedb failed" };
     }
-
-    await prisma.comment.upsert({
-      where: { discordId: message.id },
-      update: {
-        createdAt: message.createdAt,
-        discordAuthor: discordUserName,
-        text: comment,
-      },
-      create: {
-        discordId: message.id,
-        streamId: composeResponse.data.createComment?.document.id,
-        createdAt: message.createdAt,
-        discordAuthor: discordUserName,
-        text: comment,
-        Thread: {
-          connect: { id: existhreaingThread.id },
-        },
-      },
-    });
   }
 
   return { result: true, value: "comment added" };
