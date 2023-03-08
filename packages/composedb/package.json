@@ -23,15 +23,19 @@
   },
   "devDependencies": {
     "@ceramicnetwork/cli": "next",
-    "@composedb/cli": "next",
+    "@composedb/cli": "0.4.3",
     "@devnode/tsconfig": "*",
     "rimraf": "^3.0.2",
     "tsup": "^6.5.0"
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
+    "@composedb/client": "^0.4.3",
+    "@stablelib/random": "^1.0.2",
     "cross-var": "^1.1.0",
+    "did-session": "^2.0.0",
     "dotenv": "^16.0.3",
-    "dotenv-cli": "^6.0.0"
+    "dotenv-cli": "^6.0.0",
+    "latest": "^0.2.0"
   }
 }
