@@ -13,4 +13,9 @@ describe("utils.text", () => {
     const output = "z6Mk...jhdA"
     expect(utils.formatDid(did)).toEqual(output);
   });
+
+  it("should return concatenation of class names", () => {
+    expect(utils.classNames("a", "b", "custom")).toEqual("a b custom");
+    expect(utils.classNames("a", null, undefined, "b", "c")).toEqual("a b c");
+  });
 });

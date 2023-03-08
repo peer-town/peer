@@ -6,16 +6,13 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
-import {InterfacesModal, Modal, WebOnBoardModal} from "../Modal";
+import {Modal} from "../Modal";
 import Link from "next/link";
 import {getDiscordAuthUrl} from "../../config";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
 import {ConnectWalletButton} from "../Button";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import * as utils from "../../utils";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -25,8 +22,6 @@ const NavBar = (props) => {
   const [did, setDid] = useLocalStorage("did", "");
   const [didSession, setDidSession] = useLocalStorage("didSession", "");
   const [isOpen, setOpen] = useState(false);
-  const [isWebOnboardingOpen, setIsWebOnboardingOpen] = useState(false);
-  const [isAddInterfacesOpen, setAddInterfacesOpen] = useState(false);
   const { address, isConnected } = useAccount();
 
   const authorDiscord = trpc.public.getDiscordUser.useQuery({
@@ -42,13 +37,6 @@ const NavBar = (props) => {
       handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
     }
   }, [code]);
-
-  useEffect(() => {
-    if(isConnected) {
-      // TODO: handle is user exists or not
-      setIsWebOnboardingOpen(true);
-    }
-  }, [isConnected]);
 
   const handleDIDSession = async () => {
     if (!isConnected) return;
@@ -99,7 +87,7 @@ const NavBar = (props) => {
       <Popover
         as="header"
         className={({ open }) =>
-          classNames(
+          utils.classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
             "border-b-[1px] border-[#08010D12] lg:static lg:overflow-y-visible"
           )
@@ -252,7 +240,7 @@ const NavBar = (props) => {
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
-                    className={classNames(
+                    className={utils.classNames(
                       item.current
                         ? "bg-gray-100 text-gray-900"
                         : "hover:bg-gray-50",
@@ -267,18 +255,6 @@ const NavBar = (props) => {
           </>
         )}
       </Popover>
-      <WebOnBoardModal
-        open={isWebOnboardingOpen}
-        onClose={() => setIsWebOnboardingOpen(false)}
-        onSubmit={(data) => {
-          console.log(data);
-          setIsWebOnboardingOpen(false);
-          setAddInterfacesOpen(true);
-      }} />
-      <InterfacesModal
-        onClose={() => setAddInterfacesOpen(false)}
-        open={isAddInterfacesOpen}
-      />
     </>
   );
 };

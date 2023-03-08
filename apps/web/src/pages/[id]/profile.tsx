@@ -10,10 +10,6 @@ import ThreadCard from "../../components/ThreadCard";
 import * as utils from "../../utils";
 import {FlexColumn, FlexRow} from "../../components/Flex";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 const Profile = () => {
   const router = useRouter();
   const profileId = router.query.id as string;
@@ -80,7 +76,7 @@ const Profile = () => {
               <Tab.List className="flex space-x-7 px-1 border-b">
                 {tabs && tabs.map((name) => (
                   <Tab as={"div"} key={name} className={({selected}) =>
-                    classNames(
+                    utils.classNames(
                       'w-max px-1 py-2.5 text-sm font-medium leading-5',
                       selected
                         ? 'border-b-2 border-b-black hove:ring-0'

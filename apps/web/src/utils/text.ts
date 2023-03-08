@@ -5,3 +5,7 @@ export const formatDid = (did: string) => {
 export const formatWalletAddress = (address: string, start = 6, end = 4) => {
   return `${address.slice(0, start)}...${address.slice(-1 * end)}`;
 }
+
+export const classNames = (...classes) => {
+  return classes.filter(Boolean).join(' ')
+}

@@ -19,7 +19,7 @@ export const AvatarCard = (props: AvatarCardProps) => {
         src={props.image || "https://placekitten.com/200/200"}
         alt={`${props.name} avatar`}
       />
-      {props.name && <div className="font-medium">{props.name} </div>}
+      {props.name && <div>{props.name} </div>}
       {props.address && <Badge text={utils.formatWalletAddress(props.address)} onClick={handleAddressClick}/>}
     </div>
   )
