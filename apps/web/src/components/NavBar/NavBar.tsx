@@ -48,7 +48,7 @@ const NavBar = (props) => {
       // TODO: handle is user exists or not
       setIsWebOnboardingOpen(true);
     }
-  }, [isConnected])
+  }, [isConnected]);
 
   const handleDIDSession = async () => {
     if (!isConnected) return;
