@@ -6,7 +6,6 @@
   "private": true,
   "main": "./dist/index",
   "typings": "./dist/index",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/**"

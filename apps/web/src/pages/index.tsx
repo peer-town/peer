@@ -7,6 +7,9 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { trpc } from "../utils/trpc";
 import Modal from "../components/Modal/Modal";
+import { composeQueryHandler } from "@devnode/composedb";
+
+const queryHandler = composeQueryHandler();
 
 const Home: NextPage = () => {
   const threads = trpc.public.fetchAllThreads.useQuery();
@@ -17,6 +20,13 @@ const Home: NextPage = () => {
   const [isOpen, setOpen] = useState(false);
   const [loading,setLoading] = useState(true);
 
+  useEffect(()=>{
+    queryHandler.fetchAllUsers().then((response)=>{
+      console.log(response);
+    }).catch((e)=>{
+      console.log(e);
+    })
+  },[]);
   // todo we can write a custom hook for fetching all threads
   useEffect(()=>{
     if (threads.data && threads.data?.length>=0){
