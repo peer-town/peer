@@ -21,8 +21,18 @@ const QuestionPage =  () => {
   const { isConnected } = useAccount();
   const [isDidSession, setDidSession] = useState(didSession?true:false);
   const [isDiscordUser, setDiscordUser] = useState(false);
+  const [loading,setLoading] = useState(true);
+
+  // todo we can write a custom hook for fetching all threads
+  useEffect(()=>{
+    if (threads.data && threads.data?.length>=0){
+      setLoading(false);
+    } 
+  },[threads])
   
-  if (!threads.data) return <div>Loading</div>;
+  if(loading){
+    return <div>Loading...</div>;
+  }
 
   const thisThread = threads.data.filter((thread) => thread.node.id == id)[0]
     .node;
@@ -90,12 +100,12 @@ const QuestionPage =  () => {
           </Link>
           <div className="mt-[80px] lg:mr-[50px]">
             <div>
-              <Thread thread={thisThread.node} />
+            {thisThread.node && <Thread thread={thisThread.node} />}
             </div>
             <div className="mt-[94px] pb-[40px]">
               <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
               <div className="mt-[40px] space-y-[40px]">
-                {commentsForThread.map((item) => (
+                {commentsForThread && commentsForThread.length>0 && commentsForThread.map((item) => (
                   <Comment key={item.node.id} comment={item.node} />
                 ))}
               </div>

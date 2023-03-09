@@ -15,9 +15,18 @@ const Home: NextPage = () => {
   const [isDidSession, setDidSession] = useState(didSession ? true : false);
   const [isDiscordUser, setDiscordUser] = useState(false);
   const [isOpen, setOpen] = useState(false);
+  const [loading,setLoading] = useState(true);
 
   // todo we can write a custom hook for fetching all threads
-  if (!threads.data && threads.data?.edge.length>0) return <div>Loading...</div>;
+  useEffect(()=>{
+    if (threads.data && threads.data?.length>=0){
+      setLoading(false);
+    } 
+  },[threads])
+  
+  if(loading){
+    return <div>Loading...</div>;
+  }
 
   const handleDidSession = (value) => {
     setDidSession(value);
