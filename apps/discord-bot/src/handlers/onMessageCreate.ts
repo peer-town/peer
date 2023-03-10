@@ -1,10 +1,8 @@
 import { config } from "dotenv";
 config();
 import { ChannelType, Message, MessageType } from "discord.js";
-import { prisma } from "@devnode/database";
-import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
+import { definition ,composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
 import { Thread } from ".prisma/client";
 import {
   DISCORD_CANNOT_DELETE_MESSAGE_PERMISSIONS,
@@ -12,13 +10,20 @@ import {
   DISCORD_DO_NOT_WRITE_MESSAGES_OURSIDE_THREADS,
   DISCORD_LOST_SESSION,
 } from "../consts/replyMessages";
+import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: String(process.env.CERAMIC_NODE),
+  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
   definition,
 });
 
 export const onMessageCreate = async (message: Message) => {
+  
+  const session = await DIDSession.fromSession("eyJzZXNzaW9uS2V5U2VlZCI6InN3b0l1TE4zTXpESmc2WjhPS25pZ0Rmc1AwU1hpQS9mU3lmOXBFd2F2Yjg9IiwiY2FjYW8iOnsiaCI6eyJ0IjoiZWlwNDM2MSJ9LCJwIjp7ImRvbWFpbiI6ImRldm5vZGUtd2ViLXN0YWdpbmcudXAucmFpbHdheS5hcHAiLCJpYXQiOiIyMDIzLTAxLTE2VDE0OjM2OjIzLjAwMVoiLCJpc3MiOiJkaWQ6cGtoOmVpcDE1NToxOjB4OGIyYTZhMjJlYzA1NTIyNUM0YzRiNTgxNWU3ZDlGNTY2YjhiZTY4RiIsImF1ZCI6ImRpZDprZXk6ejZNa3RLNG1wNXhld29WZlM3cXlCWE01THRtczNEQ2dYU0NkSHlLenB4R2dGVGVrIiwidmVyc2lvbiI6IjEiLCJub25jZSI6ImY5RVg2QmM3V1QiLCJleHAiOiIyMDI0LTEyLTE2VDE0OjM2OjIzLjAwMVoiLCJzdGF0ZW1lbnQiOiJHaXZlIHRoaXMgYXBwbGljYXRpb24gYWNjZXNzIHRvIHNvbWUgb2YgeW91ciBkYXRhIG9uIENlcmFtaWMiLCJyZXNvdXJjZXMiOlsiY2VyYW1pYzovLyoiXX0sInMiOnsidCI6ImVpcDE5MSIsInMiOiIweDU4MGE3Njg4M2U0ZmQyNGZmNzkzMGVhMWM5NDRhOGFjZGQ1YjBhZjc5OTRiNDJkMDU4NTczYjE2Y2E3NzM2YWU0YWZlZTE5YjNmYWY0MTRhNWQ4MThhNGVjZTdkYmI3MTUzZDY4MjUwZWM0OTI4MzdlMDUxZDQ0OGM1ZmJmODFlMWIifX19");
+  compose.setDID(session.did);
+  const queryHandler = await composeQueryHandler();
+  const mutationhandler = await composeMutationHandler(compose);
+
   //We ignore bots
   if (message.author.bot) return;
 
@@ -55,27 +60,15 @@ export const onMessageCreate = async (message: Message) => {
 
   //If it's a thread message, now we care about it
   if (message.channel.type == ChannelType.PublicThread) {
-    const existingMessage = await prisma.comment.findUnique({
-      where: {
-        discordId: message.id,
-      },
-    });
+    const existingMessage = await queryHandler.fetchCommentDetails(message.channel.id);
 
-    const user = await prisma.user
-      .findUniqueOrThrow({
-        where: {
-          discordUsername: message.author.tag,
-        },
-        select: {
-          didSession: true,
-        },
-      })
+    const user =  await queryHandler.fetchUserDetailsUsingPlatform("discord", message.author.id)
       .catch(() => {
         return null;
       });
-
+    const {id} = user.node;
     //If the user does not have a devnode account, delete it and tell the user to create one
-    if (user == null || !user.didSession) {
+    if (user == null || !user.node) {
       await new Promise((r) => setTimeout(r, 3000));
 
       if (existingMessage) {
@@ -101,16 +94,11 @@ export const onMessageCreate = async (message: Message) => {
     let propagationDelay = false;
 
     while (!thread) {
-      thread = await prisma.thread
-        .findFirstOrThrow({
-          where: {
-            discordId: message.channel.id,
-          },
-        })
-        .then((res) => {
+      thread = await queryHandler.fetchThreadDetails(message.channel.id)
+        .then((res:any) => {
           return res;
         })
-        .catch((e) => {
+        .catch((e:any) => {
           propagationDelay = true;
           console.log(e);
           return null;
@@ -121,61 +109,19 @@ export const onMessageCreate = async (message: Message) => {
 
     if (propagationDelay) await new Promise((r) => setTimeout(r, 5000));
 
-    //Getting ready to store in Ceramic
-    const session = await DIDSession.fromSession(user.didSession);
-    compose.setDID(session.did);
-
+    const commentInput ={
+      threadId: String(thread!.id) ,
+      userID:id as string,//streamId of User
+      comment:String(message.content),//comment text
+      createdFrom:"discord", //platform name
+      createdAt: thread.createdAt?.toISOString(),
+    }
     //Store in Ceramic
-    await compose
-      .executeQuery<{
-        createComment: { document: { id: string } };
-      }>(
-        `mutation CreateComment($input: CreateCommentInput!) {
-          createComment(input: $input) {
-            document {
-              id
-              threadID
-              text
-              createdAt
-            }
-          }
-        }`,
-        {
-          input: {
-            content: {
-              threadID: thread!.streamId,
-              text: String(message.content),
-              createdAt: message.createdAt.toISOString(),
-            },
-          },
-        }
-      )
-      .then(async (r) => {
+    await mutationhandler.createComment(commentInput)
+      .then(async (r:any) => {
         if (!r || !r.data) return;
         if (!thread) return;
-
-        //Once stored in ceramic, store in our db as well
-        await prisma.comment.upsert({
-          where: { discordId: message.id },
-          update: {
-            createdAt: message.createdAt,
-            discordAuthor: String(message.author.tag),
-            text: String(message.content),
-          },
-          create: {
-            discordId: message.id,
-            streamId: r.data.createComment.document.id,
-            createdAt: message.createdAt,
-            discordAuthor: String(message.author.tag),
-            text: String(message.content),
-            Thread: {
-              connect: { id: thread.id },
-            },
-          },
-        });
-
-     
       })
-      .catch((e) => console.log(e));
+      .catch((e:any) => console.log(e));
   }
 };

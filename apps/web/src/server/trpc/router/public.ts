@@ -1,87 +1,32 @@
 import { GraphQLClient, gql } from "graphql-request";
 import { router, publicProcedure } from "../trpc";
 import { z } from "zod";
-import { prisma } from "@devnode/database";
+import { composeQueryHandler } from "@devnode/composedb";
 
 const client = new GraphQLClient(process.env.CERAMIC_GRAPH, {});
 
+const queryHandler = composeQueryHandler();
+
 export const publicRouter = router({
-  getAllCommunities: publicProcedure.query(async () => {
-    const communities = await prisma.community.findMany({});
-    return communities;
+  fetchAllThreads: publicProcedure.query(async () => {
+    const allThreads = await queryHandler.fetchAllThreads();
+    console.log("allThreads",allThreads)
+    return allThreads;
   }),
 
-  getAllThreads: publicProcedure.query(async () => {
-    const query = gql`
-      {
-        threadIndex(first: 100) {
-          edges {
-            node {
-              id
-              title
-              author {
-                id
-              }
-              community
-              createdAt
-            }
-          }
-        }
-      }
-    `;
-    const threads = await client.request(query);
-    return threads.threadIndex?.edges;
+  fetchCommunities: publicProcedure.query(async () => {
+    const allCommunities =
+      await queryHandler.fetchAllCommunitiesPlatformDetails("discord");
+    return allCommunities;
   }),
 
-  getAllComments: publicProcedure.query(async () => {
-    const query = gql`
-      {
-        commentIndex(first: 100) {
-          edges {
-            node {
-              id
-              threadID
-              text
-              author {
-                id
-              }
-              createdAt
-            }
-          }
-        }
-      }
-    `;
-    const comments = await client.request(query);
-    return comments.commentIndex?.edges;
-  }),
-
-  getAuthor: publicProcedure
-    .input(z.object({ pkh: z.string() }))
+  getAuthorDiscord: publicProcedure
+    .input(z.object({ address: z.string() }))
     .query(async ({ input }) => {
-      if(!input.pkh || input.pkh === ""){
-        return null;
-      }
-      let user = await prisma.user.findFirstOrThrow({
-        where: {
-          didpkh: input.pkh,
-        },
-      });
-
-      return user;
-    }),
-
-  getDiscordUser: publicProcedure
-    .input(z.object({ didSession: z.string() }))
-    .query(async ({ input }) => {
-      if(!input.didSession || input.didSession === ""){
-        return null;
-      }
-      let discordUsername = await prisma.user.findFirstOrThrow({
-        where: {
-          didSession: input.didSession,
-        },
-      });
-
-      return discordUsername;
-    }),
-});
+      const authorDiscord = await queryHandler.fetchAuthorPlatformDetails(
+        input.address,
+        "discord"
+      );
+      return authorDiscord;
+    })
+  })

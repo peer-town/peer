@@ -1,5 +1,5 @@
 import { Layout } from "../components/Layout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -11,25 +11,32 @@ import CommentInput from "../components/Thread/CommentInput";
 import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 
-const QuestionPage = () => {
+const QuestionPage =  () => {
   const router = useRouter();
   const id = router.query.id as string;
 
-  const allThreads = trpc.public.getAllThreads.useQuery();
-  const allComments = trpc.public.getAllComments.useQuery();
+  const threads = trpc.public.fetchAllThreads.useQuery();
 
   const [didSession] = useLocalStorage("didSession","");
   const { isConnected } = useAccount();
   const [isDidSession, setDidSession] = useState(didSession?true:false);
   const [isDiscordUser, setDiscordUser] = useState(false);
-  
-  if (!allComments.data || !allThreads.data) return <div>Loading</div>;
+  const [loading,setLoading] = useState(true);
 
-  const thisThread = allThreads.data.filter((thread) => thread.node.id == id)[0]
+  // todo we can write a custom hook for fetching all threads
+  useEffect(()=>{
+    if (threads.data && threads.data?.length>=0){
+      setLoading(false);
+    } 
+  },[threads])
+  
+  if(loading){
+    return <div>Loading...</div>;
+  }
+
+  const thisThread = threads.data.filter((thread) => thread.node.id == id)[0]
     .node;
-  const commentsForThread = allComments.data
-    .filter((comment) => comment.node.threadID == id)
-    .map((comment) => comment.node);
+  const commentsForThread = thisThread.node.comment.edge;
 
   const handleDidSession = (value) =>{
     setDidSession(value)
@@ -93,13 +100,13 @@ const QuestionPage = () => {
           </Link>
           <div className="mt-[80px] lg:mr-[50px]">
             <div>
-              <Thread data={thisThread} />
+            {thisThread.node && <Thread thread={thisThread.node} />}
             </div>
             <div className="mt-[94px] pb-[40px]">
               <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
               <div className="mt-[40px] space-y-[40px]">
-                {commentsForThread.map((item) => (
-                  <Comment key={item.id} data={item} />
+                {commentsForThread && commentsForThread.length>0 && commentsForThread.map((item) => (
+                  <Comment key={item.node.id} comment={item.node} />
                 ))}
               </div>
             </div>
@@ -107,15 +114,14 @@ const QuestionPage = () => {
             {isConnected && isDidSession && isDiscordUser ?<CommentInput
               threadId={id}
               refresh={() => {
-                allThreads.refetch();
-                allComments.refetch();
+                threads.refetch();
               }}
             /> : checkConnected()}
           </div>
         </div>
 
         {/* Right column */}
-        <ThreadInformation allComments={allComments} />
+        <ThreadInformation Comments={commentsForThread} />
       </main>
     </Layout>
   );

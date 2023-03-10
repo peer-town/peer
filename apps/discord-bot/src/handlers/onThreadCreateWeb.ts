@@ -8,12 +8,11 @@ import {
   ThreadAutoArchiveDuration,
   ThreadChannel,
 } from "discord.js";
-import { prisma } from "@devnode/database";
-import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
+import { definition, composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
+import { DIDSession } from "did-session";
 export const compose = new ComposeClient({
-  ceramic: String(process.env.CERAMIC_NODE),
+  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
   definition,
 });
 
@@ -27,8 +26,15 @@ export const onThreadCreateWeb = async (
   threadTitle: string,
   community: string,
   discordUserName: string,
-  didSession: string
+  didSession: string,
+  platformId:string
 ): Promise<Response> => {
+  
+  const session = await DIDSession.fromSession(didSession);
+  compose.setDID(session.did);
+  const queryHandler = await composeQueryHandler();
+  const mutationhandler = await composeMutationHandler(compose);
+
   let guild = await client.guilds.cache.get(community);
 
   if (!guild) return { result: false, value: "community missing" };
@@ -39,21 +45,19 @@ export const onThreadCreateWeb = async (
 
   if (!channel) return { result: false, value: "channel missing" };
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      discordUsername: discordUserName,
-    },
-    select: {
-      didSession: true,
-    },
-  });
+  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord", platformId);
 
-  if (user == null || !user.didSession || user.didSession!==didSession) {
+  if (user == null || !user.node ) {
     return {
       result: false,
       value: "user not signed in from discord or did session has expired",
     };
   }
+  
+  const {id} = user.node;
+
+  const socialPlatform = await queryHandler.fetchSocialPlatform(community as string);
+  const {communityID } = socialPlatform.node;
 
   const thread = await channel.threads
     .create({
@@ -71,34 +75,18 @@ export const onThreadCreateWeb = async (
   if (!(thread instanceof ThreadChannel))
     return { result: false, value: "could not create thread" };
 
-  const session = await DIDSession.fromSession(user.didSession);
-  compose.setDID(session.did);
+  const threadDetails = {
+    communityId: communityID as string,
+    userID: id as string,
+    threadId:thread.id,
+    title: String(thread.name),
+    createdFrom:"discord", 
+    createdAt: thread.createdAt?.toISOString() as string,
+  }
 
   let composeResponse;
   try {
-    composeResponse = await compose.executeQuery<{
-      createThread: { document: { id: string } };
-    }>(
-      `mutation CreateThread($input: CreateThreadInput!) {
-            createThread(input: $input) {
-              document {
-                id
-                community
-                title
-                createdAt
-              }
-            }
-          }`,
-      {
-        input: {
-          content: {
-            community: community,
-            title: String(thread.name),
-            createdAt: thread.createdAt?.toISOString(),
-          },
-        },
-      }
-    );
+    composeResponse = await mutationhandler.createThread(threadDetails);
   } catch (res) {
     await thread.delete();
     return { result: false, value: "composedb failed" };
@@ -110,24 +98,6 @@ export const onThreadCreateWeb = async (
     await thread.delete();
     return { result: false, value: "composedb failed" };
   }
-
-  await prisma.thread.upsert({
-    where: { discordId: thread.id },
-    update: {
-      createdAt: thread.createdAt!,
-      discordAuthor: discordUserName,
-      discordCommunity: thread.guild.id,
-      title: String(thread.name),
-    },
-    create: {
-      discordId: thread.id,
-      streamId: composeResponse.data.createThread.document.id,
-      createdAt: thread.createdAt!,
-      discordAuthor: discordUserName,
-      discordCommunity: thread.guild.id,
-      title: String(thread.name),
-    },
-  });
 
   return { result: true, value: "thread added" };
 };

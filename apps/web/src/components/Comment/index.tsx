@@ -1,25 +1,13 @@
 import Image from "next/image";
-import { trpc } from "../../utils/trpc";
 
-export interface CommentProps {
-  data: {
-    id: string;
-    author: {
-      id: string;
-    };
-    text: string;
-    createdAt: string;
-  };
-}
-
-const Comment: React.FC<CommentProps> = ({ data }) => {
-  const user = trpc.public.getAuthor.useQuery({
-    pkh: data.author.id,
-  });
+const Comment = ({ comment }) => {
+  const user = comment.User.user.userPlatforms.filter(
+    (platform) => platform.platormName == "discord"
+  )[0];
 
   const avatar =
-    user.data?.discordAvatar !== ""
-      ? user.data?.discordAvatar
+    user.platformAvatar !== ""
+      ? user.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
@@ -38,15 +26,15 @@ const Comment: React.FC<CommentProps> = ({ data }) => {
             <div className="font-semibold">
               {user.data?.discordUsername ?? "Anonymous"}
             </div>
-            <div className="font-light text-gray-400">{data.author.id}</div>
+            <div className="font-light text-gray-400">{comment.author.id}</div>
           </div>
         </div>
         <div className="ml-[10px] text-[12px]  text-[#A39DAA] lg:ml-[40px] lg:text-[16px]">
-          {new Date(data.createdAt).toLocaleString()}
+          {new Date(comment.createdAt).toLocaleString()}
         </div>
       </div>
 
-      <div className="text-[#716D76]">{data.text} </div>
+      <div className="text-[#716D76]">{comment.text} </div>
     </div>
   );
 };

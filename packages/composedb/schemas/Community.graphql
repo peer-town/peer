@@ -1,0 +1,6 @@
+type Community
+  @createModel(accountRelation: LIST, description: "DevNode Community") {
+  author: DID! @documentAccount
+  createdAt: DateTime! @string(maxLength: 100)
+  communityName: String! @string(maxLength: 2000)
+}

@@ -3,17 +3,12 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { DIDSession } from "did-session";
 import { trpc } from "../../utils/trpc";
-import { ComposeClient } from "@composedb/client";
-import { definition } from "@devnode/composedb";
 import { toast } from 'react-toastify';
 
-export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
-  definition,
-});
+import { Platform } from "./type";
 
 const CommentInput = (props: { threadId: string; refresh: () => void }) => {
-  const { isConnected } = useAccount();
+  const { address } = useAccount();
   const [did, setDid] = useState("");
   const [didSession] = useLocalStorage("didSession", "");
 
@@ -29,12 +24,10 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
     getData();
   }, [didSession]);
 
-  const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession,
+  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
+    address: address,
   });
-
-  const isDiscordUser = authorDiscord.data?.discordUsername;
-  const discordUserName = authorDiscord.data?.discordUsername ?? "Anonymous";
+  const discordUserName = authorPlatformDetails.data?.platformUsername ;
 
   const onCommentSubmit = async () => {
 
@@ -42,9 +35,6 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
       toast.error("Empty comment");
       return;
     }
-
-    const session = await DIDSession.fromSession(didSession);
-    compose.setDID(session.did);
 
     await fetch(
       `${String(process.env.NEXT_PUBLIC_DISCORD_BOT_URL)}webcomment`,
