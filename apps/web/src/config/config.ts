@@ -8,7 +8,10 @@ export const config = {
   },
   walletConnect: {
     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "",
-  }
+  },
+  didSession: {
+    expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
+  },
 }
 
 export const getDiscordAuthUrl = (): string => {
