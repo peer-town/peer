@@ -13,7 +13,12 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["placekitten.com", "cdn.discordapp.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
   experimental: {
     esmExternals: 'loose' // second add this experimental flag to the config
