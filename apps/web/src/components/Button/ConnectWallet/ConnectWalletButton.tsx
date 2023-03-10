@@ -7,13 +7,14 @@ import {DIDSession} from "did-session";
 import {config} from "../../../config";
 import {toast} from "react-toastify";
 import useLocalStorage from "../../../hooks/useLocalStorage";
+import {ConnectWalletProps} from "./types";
 
-export const ConnectWalletButton = () => {
+export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const {open} = useWeb3Modal()
   const {disconnect} = useDisconnect()
   const [loading, setLoading] = useState(false)
-  const [, setDid] = useLocalStorage("did", "");
-  const [, setDidSession] = useLocalStorage("didSession", "");
+  const [, setDid, removeDid] = useLocalStorage("did", "");
+  const [, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
 
   const generateDidSession = async (address: string) => {
     const accountId = await getAccountId(window.ethereum, address);
@@ -33,14 +34,17 @@ export const ConnectWalletButton = () => {
     onConnect(context) {
       if (!context.isReconnected) {
         generateDidSession(context.address)
+          .then(() => {
+            props.onSessionCreated(context.address);
+          })
           .catch(() => {
             toast.error("Error initiating did session!")
           });
       }
     },
     onDisconnect() {
-      setDidSession(undefined);
-      setDid(undefined);
+      removeDid();
+      removeDidSession();
     }
   });
 
