@@ -1,17 +1,12 @@
-import { Popover, Transition } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import { useAccount } from "wagmi";
 import Image from "next/image";
-import {Fragment, useEffect, useState} from "react";
-import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-import { DIDSession } from "did-session";
-import useLocalStorage from "../../hooks/useLocalStorage";
+import {useEffect} from "react";
 import { trpc } from "../../utils/trpc";
-import {Modal} from "../Modal";
 import Link from "next/link";
-import {getDiscordAuthUrl} from "../../config";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
-import {ConnectWalletButton} from "../Button";
+import {ConnectWalletButton, PrimaryButton} from "../Button";
 import * as utils from "../../utils";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
@@ -19,16 +14,12 @@ const navigation = [{ name: "Ask a question", href: "#", current: true }];
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-  const [did, setDid] = useLocalStorage("did", "");
-  const [didSession, setDidSession] = useLocalStorage("didSession", "");
-  const [isOpen, setOpen] = useState(false);
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
 
   const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
     address: address,
   });
   const discordUserName = authorPlatformDetails.data?.platformUsername ;
-
   discordUserName && props.handleDiscordUser(true);
 
   useEffect(() => {
@@ -37,41 +28,6 @@ const NavBar = (props) => {
       handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
     }
   }, [code]);
-
-  const handleDIDSession = async () => {
-    if (!isConnected) return;
-
-    const accountId = await getAccountId(window.ethereum, address);
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      window.ethereum,
-      accountId
-    );
-
-    const oneHundredWeeks = 60 * 60 * 24 * 7 * 100;
-    const session = await DIDSession.authorize(authMethod, {
-      resources: [`ceramic://*`],
-      expiresInSecs: oneHundredWeeks,
-    });
-
-    // fetch(
-    //   `/api/user/didSession?&did=${
-    //     session.did.id
-    //   }&didSession=${session.serialize()}&didpkh=did:pkh:eip155:1:${address}`
-    // );
-
-    setDidSession(session.serialize());
-    props.handleDidSession(true);
-    setDid(session.did.id);
-  };
-
-  const handleClick = () => {
-    setOpen((state) => !state);
-  };
-
-  const handleDiscordConnect = () => {
-    const redirect = getDiscordAuthUrl();
-    window.location.replace(redirect);
-  }
 
   const handleDiscordAuthCallback = async (code: string) => {
     const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
@@ -96,8 +52,8 @@ const NavBar = (props) => {
         {({ open }) => (
           <>
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
-              <div className="flex h-full items-center gap-[34px] lg:gap-[50px]">
-                <div className="flex min-w-0 grow items-center justify-center gap-[30px] lg:max-w-[75%]">
+              <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
+                <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
                   <Link href="/">
                     <Image
                       width="44"
@@ -108,7 +64,7 @@ const NavBar = (props) => {
                     />
                   </Link>
 
-                  <div className="flex grow items-center lg:mx-0 lg:max-w-none xl:px-0">
+                  <div className="flex items-center lg:w-[80%] lg:mx-0 lg:max-w-none xl:px-0">
                     <div className="w-full">
                       <label htmlFor="search" className="sr-only">
                         Search
@@ -141,94 +97,9 @@ const NavBar = (props) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center lg:hidden">
-                  {/* Mobile menu button */}
-                  {/* <Popover.Button className="-mx-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black">
-                    <span className="sr-only">Open menu</span>
-                    {open ? (
-                      <XIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Popover.Button> */}
-                </div>
-                <div className="hidden gap-[16px] lg:flex lg:w-[40%] lg:items-center lg:justify-start">
+                <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
+                  <PrimaryButton title={"Ask a question"} onClick={() => {}} />
                   <ConnectWalletButton />
-
-                  {isConnected && did.length > 0 ? (
-                    <Popover className="relative">
-                      <Popover.Button
-                        onClick={async () => {
-                          await navigator.clipboard.writeText(did);
-                        }}
-                        className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                      >
-                        {did.slice(8, 12) +
-                          "..." +
-                          did.slice(did.length - 4, did.length)}
-                      </Popover.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-max -translate-x-1/2 transform">
-                          <div className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                            <p>DID copied to clipboard!</p>
-                          </div>
-                        </Popover.Panel>
-                      </Transition>
-                    </Popover>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        handleDIDSession();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Create DID
-                    </button>
-                  )}
-
-                  {discordUserName ? (
-                    <Popover className="relative">
-                      <Popover.Button
-                        onClick={async () => {
-                          await navigator.clipboard.writeText(did);
-                        }}
-                        className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                      >
-                        {discordUserName}
-                      </Popover.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-max -translate-x-1/2 transform">
-                          <div className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                            <p>Discord user name copied to clipboard!</p>
-                          </div>
-                        </Popover.Panel>
-                      </Transition>
-                    </Popover>
-                  ) : (
-                    <button
-                      onClick={handleDiscordConnect}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Connect with Discord bot
-                    </button>
-                  )}
-                  {isOpen && <Modal handleClick={handleClick} />}
                 </div>
               </div>
             </div>
