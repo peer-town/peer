@@ -15,5 +15,8 @@ const config = {
   images: {
     domains: ["placekitten.com", "cdn.discordapp.com"],
   },
+  experimental: {
+    esmExternals: 'loose' // second add this experimental flag to the config
+  }
 };
 export default config;

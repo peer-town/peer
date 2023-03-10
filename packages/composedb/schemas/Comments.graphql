@@ -1,0 +1,25 @@
+type Thread
+  @loadModel(
+    id: "kjzl6hvfrbw6c7tuznyikjds1bmmbap2k38vxjaggtey8wgnuxfadn0cps2frpf"
+  ) {
+  id: ID!
+}
+
+type User 
+  @loadModel(
+     id: "kjzl6hvfrbw6cbc7kl0eijlv9e5gall76dqqqd10dnyxe5paag1kr2curfo1c32"
+    ) {
+  id: ID!
+}
+
+type Comment
+  @createModel(accountRelation: LIST, description: "DevNode Comment") {
+  threadID: StreamID! @documentReference(model: "Thread")
+  thread: Thread! @relationDocument(property: "threadID")
+  author: DID! @documentAccount
+  UserID: StreamID! @documentReference(model: "User")
+  User: User! @relationDocument(property: "UserID")
+  text: String! @string(maxLength: 2000)
+  createdFrom: String! @string(maxLength: 2000)
+  createdAt: DateTime! @string(maxLength: 100)
+}

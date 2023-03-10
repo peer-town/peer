@@ -1,4 +1,4 @@
-const ThreadInformation = (props: { allComments }) => {
+const ThreadInformation = (props: { Comments }) => {
   return (
     <div className="hidden lg:flex lg:h-full lg:min-w-[25%] lg:pt-[165px]">
       <div className="h-full w-full space-y-[35px]">
@@ -7,7 +7,7 @@ const ThreadInformation = (props: { allComments }) => {
         <div className="space-y-[30px]">
           <div className="text-[20px] text-[#08010D]">Contributors</div>
           <div className="space-y-[24px] text-[16px] font-[500] text-[#716D76]">
-            {props.allComments.data
+            {props.Comments
               .map((comment) => comment.node)
               .map((commentNode) => commentNode.author.id)
               .filter((item, i, ar) => ar.indexOf(item) === i)

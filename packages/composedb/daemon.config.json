@@ -2,7 +2,7 @@
   "anchor": {},
   "http-api": {
     "cors-allowed-origins": [".*"],
-    "admin-dids": ["did:key:z6Mkg44tcD4ni7zEbe9iaQh7NpCdiVahJdUj1XdacMr3UkuJ"]
+    "admin-dids": ["did:key:z6MkoddUiEXf21k19ewQfACp48dqDM3bwEuCFvSKUggn9MRX"]
   },
   "ipfs": {
     "mode": "bundled"
@@ -27,10 +27,6 @@
   },
   "indexing": {
     "db": "sqlite:./.ceramic/indexing.sqlite",
-    "allow-queries-before-historical-sync": true,
-    "models": [
-      "kjzl6hvfrbw6c9aofa8penmje3t7ulzvrgdsm7mqiep6h2p7xps46717pl5vk73",
-      "kjzl6hvfrbw6c9fi3m3qzse6jxkloa84tp4xqk2qp4031qqbhpeg890admje9bu"
-    ]
+    "allow-queries-before-historical-sync": true
   }
 }

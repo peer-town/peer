@@ -24,10 +24,10 @@ const NavBar = (props) => {
   const [isOpen, setOpen] = useState(false);
   const { address, isConnected } = useAccount();
 
-  const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession,
+  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
+    address: address,
   });
-  const discordUserName = authorDiscord.data?.discordUsername;
+  const discordUserName = authorPlatformDetails.data?.platformUsername ;
 
   discordUserName && props.handleDiscordUser(true);
 
@@ -53,11 +53,11 @@ const NavBar = (props) => {
       expiresInSecs: oneHundredWeeks,
     });
 
-    fetch(
-      `/api/user/didSession?&did=${
-        session.did.id
-      }&didSession=${session.serialize()}&didpkh=did:pkh:eip155:1:${address}`
-    );
+    // fetch(
+    //   `/api/user/didSession?&did=${
+    //     session.did.id
+    //   }&didSession=${session.serialize()}&didpkh=did:pkh:eip155:1:${address}`
+    // );
 
     setDidSession(session.serialize());
     props.handleDidSession(true);
