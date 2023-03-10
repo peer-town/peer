@@ -1,6 +1,7 @@
+import React from "react";
 import Image from "next/image";
 
-const Modal = ({handleClick}) => {
+export const Modal = ({handleClick}) => {
 
   return (
     <>
@@ -38,9 +39,7 @@ const Modal = ({handleClick}) => {
             </div>
           </a>
         </div>
-      </div>   
+      </div>
     </>
   );
 };
-
-export default Modal;

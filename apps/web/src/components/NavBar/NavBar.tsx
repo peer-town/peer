@@ -6,28 +6,23 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
-import { Modal } from "../Modal";
+import {Modal} from "../Modal";
 import Link from "next/link";
 import {getDiscordAuthUrl} from "../../config";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
 import {ConnectWalletButton} from "../Button";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import * as utils from "../../utils";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-  const { address, isConnected } = useAccount();
-
   const [did, setDid] = useLocalStorage("did", "");
   const [didSession, setDidSession] = useLocalStorage("didSession", "");
-
   const [isOpen, setOpen] = useState(false);
+  const { address, isConnected } = useAccount();
 
   const authorDiscord = trpc.public.getDiscordUser.useQuery({
     didSession: didSession,
@@ -74,8 +69,8 @@ const NavBar = (props) => {
   };
 
   const handleDiscordConnect = () => {
-    const redirect = getDiscordAuthUrl()
-    window.location.replace(redirect)
+    const redirect = getDiscordAuthUrl();
+    window.location.replace(redirect);
   }
 
   const handleDiscordAuthCallback = async (code: string) => {
@@ -92,7 +87,7 @@ const NavBar = (props) => {
       <Popover
         as="header"
         className={({ open }) =>
-          classNames(
+          utils.classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
             "border-b-[1px] border-[#08010D12] lg:static lg:overflow-y-visible"
           )
@@ -245,7 +240,7 @@ const NavBar = (props) => {
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
-                    className={classNames(
+                    className={utils.classNames(
                       item.current
                         ? "bg-gray-100 text-gray-900"
                         : "hover:bg-gray-50",

@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 import { trpc } from "../utils/trpc";
-import Modal from "../components/Modal/Modal";
+import {Modal} from "../components/Modal";
 
 const Home: NextPage = () => {
   const threads = trpc.public.getAllThreads.useQuery();
@@ -25,7 +25,7 @@ const Home: NextPage = () => {
   const handleDiscordUser = (value) => {
     setDiscordUser(value)
   }
-  
+
   const handleClick = () => {
     setOpen((state) => !state);
   };
@@ -72,15 +72,15 @@ const Home: NextPage = () => {
             </div>
           </div>
           <div className="flex flex-col space-y-[36px] py-[40px]">
-            {threads.data.map((thread) => (
-              <ThreadCard key={thread.id} thread={thread.node} />
+            {threads.data.map((thread, index) => (
+              <ThreadCard key={index} thread={thread.node} />
             ))}
           </div>
 
           <div className="flex flex-col space-y-[36px] py-[40px]">
             {isConnected && isDidSession && isDiscordUser ? <NewThread
               isDidSession= {isDidSession}
-              isDiscordUser= {isDiscordUser} 
+              isDiscordUser= {isDiscordUser}
               refresh={() => {
                 threads.refetch();
               }}

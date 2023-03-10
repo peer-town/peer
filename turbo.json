@@ -28,6 +28,9 @@
     "dev": {
       "cache": false
     },
+    "test:web": {
+      "cache": true
+    },
     "composedb:daemon": {
       "cache": false
     },
