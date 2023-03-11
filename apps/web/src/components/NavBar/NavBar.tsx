@@ -65,7 +65,8 @@ const NavBar = (props) => {
   }
 
   const getUserAvatar = (user) => {
-    if (user.data && isRight(user.data)) {
+    if(!user) {return}
+    if (user.data && isRight(user.data) && user.data.value.id) {
       return user.data.value.userPlatforms[0].platformAvatar;
     }
   }

@@ -34,7 +34,7 @@ export const userRouter = router({
     .query(async ({input}) => {
       try {
         const response = await composeQueryHandler().fetchUserDetails(input.address);
-        return response && response.node ? right(response.node) : left({});
+        return response && response.node ? right(response.node) : right({});
       } catch (e) {
         return left(e);
       }

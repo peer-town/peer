@@ -16,12 +16,10 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const [, setDid, removeDid] = useLocalStorage("did", "");
   const [, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
 
-  const generateDidSession = async (address: string) => {
-    const accountId = await getAccountId(window.ethereum, address);
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      window.ethereum,
-      accountId
-    );
+  const generateDidSession = async (address: string, connector: any) => {
+    const provider = await connector.getProvider();
+    const accountId = await getAccountId(provider, address);
+    const authMethod = await EthereumWebAuth.getAuthMethod(provider, accountId);
     const session = await DIDSession.authorize(authMethod, {
       resources: [`ceramic://*`],
       expiresInSecs: config.didSession.expiresInSecs,
@@ -33,13 +31,11 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const {address, isConnected} = useAccount({
     onConnect(context) {
       if (!context.isReconnected) {
-        generateDidSession(context.address)
-          .then(() => {
-            props.onSessionCreated(context.address);
-          })
-          .catch(() => {
-            toast.error("Error initiating did session!")
-          });
+        generateDidSession(context.address, context.connector).then(() => {
+          props.onSessionCreated(context.address);
+        }).catch(() => {
+          toast.error("Error initiating did session!")
+        });
       }
     },
     onDisconnect() {
