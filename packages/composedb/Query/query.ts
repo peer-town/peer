@@ -368,5 +368,9 @@ export const composeQueryHandler = () => {
       );
       return platfromAuthor;
     },
+    fetchAllUserThreads: async function (walletAddress: string) {
+      const allThreads = await this.fetchAllThreads();
+      return allThreads.filter((thread: any) => thread.node.User.walletAddress === walletAddress);
+    },
   };
 };

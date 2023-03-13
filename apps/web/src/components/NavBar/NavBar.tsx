@@ -54,7 +54,10 @@ const NavBar = (props) => {
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
               <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
                 <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
-                  <Link href="/">
+                  <Link href={{
+                    pathname: address ? `/[id]/profile` : `/`,
+                    query: { id: address },
+                  }}>
                     <Image
                       width="44"
                       height="44"

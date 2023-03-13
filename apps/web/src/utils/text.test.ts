@@ -7,6 +7,8 @@ describe("utils.text", () => {
   it("should return a formatted wallet address", () => {
     const output = "0x7c98...1991"
     expect(utils.formatWalletAddress(walletAddress)).toEqual(output);
+    expect(utils.formatWalletAddress(undefined)).toEqual("");
+    expect(utils.formatWalletAddress(null)).toEqual("");
   });
 
   it("should return a formatted did session/id", () => {

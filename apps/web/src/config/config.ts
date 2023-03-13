@@ -2,8 +2,8 @@ export const config = {
   appHome: process.env.NEXT_PUBLIC_APP_HOME || "",
   discordApiEndpoint: "https://discord.com/api",
   discordOAuth: {
-    clientId: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_ID || "",
-    clientSecret: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_SECRET || "",
+    clientId: process.env.DISCORD_OAUTH_CLIENT_ID || "",
+    clientSecret: process.env.OAUTH_CLIENT_SECRET || "",
     redirectUrl: process.env.NEXT_PUBLIC_DISCORD_OAUTH_REDIRECT_URL || "",
   },
   walletConnect: {
@@ -12,6 +12,10 @@ export const config = {
   didSession: {
     expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
   },
+  ceramic: {
+    nodeUrl: process.env.CERAMIC_NODE || "",
+    graphqlUrl: process.env.CERAMIC_GRAPH || "",
+  }
 }
 
 export const getDiscordAuthUrl = (): string => {
