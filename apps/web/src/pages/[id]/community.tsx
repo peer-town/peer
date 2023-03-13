@@ -13,42 +13,17 @@ import {Chip} from "../../components/Chip";
 const Profile = () => {
   const router = useRouter();
   const communityId = router.query.id as string;
-
   const tabs = ["Newest", "Active", "Unanswered"];
-
-  let [categories] = useState({
-    Newest: [
-      {
-        id: '1',
-        title: 'Does drinking coffee make you smarter?',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
-    Active: [
-      {
-        id: '1',
-        title: 'Is tech making coffee better or worse?',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
-    Unanswered: [
-      {
-        id: '1',
-        title: 'Ask Me Anything: 10 answers to your questions about coffee',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
+  const [categories] = useState({
+    Newest: [],
+    Active: [],
+    Unanswered: [],
   })
 
   return (
     <Layout
-      handleDiscordUser={() => {
-      }}
-      handleDidSession={() => {
-      }}
+      handleDiscordUser={() => {}}
+      handleDidSession={() => {}}
     >
       <div className="flex flex-row">
         <div className="w-full h-screen border-x px-12">

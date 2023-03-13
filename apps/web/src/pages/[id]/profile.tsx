@@ -40,10 +40,8 @@ const Profile = () => {
 
   return (
     <Layout
-      handleDiscordUser={() => {
-      }}
-      handleDidSession={() => {
-      }}
+      handleDiscordUser={() => {}}
+      handleDidSession={() => {}}
     >
       <div className="flex flex-row">
         <div className="w-full h-screen border-x px-12">
