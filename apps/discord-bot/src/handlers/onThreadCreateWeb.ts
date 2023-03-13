@@ -35,8 +35,8 @@ export const onThreadCreateWeb = async (
   const queryHandler = await composeQueryHandler();
   const mutationhandler = await composeMutationHandler(compose);
 
-  let guild = await client.guilds.cache.get(community);
-
+  let guild =  client.guilds.cache.get(community);
+  
   if (!guild) return { result: false, value: "community missing" };
 
   let channel = guild.channels.cache.find(
@@ -45,8 +45,7 @@ export const onThreadCreateWeb = async (
 
   if (!channel) return { result: false, value: "channel missing" };
 
-  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord", platformId);
-
+  const user = await queryHandler.fetchUserDetailsFromPlatformId("discord", platformId);
   if (user == null || !user.node ) {
     return {
       result: false,

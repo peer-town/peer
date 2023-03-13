@@ -2,11 +2,11 @@ import Image from "next/image";
  
 const Thread = ({ thread }) => {
 
-  const user = thread.User.user.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
+  const user = thread?.User?.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
 
   const avatar =
-    user.platformAvatar !== ""
-      ? user.platformAvatar
+    user?.platformAvatar !== ""
+      ? user?.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
@@ -23,9 +23,9 @@ const Thread = ({ thread }) => {
           />
           <div>
             <div className="font-semibold">
-              {user.data?.discordUsername ?? "Anonymous"}
+              {user?.data?.discordUsername ?? "Anonymous"}
             </div>
-            <div className="font-light text-gray-400">{thread.author.id}</div>
+            <div className="font-light text-gray-400">{thread?.author?.id}</div>
           </div>
         </div>
         <div className="ml-[10px] text-[12px]  text-[#A39DAA] lg:ml-[40px] lg:text-[16px]">
@@ -34,7 +34,7 @@ const Thread = ({ thread }) => {
       </div>
 
       <div className="text-[48px] font-semibold text-gray-700">
-        {thread.title}
+        {thread?.title}
       </div>
     </div>
   );

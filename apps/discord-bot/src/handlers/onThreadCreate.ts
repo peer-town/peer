@@ -37,7 +37,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
 
   //If the user does not have a devnode account, delete it and tell the user to create one
 
-  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord", threadOwner.user.id);
+  const user = await queryHandler.fetchUserDetailsFromPlatformId("discord", threadOwner.user.id);
 
   if (user == null || !user.node) {
     //User account does not exist at all
@@ -60,7 +60,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
   //If we already stored this thread for some reason, ignore it
   if (existingThread && existingThread.node ) return;
 
-  const socialPlatform = await queryHandler.fetchSocialPlatform(thread.parent?.id as string);
+  const socialPlatform = await queryHandler.fetchSocialPlatform(thread.guildId as string);
   const {communityID } = socialPlatform.node;
 
   const {id} = user.node;

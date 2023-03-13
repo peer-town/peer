@@ -1,13 +1,13 @@
 import Image from "next/image";
 
 const Comment = ({ comment }) => {
-  const user = comment.User.user.userPlatforms.filter(
-    (platform) => platform.platormName == "discord"
+  const user = comment?.User?.userPlatforms.filter(
+    (platform) => platform?.platormName == "discord"
   )[0];
 
   const avatar =
-    user.platformAvatar !== ""
-      ? user.platformAvatar
+    user?.platformAvatar !== ""
+      ? user?.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
@@ -24,7 +24,7 @@ const Comment = ({ comment }) => {
           />
           <div>
             <div className="font-semibold">
-              {user.data?.discordUsername ?? "Anonymous"}
+              {user?.data?.discordUsername ?? "Anonymous"}
             </div>
             <div className="font-light text-gray-400">{comment.author.id}</div>
           </div>

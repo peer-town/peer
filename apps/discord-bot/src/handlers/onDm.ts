@@ -16,7 +16,6 @@ export const onDm = async (message: Message) => {
   const username = `${handle}#${discriminator}`;
   const avatar = message.author.avatarURL() ?? "";
 
-  console.log(message.content);
   let did = "";
   try {
     did = message.content.match(/did🔑[a-zA-z0-9:]{48}/)![0];

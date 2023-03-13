@@ -34,9 +34,8 @@ const QuestionPage =  () => {
     return <div>Loading...</div>;
   }
 
-  const thisThread = threads.data.filter((thread) => thread.node.id == id)[0]
-    .node;
-  const commentsForThread = thisThread.node.comment.edge;
+  const thisThread = threads.data.filter((thread) => thread.node.id == id)[0].node;
+  const commentsForThread = thisThread.comments.edges;
 
   const handleDidSession = (value) =>{
     setDidSession(value)
@@ -100,12 +99,12 @@ const QuestionPage =  () => {
           </Link>
           <div className="mt-[80px] lg:mr-[50px]">
             <div>
-            {thisThread.node && <Thread thread={thisThread.node} />}
+            {thisThread && <Thread thread={thisThread} />}
             </div>
             <div className="mt-[94px] pb-[40px]">
               <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
               <div className="mt-[40px] space-y-[40px]">
-                {commentsForThread && commentsForThread.length>0 && commentsForThread.map((item) => (
+                {commentsForThread && commentsForThread?.length>0 && commentsForThread.map((item) => (
                   <Comment key={item.node.id} comment={item.node} />
                 ))}
               </div>

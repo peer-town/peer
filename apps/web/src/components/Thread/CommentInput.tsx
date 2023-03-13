@@ -31,7 +31,7 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
 
   const onCommentSubmit = async () => {
 
-    if(comment.length === 0){
+    if(comment?.length === 0){
       toast.error("Empty comment");
       return;
     }
@@ -43,7 +43,8 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           threadId: props.threadId,
           comment: String(comment),
           discordUserName: String(discordUserName),
-          didSession:String(didSession)
+          didSession:String(didSession),
+          platformId: authorPlatformDetails.data.platformId,
         }),
         method: "POST",
         headers: {

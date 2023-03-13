@@ -62,7 +62,7 @@ export const onMessageCreate = async (message: Message) => {
   if (message.channel.type == ChannelType.PublicThread) {
     const existingMessage = await queryHandler.fetchCommentDetails(message.channel.id);
 
-    const user =  await queryHandler.fetchUserDetailsUsingPlatform("discord", message.author.id)
+    const user =  await queryHandler.fetchUserDetailsFromPlatformId("discord", message.author.id)
       .catch(() => {
         return null;
       });
@@ -105,12 +105,10 @@ export const onMessageCreate = async (message: Message) => {
         });
     }
 
-    console.log(thread);
-
     if (propagationDelay) await new Promise((r) => setTimeout(r, 5000));
 
     const commentInput ={
-      threadId: String(thread!.id) ,
+      threadId: String(thread.id) ,
       userID:id as string,//streamId of User
       comment:String(message.content),//comment text
       createdFrom:"discord", //platform name
