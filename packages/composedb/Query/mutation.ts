@@ -6,6 +6,8 @@ import {
   UserPlatformDetails,
 } from "./type";
 
+import {composeQueryHandler} from "./query";
+
 export const composeMutationHandler = async (compose:ComposeClient) => {
     
   return {
@@ -177,6 +179,46 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
               text: comment, //comment text
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
+            },
+          },
+        }
+      );
+    },
+    updateUser: async function (
+      userPlatformDetails: UserPlatformDetails,
+      walletAddress: string
+    ) {
+
+      const userExists = await composeQueryHandler().fetchUserDetails(walletAddress);
+      if(!userExists){
+        return ;
+      }
+      const userPlatforms = [...userExists.node.userPlatforms, userPlatformDetails]
+      const userId = userExists.node.id;
+      return compose.executeQuery<{
+        updateUser: { document: { id: string } };
+      }>(
+        `mutation UpdateUser($input: UpdateUserInput!) {
+          updateUser(input: $input) {
+            document {
+              id
+              userPlatforms{
+                platformId
+                platormName
+                platformAvatar
+                platformUsername
+              }
+              walletAddress
+              createdAt
+            }
+          }
+        }`,
+        {
+          input: {
+            id: userId,
+            content: {
+              userPlatforms: userPlatforms,
+              createdAt: new Date().toISOString(),
             },
           },
         }

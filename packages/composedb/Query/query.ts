@@ -236,16 +236,40 @@ export const composeQueryHandler = () => {
     },
     fetchAllComments: async function () {
       const query = gql`
-        {
-          comments(first: 100) {
-            edge {
-              node {
+      {
+        commentIndex(first: 100) {
+          edges {
+            node {
+              id
+              text
+              UserID
+              threadID
+              createdAt
+              createdFrom
+              User {
                 id
-                text
-                UserID
-                threadID
+                walletAddress
+                author {
+                  id
+                }
+                userPlatforms {
+                  platformId
+                  platormName
+                  platformAvatar
+                  platformUsername
+                }
                 createdAt
+              }
+              thread {
+                id
+                title
+                UserID
+                createdAt
+                communityID
                 createdFrom
+                author {
+                  id
+                }
                 User {
                   id
                   walletAddress
@@ -260,38 +284,14 @@ export const composeQueryHandler = () => {
                   }
                   createdAt
                 }
-                thread {
-                  id
-                  title
-                  UserID
-                  createdAt
-                  communityID
-                  createdFrom
-                  author {
-                    id
-                  }
-                  User {
-                    id
-                    walletAddress
-                    author {
-                      id
-                    }
-                    userPlatforms {
-                      platformId
-                      platormName
-                      platformAvatar
-                      platformUsername
-                    }
-                    createdAt
-                  }
-                }
-                author {
-                  id
-                }
+              }
+              author {
+                id
               }
             }
           }
         }
+      }
       `;
       const allComments = await client.request(query);
       return allComments.commentIndex?.edges;
@@ -303,7 +303,7 @@ export const composeQueryHandler = () => {
       )[0];
       return user;
     },
-    fetchUserDetailsUsingPlatform: async function (
+    fetchUserPlatformDetails: async function (
       platformName: string,
       platformId: string
     ) {
@@ -318,24 +318,42 @@ export const composeQueryHandler = () => {
       )[0];
       return user;
     },
-    fetchThreadDetails: async function (threadPlatformId: string) {
+    fetchUserDetailsFromPlatformId: async function (
+      platformName: string,
+      platformId: string
+    ) {
+      const allUsers = await this.fetchAllUsers();
+      const user = allUsers.map(
+        (user: any) => {
+          const userExists = user.node.userPlatforms.filter(
+            (platform: any) =>
+              platform.platormName === platformName &&
+              platform.platformId === platformId
+          )[0];
+          if(Object.keys(userExists).length !== 0){
+            return user;
+          }
+          })[0];
+      return user;
+    },
+    fetchThreadDetails: async function (threadId: string) {
       const allThreads = await this.fetchAllThreads();
       const thread = allThreads.filter(
-        (thread: any) => thread.threadId === threadPlatformId
+        (thread: any) => thread.node.id === threadId
       )[0];
       return thread;
     },
-    fetchCommentDetails: async function (commentPlatformId: string) {
+    fetchCommentDetails: async function (commentId: string) {
       const allComments = await this.fetchAllComments();
       const comment = allComments.filter(
-        (comment: any) => comment.commentId === commentPlatformId
+        (comment: any) => comment.node.id === commentId
       )[0];
       return comment;
     },
     fetchSocialPlatform: async function (platformId: string) {
       const allSocialPlatforms = await this.fetchAllSocialPlatforms();
       const socialPlatform = allSocialPlatforms.filter(
-        (socialPlatform: any) => socialPlatform.platformId === platformId
+        (socialPlatform: any) => socialPlatform.node.platformId === platformId
       )[0];
       return socialPlatform;
     },
@@ -344,7 +362,6 @@ export const composeQueryHandler = () => {
       usersPlatform: string
     ) {
       const userDetails = await this.fetchUserDetails(walletAddress);
-      console.log("userDetails",userDetails)
       const platfromAuthor = userDetails && userDetails.node.userPlatforms.filter(
         (platform: any) => platform && platform.platormName === usersPlatform
       )[0];
@@ -357,14 +374,14 @@ export const composeQueryHandler = () => {
       if (!communityPlatform) {
         return allCommunities.map((community: any) => {
           if (community && community.node!== undefined)
-            return community.node.socialPlatforms.edge;
+            return community.node.socialPlatforms.edges;
         });
       }
       const platfromAuthor = allCommunities.map((community: any) =>
-        community.node.socialPlatforms.edge.filter((socialPlatform: any) => {
+        community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
           if (socialPlatform && socialPlatform.node!== undefined)
             return socialPlatform.node.platform === communityPlatform;
-        })
+        })[0]
       );
       return platfromAuthor;
     },
