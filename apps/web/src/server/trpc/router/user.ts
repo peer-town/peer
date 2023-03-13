@@ -53,4 +53,18 @@ export const userRouter = router({
         return left(e);
       }
     }),
+
+    updateUser: publicProcedure
+    .input(createUserSchema)
+    .mutation(async ({input}) => {
+      try {
+        const handler = await getHandler(input.session);
+        const response = await handler.updateUser(input.userPlatformDetails as any, input.walletAddress);
+        return (response.errors && response.errors.length > 0)
+          ? left(response.errors)
+          : right(response.data);
+      } catch (e) {
+        return left(e);
+      }
+    }),
 });
