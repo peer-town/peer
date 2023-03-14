@@ -37,7 +37,7 @@ const Layout = (props) => {
         <div className="flex flex-col gap-7 px-6 py-10 border-r h-screen sm:hidden md:flex">
           {getCommunityList()}
         </div>
-        <div className="relative mx-auto w-full grow px-5 lg:px-0">
+        <div className="relative mx-auto w-full grow px-6">
           {props.children}
         </div>
       </div>
