@@ -112,7 +112,7 @@ const updateCommunities = async () => {
 
     const userDetails ={
         platformId: owner.user.id,
-        platormName: "discord",
+        platformName: "discord",
         platformAvatar: owner.user.avatarURL() as string || owner.user.defaultAvatarURL,
         platformUsername: `${owner.user.username}#${owner.user.discriminator}`
     }
@@ -130,7 +130,7 @@ const updateCommunities = async () => {
       userID: userRespose.data.createUser.document.id as string,
       platform: "discord",
       platformId: guild?.id as string,
-      communityID: communityRespose.data.createCommunity.document.id as string,
+      communityId: communityRespose.data.createCommunity.document.id as string,
       communityName: guild.name,
       communityAvatar: guild.iconURL() || "",
   };

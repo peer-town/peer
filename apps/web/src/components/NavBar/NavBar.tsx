@@ -55,7 +55,7 @@ const NavBar = (props) => {
       session: didSession,
       userPlatformDetails: {
         platformId: constants.PLATFORM_DEVNODE_ID,
-        platormName: constants.PLATFORM_DEVNODE_NAME,
+        platformName: constants.PLATFORM_DEVNODE_NAME,
         platformUsername: details.name,
         platformAvatar: details.imageUrl,
       },

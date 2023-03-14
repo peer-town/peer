@@ -15,7 +15,7 @@ export const composeQueryHandler = () => {
                 walletAddress
                 userPlatforms {
                   platformId
-                  platormName
+                  platformName
                   platformAvatar
                   platformUsername
                 }
@@ -49,7 +49,7 @@ export const composeQueryHandler = () => {
                       userID
                       platform
                       platformId
-                      communityID
+                      communityId
                       communityName
                       communityAvatar
                       user {
@@ -60,7 +60,7 @@ export const composeQueryHandler = () => {
                         }
                         userPlatforms {
                           platformId
-                          platormName
+                          platformName
                           platformAvatar
                           platformUsername
                         }
@@ -98,7 +98,7 @@ export const composeQueryHandler = () => {
                 userID
                 platform
                 platformId
-                communityID
+                communityId
                 communityName
                 communityAvatar
                 user {
@@ -109,7 +109,7 @@ export const composeQueryHandler = () => {
                   }
                   userPlatforms {
                     platformId
-                    platormName
+                    platformName
                     platformAvatar
                     platformUsername
                   }
@@ -142,10 +142,10 @@ export const composeQueryHandler = () => {
               node {
                 id
                 title
-                UserID
-                threadID
+                userId
+                threadId
                 createdAt
-                communityID
+                communityId
                 createdFrom
                 author {
                   id
@@ -158,7 +158,7 @@ export const composeQueryHandler = () => {
                   }
                   userPlatforms {
                     platformId
-                    platormName
+                    platformName
                     platformAvatar
                     platformUsername
                   }
@@ -177,8 +177,8 @@ export const composeQueryHandler = () => {
                     node {
                       id
                       text
-                      UserID
-                      threadID
+                      userId
+                      threadId
                       createdAt
                       createdFrom
                       User {
@@ -189,7 +189,7 @@ export const composeQueryHandler = () => {
                         }
                         userPlatforms {
                           platformId
-                          platormName
+                          platformName
                           platformAvatar
                           platformUsername
                         }
@@ -198,9 +198,9 @@ export const composeQueryHandler = () => {
                       thread {
                         id
                         title
-                        UserID
+                        userId
                         createdAt
-                        communityID
+                        communityId
                         createdFrom
                         author {
                           id
@@ -213,7 +213,7 @@ export const composeQueryHandler = () => {
                           }
                           userPlatforms {
                             platformId
-                            platormName
+                            platformName
                             platformAvatar
                             platformUsername
                           }
@@ -242,8 +242,8 @@ export const composeQueryHandler = () => {
             node {
               id
               text
-              UserID
-              threadID
+              userId
+              threadId
               createdAt
               createdFrom
               User {
@@ -254,7 +254,7 @@ export const composeQueryHandler = () => {
                 }
                 userPlatforms {
                   platformId
-                  platormName
+                  platformName
                   platformAvatar
                   platformUsername
                 }
@@ -263,9 +263,9 @@ export const composeQueryHandler = () => {
               thread {
                 id
                 title
-                UserID
+                userId
                 createdAt
-                communityID
+                communityId
                 createdFrom
                 author {
                   id
@@ -278,7 +278,7 @@ export const composeQueryHandler = () => {
                   }
                   userPlatforms {
                     platformId
-                    platormName
+                    platformName
                     platformAvatar
                     platformUsername
                   }
@@ -312,7 +312,7 @@ export const composeQueryHandler = () => {
         (user: any) =>
           user.node.userPlatforms.filter(
             (platform: any) =>
-              platform.platormName === platformName &&
+              platform.platformName === platformName &&
               platform.platformId === platformId
           )[0]
       )[0];
@@ -327,7 +327,7 @@ export const composeQueryHandler = () => {
         (user: any) => {
           const userExists = user.node.userPlatforms.filter(
             (platform: any) =>
-              platform.platormName === platformName &&
+              platform.platformName === platformName &&
               platform.platformId === platformId
           )[0];
           if(Object.keys(userExists).length !== 0){
@@ -363,7 +363,7 @@ export const composeQueryHandler = () => {
     ) {
       const userDetails = await this.fetchUserDetails(walletAddress);
       const platfromAuthor = userDetails && userDetails.node.userPlatforms.filter(
-        (platform: any) => platform && platform.platormName === usersPlatform
+        (platform: any) => platform && platform.platformName === usersPlatform
       )[0];
       return platfromAuthor;
     },

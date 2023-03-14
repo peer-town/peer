@@ -56,7 +56,7 @@ export const onThreadCreateWeb = async (
   const {id} = user.node;
 
   const socialPlatform = await queryHandler.fetchSocialPlatform(community as string);
-  const {communityID } = socialPlatform.node;
+  const {communityId } = socialPlatform.node;
 
   const thread = await channel.threads
     .create({
@@ -75,7 +75,7 @@ export const onThreadCreateWeb = async (
     return { result: false, value: "could not create thread" };
 
   const threadDetails = {
-    communityId: communityID as string,
+    communityId: communityId as string,
     userID: id as string,
     threadId:thread.id,
     title: String(thread.name),

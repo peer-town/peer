@@ -15,7 +15,7 @@ const createUserSchema = z.object({
   session: z.string(),
   userPlatformDetails: z.object({
     platformId: z.string(),
-    platormName: z.string(),
+    platformName: z.string(),
     platformAvatar: z.string(),
     platformUsername: z.string(),
   }),

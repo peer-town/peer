@@ -2,7 +2,7 @@ import Image from "next/image";
  
 const Thread = ({ thread }) => {
 
-  const user = thread?.User?.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
+  const user = thread?.User?.userPlatforms.filter((platform)=>platform.platformName == "discord")[0]
 
   const avatar =
     user?.platformAvatar !== ""

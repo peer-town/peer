@@ -6,7 +6,7 @@ const ThreadCard = ({ thread }) => {
 
   const commentsForThread = thread?.comments?.edge;
 
-  const user = thread?.User?.userPlatforms.filter((platform)=>platform?.platormName == "discord")[0]
+  const user = thread?.User?.userPlatforms.filter((platform)=>platform?.platformName == "discord")[0]
 
   if (commentsForThread?.length<=0) return <div>Loading</div>;
 

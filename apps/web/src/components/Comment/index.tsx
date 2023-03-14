@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Comment = ({ comment }) => {
   const user = comment?.User?.userPlatforms.filter(
-    (platform) => platform?.platormName == "discord"
+    (platform) => platform?.platformName == "discord"
   )[0];
 
   const avatar =

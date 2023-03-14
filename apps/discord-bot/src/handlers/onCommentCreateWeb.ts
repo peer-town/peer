@@ -49,7 +49,7 @@ export const onCommentCreateWeb = async (
 
   if (existhreaingThread) {
     const thread = client.channels.cache.get(
-      existhreaingThread.node.threadID
+      existhreaingThread.node.threadId
     ) as ThreadChannel;
 
     const message = await thread.send(

@@ -61,12 +61,12 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
   if (existingThread && existingThread.node ) return;
 
   const socialPlatform = await queryHandler.fetchSocialPlatform(thread.guildId as string);
-  const {communityID } = socialPlatform.node;
+  const {communityId } = socialPlatform.node;
 
   const {id} = user.node;
 
   const threadDetails = {
-    communityId: communityID as string,
+    communityId: communityId as string,
     userID: id as string,
     threadId:thread.id,
     title: String(thread.name),

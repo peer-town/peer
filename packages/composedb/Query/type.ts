@@ -2,13 +2,13 @@ export type SocialPlatformInput = {
   userID: string;
   platform: string;
   platformId: string;
-  communityID: string;
+  communityId: string;
   communityName: string;
   communityAvatar: string;
 };
 export type UserPlatformDetails = {
   platformId: string;
-  platormName: string;
+  platformName: string;
   platformAvatar: string;
   platformUsername: string;
 };
@@ -50,18 +50,18 @@ export type Comments = {
       {
         id: string;
         text: string;
-        UserID: string;
-        threadID: string;
+        userId: string;
+        threadId: string;
         createdAt: string;
         createdFrom: string;
         User: User;
         thread: {
           id: string;
           title: string;
-          UserID: string;
-          threadID: string;
+          userId: string;
+          threadId: string;
           createdAt: string;
-          communityID: string;
+          communityId: string;
           createdFrom: string;
           author: {
             id: string;
@@ -80,10 +80,10 @@ export type Comments = {
 export type Thread = {
   id: string;
   title: string;
-  UserID: string;
-  threadID: string;
+  userId: string;
+  threadId: string;
   createdAt: string;
-  communityID: string;
+  communityId: string;
   createdFrom: string;
   author: {
     id: string;
