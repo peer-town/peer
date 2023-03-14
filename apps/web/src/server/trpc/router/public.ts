@@ -10,8 +10,12 @@ const queryHandler = composeQueryHandler();
 export const publicRouter = router({
   fetchAllThreads: publicProcedure.query(async () => {
     const allThreads = await queryHandler.fetchAllThreads();
-    console.log("allThreads",allThreads)
     return allThreads;
+  }),
+
+  fetchAllUsers: publicProcedure.query(async () => {
+    const allUsers = await queryHandler.fetchAllUsers();
+    return allUsers;
   }),
 
   fetchAllUserThreads: publicProcedure

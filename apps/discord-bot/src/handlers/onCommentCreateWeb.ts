@@ -36,7 +36,7 @@ export const onCommentCreateWeb = async (
       console.log(e);
     });
 
-  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord",platformId )
+  const user = await queryHandler.fetchUserDetailsFromPlatformId("discord",platformId )
 
   if (user == null || !user.node ) {
     return {
@@ -49,16 +49,17 @@ export const onCommentCreateWeb = async (
 
   if (existhreaingThread) {
     const thread = client.channels.cache.get(
-      existhreaingThread.node.threadID
+      existhreaingThread.node.threadId
     ) as ThreadChannel;
+
     const message = await thread.send(
       `From WEB \n ${discordUserName} : ${comment}`
     );
 
   const commentInput ={
-    threadId: String(thread!.id) ,
+    threadId: threadId ,
     userID:id as string,//streamId of User
-    comment:String(message.content),//comment text
+    comment:String(comment),//comment text
     createdFrom:"discord", //platform name
     createdAt: thread.createdAt?.toISOString() as string,
   }
@@ -66,16 +67,20 @@ export const onCommentCreateWeb = async (
     let composeResponse;
 
     try {
-      composeResponse = await mutationhandler.createComment(commentInput)
+      composeResponse = await mutationhandler.createComment(commentInput);
+
     } catch {
       message.delete();
       return { result: false, value: "compose failed" };
     }
 
-    if (!composeResponse || !composeResponse.data) {
+    if (!composeResponse && composeResponse?.errors) {
       await message.delete();
-      return { result: false, value: "composedb failed" };
+      return { result: false, value: composeResponse?.errors };
     }
+  }
+  else{
+    return { result: false, value: "thread not found" };
   }
 
   return { result: true, value: "comment added" };

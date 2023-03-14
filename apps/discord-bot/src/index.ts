@@ -112,7 +112,7 @@ const updateCommunities = async () => {
 
     const userDetails ={
         platformId: owner.user.id,
-        platormName: "discord",
+        platformName: "discord",
         platformAvatar: owner.user.avatarURL() as string || owner.user.defaultAvatarURL,
         platformUsername: `${owner.user.username}#${owner.user.discriminator}`
     }
@@ -120,19 +120,17 @@ const updateCommunities = async () => {
     if (!userRespose || !userRespose.data) {
       return ;
     } 
-    console.log("userRespose",userRespose);
     const communityRespose = await handler.createCommunity(guild.name);
     if (!communityRespose || !communityRespose.data) {
       return ;
     } 
 
-    const channel = (await guild.fetch()).channels.cache.filter((guild) => guild.name === "devnode").first();
 
     const socialPlatformInput = {
       userID: userRespose.data.createUser.document.id as string,
       platform: "discord",
-      platformId: channel?.id as string,
-      communityID: communityRespose.data.createCommunity.document.id as string,
+      platformId: guild?.id as string,
+      communityId: communityRespose.data.createCommunity.document.id as string,
       communityName: guild.name,
       communityAvatar: guild.iconURL() || "",
   };
@@ -144,7 +142,6 @@ const updateCommunities = async () => {
 // apis
 app.post("/webcomment", async (req, res) => {
   const { threadId, comment, discordUserName, didSession,platformId } = req.body;
-  console.log({ threadId: threadId, comment: comment });
   const response = await onCommentCreateWeb(
     client,
     threadId,
@@ -163,11 +160,7 @@ app.post("/webcomment", async (req, res) => {
 
 app.post("/webthread", async (req, res) => {
   const { threadTitle, community, discordUserName, didSession, platformId } = req.body;
-  console.log({
-    threadTitle: threadTitle,
-    community: community,
-    discordUserName: discordUserName,
-  });
+
   const response = await onThreadCreateWeb(
     client,
     threadTitle,

@@ -7,7 +7,7 @@ type Community
 
 type User 
   @loadModel(
-     id: "kjzl6hvfrbw6cbc7kl0eijlv9e5gall76dqqqd10dnyxe5paag1kr2curfo1c32"
+     id: "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju"
     ) {
   id: ID!
 }
@@ -15,10 +15,10 @@ type User
 type SocialPlatform
 @createModel(accountRelation: LIST, description: "Social Platform") {
     author: DID! @documentAccount
-    userID: StreamID! @documentReference(model: "User")
-    user: User! @relationDocument(property: "userID")
-    communityID: StreamID! @documentReference(model: "Community")
-    community: Community! @relationDocument(property: "communityID")
+    userId: StreamID! @documentReference(model: "User")
+    user: User! @relationDocument(property: "userId")
+    communityId: StreamID! @documentReference(model: "Community")
+    community: Community! @relationDocument(property: "communityId")
     platform: String! @string(maxLength: 2000) 
     platformId: String! @string(maxLength: 2000) 
     communityName: String! @string(maxLength: 2000) 

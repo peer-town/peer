@@ -1,6 +1,6 @@
 type SocialPlatform 
   @loadModel(
-     id: "kjzl6hvfrbw6c8yxz99xfla9s30247gfmb4wx6o4rlgzypgp4phuhn9fds7hn81"
+     id: "kjzl6hvfrbw6c726uxs60oywkxn9wv9c8ybysxnppw8cuqzcbw9pssrmcok1nyi"
     ) {
   id: ID!
 }
@@ -9,5 +9,5 @@ type Community
   @loadModel(
      id: "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1"
     ) {
-  socialPlatforms: [SocialPlatform] @relationFrom(model: "SocialPlatform", property: "communityID")
+  socialPlatforms: [SocialPlatform] @relationFrom(model: "SocialPlatform", property: "communityId")
 }
