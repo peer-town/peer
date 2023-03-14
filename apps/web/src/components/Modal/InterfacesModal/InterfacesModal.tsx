@@ -1,6 +1,6 @@
 import {ModalProps} from "../types";
-import {getDiscordAuthUrl} from "../../../config";
 import {BaseModal} from "../BaseModal/BaseModal";
+import {getDiscordAuthUrl} from "../../../utils";
 
 export const InterfacesModal = (props: ModalProps) => {
   const connectDiscord = () => {
@@ -17,12 +17,6 @@ export const InterfacesModal = (props: ModalProps) => {
           onClick={connectDiscord}
         >
           Connect discord
-        </button>
-        <button
-          className="w-full mt-4 mb-40 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-          onClick={connectDiscord}
-        >
-          Connect discourse
         </button>
       </div>
     </BaseModal>

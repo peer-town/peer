@@ -10,7 +10,7 @@ import ThreadCard from "../../components/ThreadCard";
 import * as utils from "../../utils";
 import {FlexColumn, FlexRow} from "../../components/Flex";
 import {trpc} from "../../utils/trpc";
-import {isRight} from "../../utils/fp";
+import {has, get} from "lodash";
 
 const Profile = () => {
   const router = useRouter();
@@ -25,8 +25,8 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (user.data && isRight(user.data)) {
-      setProfile(user.data.value.userPlatforms[0]);
+    if(has(user, "data.value.userPlatforms[0]")) {
+      setProfile(get(user, "data.value.userPlatforms[0]"));
     }
   }, [user]);
 

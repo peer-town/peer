@@ -21,3 +21,19 @@ describe("utils.text", () => {
     expect(utils.classNames("a", null, undefined, "b", "c")).toEqual("a b c");
   });
 });
+
+describe("utils.discord", () => {
+
+  it("should return auth url", () => {
+    expect(utils.getDiscordAuthUrl()).not.toBeNull();
+  });
+
+  it("should return discord username structure", () => {
+    expect(utils.getDiscordUsername("abc", "123")).toEqual("abc#123");
+  });
+
+  it("should return discord avatar url", () => {
+    const expected = "https://cdn.discordapp.com/avatars/123/4567.jpg";
+    expect(utils.getDiscordAvatarUrl("123", "4567")).toEqual(expected);
+  });
+});
