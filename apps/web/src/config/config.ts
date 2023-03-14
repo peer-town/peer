@@ -12,6 +12,10 @@ export const config = {
   didSession: {
     expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
   },
+  ceramic: {
+    nodeUrl: process.env.NEXT_PUBLIC_CERAMIC_NODE || "",
+    graphqlUrl: process.env.CERAMIC_GRAPH || "",
+  }
 }
 
 export const getDiscordAuthUrl = (): string => {

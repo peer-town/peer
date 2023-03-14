@@ -1,13 +1,13 @@
 type Comment 
   @loadModel(
-     id: "kjzl6hvfrbw6c76j8qt2p5dpb3xxm9taqrudgcbdaf95i91pqbpl5jelq2ipp3q"
+     id: "kjzl6hvfrbw6c95pvk38yw31titjrq01rqg7ua5sfu4t1p8zcmn4o9gg4j51gvm"
     ) {
   id: ID!
 }
 
 type Thread 
   @loadModel(
-     id: "kjzl6hvfrbw6c7tuznyikjds1bmmbap2k38vxjaggtey8wgnuxfadn0cps2frpf"
+     id: "kjzl6hvfrbw6cacg7g3hky17flj3qrom0948a2a9zzt6hv15d9x4c2iqar5i4j3"
     ) {
-  comments: [Comment] @relationFrom(model: "Comment", property: "threadID")
+  comments: [Comment] @relationFrom(model: "Comment", property: "threadId")
 }

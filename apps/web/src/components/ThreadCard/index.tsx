@@ -1,19 +1,18 @@
 import Link from "next/link";
 import { trpc } from "../../utils/trpc";
 import Image from "next/image";
-
 const ThreadCard = ({ thread }) => {
   const { id, title, author, createdAt } = thread;
 
-  const commentsForThread = thread.comments.edge;
+  const commentsForThread = thread?.comments?.edge;
 
-  const user = thread.User.user.userPlatforms.filter((platform)=>platform.platormName == "discord")[0]
+  const user = thread?.User?.userPlatforms.filter((platform)=>platform?.platformName == "discord")[0]
 
-  if (commentsForThread.length<=0) return <div>Loading</div>;
+  if (commentsForThread?.length<=0) return <div>Loading</div>;
 
   const avatar =
-    user.platformAvatar !== ""
-      ? user.platformAvatar
+    user?.platformAvatar !== ""
+      ? user?.platformAvatar
       : "http://placekitten.com/200/200";
 
   return (
@@ -30,7 +29,7 @@ const ThreadCard = ({ thread }) => {
             />
             <div>
               <div className="font-semibold">
-                {user.data?.discordUsername ?? "Anonymous"}
+                {user?.data?.discordUsername ?? "Anonymous"}
               </div>
               <div className="font-light text-gray-400">{author.id}</div>
             </div>
@@ -41,7 +40,7 @@ const ThreadCard = ({ thread }) => {
           <div>{new Date(createdAt).toLocaleString()}</div>
         </div>
         <div className="px-5 pb-5 text-[16px] font-medium  text-gray-500">
-          {commentsForThread.length ? (
+          {commentsForThread?.length ? (
             <div>{commentsForThread[0].text}</div>
           ) : (
             <></>

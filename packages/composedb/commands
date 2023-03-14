@@ -1,13 +1,21 @@
 rm -rf gen
-composedb composite:create ./schemas/User.graphql --output=gen/User.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e 
+composedb composite:create ./schemas/User.graphql --output=gen/User.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/User.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/Community.graphql --output=gen/Community.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/Community.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/SocialPlatform.graphql --output=gen/SocialPlatform.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/SocialPlatform.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/PlatformsInCommunity.graphql --output=gen/PlatformsInCommunity.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/PlatformsInCommunity.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/Thread.graphql --output=gen/Thread.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/Thread.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/Comments.graphql --output=gen/Comments.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/Comments.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:create ./schemas/CommentsInThread.graphql --output=gen/CommentsInThread.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
+composedb composite:models ./gen/CommentsInThread.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:merge ./gen/User.json ./gen/Community.json ./gen/SocialPlatform.json ./gen/PlatformsInCommunity.json ./gen/Thread.json ./gen/Comments.json ./gen/CommentsInThread.json --output=./gen/DevNode.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:compile ./gen/DevNode.json ./gen/runtime-composite.json --ceramic-url=http://0.0.0.0:7007
 composedb composite:compile ./gen/DevNode.json src/definition.ts --ceramic-url=http://0.0.0.0:7007
 composedb composite:deploy ./gen/DevNode.json --ceramic-url=http://0.0.0.0:7007 --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e
 composedb composite:models ./gen/DevNode.json --ceramic-url=http://0.0.0.0:7007
+npx @composedb/cli graphql:server --ceramic-url=http://localhost:7007 --graphiql --port=5001 ./gen/runtime-composite.json --did-private-key=0f3c96e163e90f7f1f4ef468ea9cc6563d28ae658f13840fc9abccfc2fec1f5e

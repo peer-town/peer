@@ -7,40 +7,40 @@ import {DIDSession} from "did-session";
 import {config} from "../../../config";
 import {toast} from "react-toastify";
 import useLocalStorage from "../../../hooks/useLocalStorage";
+import {ConnectWalletProps} from "./types";
 
-export const ConnectWalletButton = () => {
+export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const {open} = useWeb3Modal()
   const {disconnect} = useDisconnect()
   const [loading, setLoading] = useState(false)
-  const [, setDid] = useLocalStorage("did", "");
-  const [, setDidSession] = useLocalStorage("didSession", "");
+  const [, setDid, removeDid] = useLocalStorage("did", "");
+  
 
-  const generateDidSession = async (address: string) => {
-    const accountId = await getAccountId(window.ethereum, address);
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      window.ethereum,
-      accountId
-    );
+  const generateDidSession = async (address: string, connector: any) => {
+    const provider = await connector.getProvider();
+    const accountId = await getAccountId(provider, address);
+    const authMethod = await EthereumWebAuth.getAuthMethod(provider, accountId);
     const session = await DIDSession.authorize(authMethod, {
       resources: [`ceramic://*`],
       expiresInSecs: config.didSession.expiresInSecs,
     });
-    setDidSession(session.serialize());
+    props.setDidSession(session.serialize());
     setDid(session.did.id);
   };
 
   const {address, isConnected} = useAccount({
     onConnect(context) {
       if (!context.isReconnected) {
-        generateDidSession(context.address)
-          .catch(() => {
-            toast.error("Error initiating did session!")
-          });
+        generateDidSession(context.address, context.connector).then(() => {
+          props.onSessionCreated(context.address);
+        }).catch(() => {
+          toast.error("Error initiating did session!")
+        });
       }
     },
     onDisconnect() {
-      setDidSession(undefined);
-      setDid(undefined);
+      removeDid();
+      props.removeDidSession();
     }
   });
 

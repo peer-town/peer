@@ -35,8 +35,8 @@ export const onThreadCreateWeb = async (
   const queryHandler = await composeQueryHandler();
   const mutationhandler = await composeMutationHandler(compose);
 
-  let guild = await client.guilds.cache.get(community);
-
+  let guild =  client.guilds.cache.get(community);
+  
   if (!guild) return { result: false, value: "community missing" };
 
   let channel = guild.channels.cache.find(
@@ -45,8 +45,7 @@ export const onThreadCreateWeb = async (
 
   if (!channel) return { result: false, value: "channel missing" };
 
-  const user = await queryHandler.fetchUserDetailsUsingPlatform("discord", platformId);
-
+  const user = await queryHandler.fetchUserDetailsFromPlatformId("discord", platformId);
   if (user == null || !user.node ) {
     return {
       result: false,
@@ -57,7 +56,7 @@ export const onThreadCreateWeb = async (
   const {id} = user.node;
 
   const socialPlatform = await queryHandler.fetchSocialPlatform(community as string);
-  const {communityID } = socialPlatform.node;
+  const {communityId } = socialPlatform.node;
 
   const thread = await channel.threads
     .create({
@@ -76,7 +75,7 @@ export const onThreadCreateWeb = async (
     return { result: false, value: "could not create thread" };
 
   const threadDetails = {
-    communityId: communityID as string,
+    communityId: communityId as string,
     userID: id as string,
     threadId:thread.id,
     title: String(thread.name),

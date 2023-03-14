@@ -1,5 +1,5 @@
 type Platform{
-  platormName: String! @string(maxLength: 2000)
+  platformName: String! @string(maxLength: 2000)
   platformUsername: String! @string(maxLength: 2000) 
   platformAvatar: String! @string(maxLength: 2000) 
   platformId: String! @string(maxLength: 2000) 

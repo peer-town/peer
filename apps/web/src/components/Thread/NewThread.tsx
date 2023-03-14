@@ -27,7 +27,7 @@ const NewThread = (props) => {
   const discordUserName = authorPlatformDetails.data?.platformUsername;
 
   const onThreadSumbit = async () => {
-    if (thread.length === 0) {
+    if (thread?.length === 0) {
       toast.error("Empty thread");
       return;
     }
@@ -70,10 +70,10 @@ const NewThread = (props) => {
           <option key="any" value="any">
             Any
           </option>
-          {communities.data.map((community) => {
+          {communities?.data?.map((community) => {
             return (
-              <option key={community.node.id} value={community.node.platformId}>
-                {community.node.communityName}
+              <option key={community?.node?.id} value={community?.node?.platformId}>
+                {community?.node?.communityName}
               </option>
             );
           })}
