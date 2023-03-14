@@ -46,7 +46,7 @@ export const composeQueryHandler = () => {
                   edges {
                     node {
                       id
-                      userID
+                      userId
                       platform
                       platformId
                       communityId

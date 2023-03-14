@@ -22,9 +22,9 @@ const Home: NextPage = () => {
   useEffect(()=>{
     if (threads.data && threads.data?.length>=0){
       setLoading(false);
-    } 
+    }
   },[threads])
-  
+
   if(loading){
     return <div>Loading...</div>;
   }

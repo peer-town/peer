@@ -30,6 +30,10 @@ export const publicRouter = router({
     return allCommunities;
   }),
 
+  fetchAllCommunities: publicProcedure.query(async () => {
+    return await queryHandler.fetchAllCommunities();
+  }),
+
   getAuthorDiscord: publicProcedure
     .input(z.object({ address: z.string() }))
     .query(async ({ input }) => {
