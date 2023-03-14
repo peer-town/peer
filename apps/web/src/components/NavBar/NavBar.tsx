@@ -10,7 +10,7 @@ import {ConnectWalletButton, PrimaryButton} from "../Button";
 import * as utils from "../../utils";
 import {isRight} from "../../utils/fp";
 import {WebOnBoardModal} from "../Modal";
-import {constants} from "../../config";
+import {constants, getDiscordAuthUrl} from "../../config";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
@@ -21,8 +21,9 @@ const NavBar = (props) => {
   const {address} = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const createUser = trpc.user.createUser.useMutation();
-  const [didSession] = useLocalStorage("didSession", "");
+  const updateUser = trpc.user.updateUser.useMutation();
   const currentUser = trpc.user.getUser.useQuery({address});
+  const [didSession, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
 
   useEffect(() => {
     const profile = localStorage.getItem("discord");
@@ -46,6 +47,7 @@ const NavBar = (props) => {
     if (isRight(existingUser) && !existingUser.value.id) {
       setWebOnBoarding(true);
     }
+    props.handleDidSession(true);
   }
 
   const handleWebOnboardSubmit = async (details) => {
@@ -53,7 +55,7 @@ const NavBar = (props) => {
       session: didSession,
       userPlatformDetails: {
         platformId: constants.PLATFORM_DEVNODE_ID,
-        platormName: constants.PLATFORM_DEVNODE_NAME,
+        platformName: constants.PLATFORM_DEVNODE_NAME,
         platformUsername: details.name,
         platformAvatar: details.imageUrl,
       },
@@ -133,7 +135,7 @@ const NavBar = (props) => {
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
                   <PrimaryButton title={"Ask a question"} onClick={() => {}} />
-                  <ConnectWalletButton onSessionCreated={handleOnUserConnected}/>
+                  <ConnectWalletButton onSessionCreated={handleOnUserConnected} setDidSession={setDidSession} removeDidSession={removeDidSession}/>
                 </div>
               </div>
             </div>

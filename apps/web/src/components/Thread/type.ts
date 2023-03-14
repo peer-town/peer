@@ -1,6 +1,6 @@
 export type Platform = {
     platformId : string,
-    platormName : string,
+    platformName : string,
     platformAvatar : string,
     platformUsername : string
 }

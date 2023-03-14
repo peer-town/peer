@@ -7,19 +7,20 @@ type Community
 
 type User 
   @loadModel(
-     id: "kjzl6hvfrbw6cbc7kl0eijlv9e5gall76dqqqd10dnyxe5paag1kr2curfo1c32"
+     id: "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju"
     ) {
   id: ID!
 }
 
 type Thread @createModel(accountRelation: LIST, description: "DevNode Thread") {
   author: DID! @documentAccount
-  communityID: StreamID! @documentReference(model: "Community")
-  community: Community! @relationDocument(property: "communityID")
-  UserID: StreamID! @documentReference(model: "User")
-  User: User! @relationDocument(property: "UserID")
-  threadID:String! @string(maxLength: 2000) 
+  communityId: StreamID! @documentReference(model: "Community")
+  community: Community! @relationDocument(property: "communityId")
+  userId: StreamID! @documentReference(model: "User")
+  user: User! @relationDocument(property: "userId")
+  threadId:String! @string(maxLength: 2000) 
   createdFrom: String! @string(maxLength: 2000) 
   title: String! @string(maxLength: 2000)
+  body: String! @string(maxLength: 2000)
   createdAt: DateTime! @string(maxLength: 100)
 }

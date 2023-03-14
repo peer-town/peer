@@ -15,7 +15,7 @@ const createUserSchema = z.object({
   session: z.string(),
   userPlatformDetails: z.object({
     platformId: z.string(),
-    platormName: z.string(),
+    platformName: z.string(),
     platformAvatar: z.string(),
     platformUsername: z.string(),
   }),
@@ -46,6 +46,20 @@ export const userRouter = router({
       try {
         const handler = await getHandler(input.session);
         const response = await handler.createUser(input.userPlatformDetails as any, input.walletAddress);
+        return (response.errors && response.errors.length > 0)
+          ? left(response.errors)
+          : right(response.data);
+      } catch (e) {
+        return left(e);
+      }
+    }),
+
+    updateUser: publicProcedure
+    .input(createUserSchema)
+    .mutation(async ({input}) => {
+      try {
+        const handler = await getHandler(input.session);
+        const response = await handler.updateUser(input.userPlatformDetails as any, input.walletAddress);
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
           : right(response.data);

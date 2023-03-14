@@ -14,7 +14,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const {disconnect} = useDisconnect()
   const [loading, setLoading] = useState(false)
   const [, setDid, removeDid] = useLocalStorage("did", "");
-  const [, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
+  
 
   const generateDidSession = async (address: string, connector: any) => {
     const provider = await connector.getProvider();
@@ -24,7 +24,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
       resources: [`ceramic://*`],
       expiresInSecs: config.didSession.expiresInSecs,
     });
-    setDidSession(session.serialize());
+    props.setDidSession(session.serialize());
     setDid(session.did.id);
   };
 
@@ -40,7 +40,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
     },
     onDisconnect() {
       removeDid();
-      removeDidSession();
+      props.removeDidSession();
     }
   });
 
