@@ -3,6 +3,7 @@ export const formatDid = (did: string) => {
 }
 
 export const formatWalletAddress = (address: string, start = 6, end = 4) => {
+  if (!address) return "";
   return `${address.slice(0, start)}...${address.slice(-1 * end)}`;
 }
 

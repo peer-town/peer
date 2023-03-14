@@ -9,9 +9,10 @@ import {toast} from "react-toastify";
 import {ConnectWalletButton, PrimaryButton} from "../Button";
 import * as utils from "../../utils";
 import {isRight} from "../../utils/fp";
-import {WebOnBoardModal} from "../Modal";
-import {constants, getDiscordAuthUrl} from "../../config";
+import {InterfacesModal, WebOnBoardModal} from "../Modal";
+import {constants} from "../../config";
 import useLocalStorage from "../../hooks/useLocalStorage";
+import {has, get, isEmpty} from "lodash";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -20,25 +21,26 @@ const NavBar = (props) => {
   const code = router.query.code as string;
   const {address} = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
+  const [socialInterfaces, setSocialInterfaces] = useState(false);
+  const [didSession, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
+
   const createUser = trpc.user.createUser.useMutation();
   const updateUser = trpc.user.updateUser.useMutation();
   const currentUser = trpc.user.getUser.useQuery({address});
-  const [didSession, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
 
   useEffect(() => {
-    const profile = localStorage.getItem("discord");
-    if (code && !profile) {
-      handleDiscordAuthCallback(code).catch((e) => {
-        console.error(e)
-      })
+    if (code) {
+      handleDiscordAuthCallback(code).catch(console.log)
     }
   }, [code]);
 
   const handleDiscordAuthCallback = async (code: string) => {
     const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
+    if (!response.ok) {
+      return;
+    }
     const profile = await response.json();
-    localStorage.setItem("discord", JSON.stringify(profile));
-    toast.success("Successfully logged in with discord");
+    await updateUserProfileWithDiscord(profile);
     props.handleDiscordUser(true);
   }
 
@@ -46,6 +48,14 @@ const NavBar = (props) => {
     const existingUser = await trpcProxy.user.getUser.query({address});
     if (isRight(existingUser) && !existingUser.value.id) {
       setWebOnBoarding(true);
+    } else {
+      if(has(existingUser, "value.userPlatforms")) {
+        const platforms = get(existingUser, "value.userPlatforms");
+        const hasDiscord = platforms.filter((platform) => platform.platformName === constants.PLATFORM_DISCORD_NAME);
+        if (isEmpty(hasDiscord)) {
+          setSocialInterfaces(true);
+        }
+      }
     }
     props.handleDidSession(true);
   }
@@ -63,13 +73,32 @@ const NavBar = (props) => {
     });
     if (isRight(user)) {
       await currentUser.refetch();
+      setWebOnBoarding(false);
+      setSocialInterfaces(true);
+    }
+  }
+
+  const updateUserProfileWithDiscord = async (profile) => {
+    const user = await updateUser.mutateAsync({
+      session: didSession,
+      userPlatformDetails: {
+        platformId: profile.id,
+        platformName: constants.PLATFORM_DISCORD_NAME,
+        platformUsername: utils.getDiscordUsername(profile.username, profile.discriminator),
+        platformAvatar: utils.getDiscordAvatarUrl(profile.id, profile.avatar),
+      },
+      walletAddress: address,
+    });
+    if (isRight(user)) {
+      toast.success("Updated profile with discord info!");
+      await currentUser.refetch();
     }
   }
 
   const getUserAvatar = (user) => {
     if(!user) {return}
-    if (user.data && isRight(user.data) && user.data.value.id) {
-      return user.data.value.userPlatforms[0].platformAvatar;
+    if (has(user, "data.value.userPlatforms[0].platformAvatar")) {
+      return get(user, "data.value.userPlatforms[0].platformAvatar");
     }
   }
 
@@ -90,7 +119,10 @@ const NavBar = (props) => {
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
               <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
                 <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
-                  <Link href="/">
+                  <Link href={{
+                    pathname: address ? `/[id]/profile` : `/`,
+                    query: { id: address },
+                  }}>
                     <Image
                       width="44"
                       height="44"
@@ -145,6 +177,7 @@ const NavBar = (props) => {
               open={webOnboarding}
               onClose={() => setWebOnBoarding(false)}
             />
+            <InterfacesModal open={socialInterfaces} onClose={() => setSocialInterfaces(false)} />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
               <div className="mx-auto max-w-3xl space-y-1 px-2 pt-2 pb-3 sm:px-4">

@@ -18,6 +18,12 @@ export const publicRouter = router({
     return allUsers;
   }),
 
+  fetchAllUserThreads: publicProcedure
+    .input(z.object({ address: z.string() }))
+    .query(async ({input}) => {
+    return await queryHandler.fetchAllUserThreads(input.address);
+  }),
+
   fetchCommunities: publicProcedure.query(async () => {
     const allCommunities =
       await queryHandler.fetchAllCommunitiesPlatformDetails("discord");

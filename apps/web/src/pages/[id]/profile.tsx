@@ -4,44 +4,39 @@ import {AvatarCard} from "../../components/AvatarCard";
 import {useRouter} from "next/router";
 import {Layout} from "../../components/Layout";
 import {Back} from "../../components/Button/Back/Back";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Tab} from "@headlessui/react";
 import ThreadCard from "../../components/ThreadCard";
 import * as utils from "../../utils";
 import {FlexColumn, FlexRow} from "../../components/Flex";
+import {trpc} from "../../utils/trpc";
+import {has, get} from "lodash";
 
 const Profile = () => {
   const router = useRouter();
-  const profileId = router.query.id as string;
+  const address = router.query.id as string;
+  const user = trpc.user.getUser.useQuery({address});
+  const questions = trpc.public.fetchAllUserThreads.useQuery({address}).data;
+  const [profile, setProfile] = useState<any>();
+  const tabs = ["Questions", "Answers"];
+  const [categories, setCategories] = useState({
+    Questions: questions,
+    Answers: [],
+  });
 
-  const tabs = ["All", "Questions", "Answers"];
+  useEffect(() => {
+    if(has(user, "data.value.userPlatforms[0]")) {
+      setProfile(get(user, "data.value.userPlatforms[0]"));
+    }
+  }, [user]);
 
-  let [categories] = useState({
-    All: [
-      {
-        id: '1',
-        title: 'Does drinking coffee make you smarter?',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
-    Questions: [
-      {
-        id: '1',
-        title: 'Is tech making coffee better or worse?',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
-    Answers: [
-      {
-        id: '1',
-        title: 'Ask Me Anything: 10 answers to your questions about coffee',
-        author: {id: '1'},
-        createdAt: Date.now(),
-      },
-    ],
-  })
+  useEffect(() => {
+    if (questions) {
+      setCategories((prev) => {
+        return {...prev, Questions: questions}
+      });
+    }
+  }, [questions]);
 
   return (
     <Layout
@@ -54,11 +49,11 @@ const Profile = () => {
             <Back link={"/"}/>
             <FlexRow classes="mt-6  justify-between">
               <FlexRow>
-                <AvatarCard image={undefined} imageSize={76}/>
+                <AvatarCard image={profile && profile.platformAvatar} imageSize={76}/>
                 <FlexColumn classes="ml-7 gap-2">
-                  <span className="text-xl">Atul Patare</span>
+                  <span className="text-xl">{profile && profile.platformUsername}</span>
                   <Badge
-                    text={utils.formatWalletAddress("0x7c98C2DEc5038f00A2cbe8b7A64089f9c0b51991")}
+                    text={utils.formatWalletAddress(address)}
                     onClick={() => {
                     }}
                   />
@@ -77,9 +72,9 @@ const Profile = () => {
                 {tabs && tabs.map((name) => (
                   <Tab as={"div"} key={name} className={({selected}) =>
                     utils.classNames(
-                      'w-max px-1 py-2.5 text-sm font-medium leading-5',
+                      'cursor-pointer w-max px-1 py-2.5 text-sm font-medium leading-5 focus:outline-none',
                       selected
-                        ? 'border-b-2 border-b-black hove:ring-0'
+                        ? 'border-b-2 border-b-black hove:ring-0 '
                         : ''
                     )}
                   >
@@ -91,8 +86,8 @@ const Profile = () => {
                 {Object.values(categories).map((threads, idx) => (
                   <Tab.Panel key={idx}>
                     <ul>
-                      {threads.map((thread, index) => (
-                        <ThreadCard key={index} thread={thread}/>
+                      {threads && threads.map((thread, index) => (
+                        <ThreadCard key={index} thread={thread.node}/>
                       ))}
                     </ul>
                   </Tab.Panel>
@@ -104,20 +99,20 @@ const Profile = () => {
         <div className="max-w-sm w-full p-12">
           <p className="text-2xl">Communities</p>
           <FlexColumn classes="mt-6 gap-6">
-            <AvatarCard image={undefined} imageSize={44} name={"Radicle"} />
-            <AvatarCard image={undefined} imageSize={44} name={"RedStar"} />
+            <AvatarCard image={undefined} imageSize={44} name={"Radicle"}/>
+            <AvatarCard image={undefined} imageSize={44} name={"RedStar"}/>
           </FlexColumn>
 
-          <hr className="my-6" />
+          <hr className="my-6"/>
           <p className="mt-14 text-2xl">Reputation</p>
           <table className="mt-6 text-gray-500 w-full table-auto">
             <tbody>
             <tr>
               <td className="align-top">Topics</td>
               <td className="flex flex-col gap-1 items-end">
-                <Badge text={"python-35pts"} />
-                <Badge text={"web-90pts"} />
-                <Badge text={"polygon-20pts"} />
+                <Badge text={"python-35pts"}/>
+                <Badge text={"web-90pts"}/>
+                <Badge text={"polygon-20pts"}/>
               </td>
             </tr>
             <tr>

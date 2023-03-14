@@ -150,7 +150,7 @@ export const composeQueryHandler = () => {
                 author {
                   id
                 }
-                User {
+                user {
                   id
                   walletAddress
                   author {
@@ -181,7 +181,7 @@ export const composeQueryHandler = () => {
                       threadId
                       createdAt
                       createdFrom
-                      User {
+                      user {
                         id
                         walletAddress
                         author {
@@ -205,7 +205,7 @@ export const composeQueryHandler = () => {
                         author {
                           id
                         }
-                        User {
+                        user {
                           id
                           walletAddress
                           author {
@@ -384,6 +384,10 @@ export const composeQueryHandler = () => {
         })[0]
       );
       return platfromAuthor;
+    },
+    fetchAllUserThreads: async function (walletAddress: string) {
+      const allThreads = await this.fetchAllThreads();
+      return allThreads.filter((thread: any) => thread.node.User.walletAddress === walletAddress);
     },
   };
 };

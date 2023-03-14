@@ -7,6 +7,8 @@ describe("utils.text", () => {
   it("should return a formatted wallet address", () => {
     const output = "0x7c98...1991"
     expect(utils.formatWalletAddress(walletAddress)).toEqual(output);
+    expect(utils.formatWalletAddress(undefined)).toEqual("");
+    expect(utils.formatWalletAddress(null)).toEqual("");
   });
 
   it("should return a formatted did session/id", () => {
@@ -17,5 +19,21 @@ describe("utils.text", () => {
   it("should return concatenation of class names", () => {
     expect(utils.classNames("a", "b", "custom")).toEqual("a b custom");
     expect(utils.classNames("a", null, undefined, "b", "c")).toEqual("a b c");
+  });
+});
+
+describe("utils.discord", () => {
+
+  it("should return auth url", () => {
+    expect(utils.getDiscordAuthUrl()).not.toBeNull();
+  });
+
+  it("should return discord username structure", () => {
+    expect(utils.getDiscordUsername("abc", "123")).toEqual("abc#123");
+  });
+
+  it("should return discord avatar url", () => {
+    const expected = "https://cdn.discordapp.com/avatars/123/4567.jpg";
+    expect(utils.getDiscordAvatarUrl("123", "4567")).toEqual(expected);
   });
 });
