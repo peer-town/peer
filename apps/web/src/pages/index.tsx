@@ -22,9 +22,9 @@ const Home: NextPage = () => {
   useEffect(()=>{
     if (threads.data && threads.data?.length>=0){
       setLoading(false);
-    } 
+    }
   },[threads])
-  
+
   if(loading){
     return <div>Loading...</div>;
   }
@@ -78,7 +78,7 @@ const Home: NextPage = () => {
       handleDidSession={handleDidSession}
     >
       <main className="h-full">
-        <div className="pt-[50px]">
+        <div className="pt-[50px] px-6">
           <div className="space-y-[50px] border-b border-gray-200 pb-5 sm:pb-0">
             <div className="text-[48px] font-medium text-[#08010D]">
               Discover

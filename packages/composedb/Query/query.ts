@@ -46,7 +46,7 @@ export const composeQueryHandler = () => {
                   edges {
                     node {
                       id
-                      userID
+                      userId
                       platform
                       platformId
                       communityId
@@ -150,7 +150,7 @@ export const composeQueryHandler = () => {
                 author {
                   id
                 }
-                User {
+                user {
                   id
                   walletAddress
                   author {
@@ -181,7 +181,7 @@ export const composeQueryHandler = () => {
                       threadId
                       createdAt
                       createdFrom
-                      User {
+                      user {
                         id
                         walletAddress
                         author {
@@ -205,7 +205,7 @@ export const composeQueryHandler = () => {
                         author {
                           id
                         }
-                        User {
+                        user {
                           id
                           walletAddress
                           author {

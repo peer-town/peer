@@ -14,7 +14,7 @@ export const CommunityAvatar = (props: CommunityAvatarProps) => {
     >
       <span
         id="tooltip"
-        className="absolute hidden group-hover:flex top-1.5 left-14 w-max px-2 py-1 bg-black rounded-lg text-center text-white">
+        className="absolute hidden z-50 group-hover:flex top-1.5 left-14 w-max px-2 py-1 bg-black rounded-lg text-center text-white">
         {props.name}
       </span>
       <Image
