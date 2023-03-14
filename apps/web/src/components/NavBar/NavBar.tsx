@@ -1,31 +1,35 @@
-import { Popover } from "@headlessui/react";
-import { useAccount } from "wagmi";
+import {Popover} from "@headlessui/react";
+import {useAccount} from "wagmi";
 import Image from "next/image";
-import {useEffect} from "react";
-import { trpc } from "../../utils/trpc";
+import {useEffect, useState} from "react";
+import {trpc, trpcProxy} from "../../utils/trpc";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
 import {ConnectWalletButton, PrimaryButton} from "../Button";
 import * as utils from "../../utils";
+import {isRight} from "../../utils/fp";
+import {WebOnBoardModal} from "../Modal";
+import {constants} from "../../config";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-  const { address } = useAccount();
-
-  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
-    address: address,
-  });
-  const discordUserName = authorPlatformDetails.data?.platformUsername ;
-  discordUserName && props.handleDiscordUser(true);
+  const {address} = useAccount();
+  const [webOnboarding, setWebOnBoarding] = useState(false);
+  const createUser = trpc.user.createUser.useMutation();
+  const [didSession] = useLocalStorage("didSession", "");
+  const currentUser = trpc.user.getUser.useQuery({address});
 
   useEffect(() => {
     const profile = localStorage.getItem("discord");
     if (code && !profile) {
-      handleDiscordAuthCallback(code).catch((e) => { console.error(e) })
+      handleDiscordAuthCallback(code).catch((e) => {
+        console.error(e)
+      })
     }
   }, [code]);
 
@@ -35,6 +39,36 @@ const NavBar = (props) => {
     localStorage.setItem("discord", JSON.stringify(profile));
     toast.success("Successfully logged in with discord");
     props.handleDiscordUser(true);
+  }
+
+  const handleOnUserConnected = async () => {
+    const existingUser = await trpcProxy.user.getUser.query({address});
+    if (isRight(existingUser) && !existingUser.value.id) {
+      setWebOnBoarding(true);
+    }
+  }
+
+  const handleWebOnboardSubmit = async (details) => {
+    const user = await createUser.mutateAsync({
+      session: didSession,
+      userPlatformDetails: {
+        platformId: constants.PLATFORM_DEVNODE_ID,
+        platormName: constants.PLATFORM_DEVNODE_NAME,
+        platformUsername: details.name,
+        platformAvatar: details.imageUrl,
+      },
+      walletAddress: address,
+    });
+    if (isRight(user)) {
+      await currentUser.refetch();
+    }
+  }
+
+  const getUserAvatar = (user) => {
+    if(!user) {return}
+    if (user.data && isRight(user.data) && user.data.value.id) {
+      return user.data.value.userPlatforms[0].platformAvatar;
+    }
   }
 
   return (
@@ -62,7 +96,7 @@ const NavBar = (props) => {
                       width="44"
                       height="44"
                       className="rounded-full"
-                      src="/logo.svg"
+                      src={getUserAvatar(currentUser) || "/logo.svg"}
                       alt=""
                     />
                   </Link>
@@ -102,10 +136,16 @@ const NavBar = (props) => {
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
                   <PrimaryButton title={"Ask a question"} onClick={() => {}} />
-                  <ConnectWalletButton />
+                  <ConnectWalletButton onSessionCreated={handleOnUserConnected}/>
                 </div>
               </div>
             </div>
+
+            <WebOnBoardModal
+              onSubmit={handleWebOnboardSubmit}
+              open={webOnboarding}
+              onClose={() => setWebOnBoarding(false)}
+            />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
               <div className="mx-auto max-w-3xl space-y-1 px-2 pt-2 pb-3 sm:px-4">
