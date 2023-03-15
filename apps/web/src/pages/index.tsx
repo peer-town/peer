@@ -7,11 +7,11 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { trpc } from "../utils/trpc";
 import {Modal} from "../components/Modal";
-import { composeQueryHandler } from "@devnode/composedb";
-
+import {useAppSelector} from "../store";
 
 const Home: NextPage = () => {
-  const threads = trpc.public.fetchAllThreads.useQuery();
+  const communityId = useAppSelector(state => state.community.selectedCommunity);
+  const threads = trpc.public.fetchAllCommunityThreads.useQuery({communityId});
   const [didSession] = useLocalStorage("didSession", "");
   const { isConnected } = useAccount();
   const [isDidSession, setDidSession] = useState(didSession ? true : false);
