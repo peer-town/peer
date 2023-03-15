@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const ThreadCard = ({ thread }) => {
-  const { id, title, author, createdAt, User } = thread;
+  const { id, title, author, createdAt, user } = thread;
 
   return (
     <Link href={`/${id}`} passHref>
@@ -13,12 +13,12 @@ const ThreadCard = ({ thread }) => {
               width={32}
               height={32}
               className="rounded-full"
-              src={User.userPlatforms[0].platformAvatar || "https://placekitten.com/200/200"}
+              src={user.userPlatforms[0].platformAvatar || "https://placekitten.com/200/200"}
               alt=""
             />
             <div>
               <div className="font-semibold">
-                {User.userPlatforms[0].platformUsername}
+                {user.userPlatforms[0].platformUsername}
               </div>
               <div className="font-light text-gray-400">{author.id}</div>
             </div>
