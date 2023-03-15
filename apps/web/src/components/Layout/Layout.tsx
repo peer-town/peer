@@ -1,28 +1,46 @@
 import {NavBar} from "../NavBar";
 import {CommunityAvatar} from "../CommunityAvatar";
 import {trpc} from "../../utils/trpc";
-import {get} from "lodash";
-import Link from "next/link";
+import * as utils from "../../utils";
+import {has, get, isNil, isEmpty} from "lodash";
+import {selectCommunity, useAppDispatch, useAppSelector} from "../../store";
 
 const Layout = (props) => {
+  const dispatch = useAppDispatch();
+  const communityId = useAppSelector(state => state.community.selectedCommunity);
   const communities = trpc.public.fetchAllCommunities.useQuery();
 
+  const handleOnCommunityClick = (id: string) => {
+    dispatch(selectCommunity(id));
+  }
+
   const getCommunityList = () => {
-    if (!communities.data || communities.data.length == 0) {
+    if (isNil(communities.data) || isEmpty(communities.data)) {
       return <></>;
     }
 
+    if (isEmpty(communityId) && has(communities, "data[0].node.id")) {
+        handleOnCommunityClick(get(communities, "data[0].node.id"));
+    }
+
     return communities.data.map((community, index) => {
+      if(!community.node) return <></>;
+
       const name = community.node.communityName;
       const image = get(community, "node.socialPlatforms.edges[0].node.communityAvatar") || "https://placekitten.com/200/200";
-      const redirect = {
-        pathname: `/[id]/community`,
-        query: {id: community.node.id},
-      };
+      const selected = community.node.id == communityId;
       return (
-        <Link key={index} href={redirect}>
-          <CommunityAvatar name={name} image={image}/>
-        </Link>
+        <CommunityAvatar
+          classes={utils.classNames(
+            "pr-4 pl-6",
+            selected ? "pr-3 border-r-[3px] rounded-r-sm border-black" : ""
+          )}
+          key={index}
+          name={name}
+          image={image}
+          selected={selected}
+          onClick={() => handleOnCommunityClick(community.node.id)}
+        />
       );
     });
   }
@@ -34,7 +52,7 @@ const Layout = (props) => {
         handleDidSession={props.handleDidSession}
       />
       <div className="flex flex-row">
-        <div className="flex flex-col gap-7 px-6 py-10 border-r h-screen sm:hidden md:flex">
+        <div className="flex flex-col gap-7 py-10 border-r h-screen sm:hidden md:flex">
           {getCommunityList()}
         </div>
         <div className="relative mx-auto w-full grow px-6">

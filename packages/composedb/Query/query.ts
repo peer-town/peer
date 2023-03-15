@@ -387,7 +387,11 @@ export const composeQueryHandler = () => {
     },
     fetchAllUserThreads: async function (walletAddress: string) {
       const allThreads = await this.fetchAllThreads();
-      return allThreads.filter((thread: any) => thread.node.User.walletAddress === walletAddress);
+      return allThreads.filter((thread: any) => thread.node.user.walletAddress === walletAddress);
+    },
+    fetchAllCommunityThreads: async function (communityId: string) {
+      const allThreads = await this.fetchAllThreads();
+      return allThreads.filter((thread: any) => thread.node.communityId === communityId);
     },
   };
 };

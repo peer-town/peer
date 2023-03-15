@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import {EthereumClient, modalConnectors, walletConnectProvider} from "@web3modal/ethereum";
 import {Web3Modal} from '@web3modal/react'
 import {config} from '../config';
+import {Provider} from "react-redux";
+import {store} from "../store";
 
 const projectId = config.walletConnect.projectId;
 const chains = [mainnet, polygon, avalanche, arbitrum, bsc, optimism, gnosis, fantom]
@@ -35,7 +37,9 @@ const MyApp: AppType = ({Component, pageProps}) => {
           pauseOnHover
           theme="light"
         />
-        <Component {...pageProps} />
+        <Provider store={store}>
+          <Component {...pageProps} />
+        </Provider>
       </WagmiConfig>
       <Web3Modal
         themeMode="light"
