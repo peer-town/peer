@@ -31,10 +31,7 @@ const Layout = (props) => {
       const selected = community.node.id == communityId;
       return (
         <CommunityAvatar
-          classes={utils.classNames(
-            "pr-4 pl-6",
-            selected ? "pr-3 border-r-[3px] rounded-r-sm border-black" : ""
-          )}
+          classes={""}
           key={index}
           name={name}
           image={image}
@@ -52,7 +49,17 @@ const Layout = (props) => {
         handleDidSession={props.handleDidSession}
       />
       <div className="flex flex-row">
-        <div className="flex flex-col gap-7 py-10 border-r h-screen sm:hidden md:flex">
+        <div className="flex flex-col gap-7 py-10 border-r h-screen sm:hidden md:flex " >
+        <CommunityAvatar
+          classes={utils.classNames(
+            "bg-slate-300	w-full rounded-full hover:rounded-xl hover:bg-slate-500" 
+          )}
+          width={25}
+          name={"create community"}
+          image={"/plus.png"}
+          selected={false}
+          onClick={() => {}}
+        />
           {getCommunityList()}
         </div>
         <div className="relative mx-auto w-full grow px-6">
