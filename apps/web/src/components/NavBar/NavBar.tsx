@@ -1,36 +1,48 @@
-import {Popover} from "@headlessui/react";
-import {useAccount} from "wagmi";
+import { Popover } from "@headlessui/react";
+import { useAccount } from "wagmi";
 import Image from "next/image";
-import {useEffect, useState} from "react";
-import {trpc, trpcProxy} from "../../utils/trpc";
+import { useEffect, useState } from "react";
+import { trpc, trpcProxy } from "../../utils/trpc";
 import Link from "next/link";
-import {useRouter} from "next/router";
-import {toast} from "react-toastify";
-import {ConnectWalletButton, PrimaryButton} from "../Button";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { ConnectWalletButton, PrimaryButton } from "../Button";
 import * as utils from "../../utils";
-import {isRight} from "../../utils/fp";
-import {InterfacesModal, WebOnBoardModal} from "../Modal";
-import {constants} from "../../config";
+import { isRight } from "../../utils/fp";
+import { InterfacesModal, WebOnBoardModal } from "../Modal";
+import { constants } from "../../config";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import {has, get, isEmpty} from "lodash";
+import { has, get, isEmpty } from "lodash";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
-  const {address} = useAccount();
+  const { address } = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
-  const [didSession, setDidSession, removeDidSession] = useLocalStorage("didSession", "");
+  const [didSession, setDidSession, removeDidSession] = useLocalStorage(
+    "didSession",
+    ""
+  );
 
   const createUser = trpc.user.createUser.useMutation();
   const updateUser = trpc.user.updateUser.useMutation();
-  const currentUser = trpc.user.getUser.useQuery({address});
+  const currentUser = trpc.user.getUser.useQuery({ address });
+  const userDiscordDetails = trpc.user.getUserPlatformDetails.useQuery({
+    address,
+    platform: "discord",
+  });
 
   useEffect(() => {
+    if (has(userDiscordDetails, "data.value.platformId")) {
+      props.handleDiscordUser(true);
+    }
+  }, [userDiscordDetails]);
+  useEffect(() => {
     if (code) {
-      handleDiscordAuthCallback(code).catch(console.log)
+      handleDiscordAuthCallback(code).catch(console.log);
     }
   }, [code]);
 
@@ -42,23 +54,26 @@ const NavBar = (props) => {
     const profile = await response.json();
     await updateUserProfileWithDiscord(profile);
     props.handleDiscordUser(true);
-  }
+  };
 
   const handleOnUserConnected = async () => {
-    const existingUser = await trpcProxy.user.getUser.query({address});
+    const existingUser = await trpcProxy.user.getUser.query({ address });
     if (isRight(existingUser) && !existingUser.value.id) {
       setWebOnBoarding(true);
     } else {
-      if(has(existingUser, "value.userPlatforms")) {
+      if (has(existingUser, "value.userPlatforms")) {
         const platforms = get(existingUser, "value.userPlatforms");
-        const hasDiscord = platforms.filter((platform) => platform.platformName === constants.PLATFORM_DISCORD_NAME);
+        const hasDiscord = platforms.filter(
+          (platform) =>
+            platform.platformName === constants.PLATFORM_DISCORD_NAME
+        );
         if (isEmpty(hasDiscord)) {
           setSocialInterfaces(true);
         }
       }
     }
     props.handleDidSession(true);
-  }
+  };
 
   const handleWebOnboardSubmit = async (details) => {
     const user = await createUser.mutateAsync({
@@ -76,7 +91,7 @@ const NavBar = (props) => {
       setWebOnBoarding(false);
       setSocialInterfaces(true);
     }
-  }
+  };
 
   const updateUserProfileWithDiscord = async (profile) => {
     const user = await updateUser.mutateAsync({
@@ -84,7 +99,10 @@ const NavBar = (props) => {
       userPlatformDetails: {
         platformId: profile.id,
         platformName: constants.PLATFORM_DISCORD_NAME,
-        platformUsername: utils.getDiscordUsername(profile.username, profile.discriminator),
+        platformUsername: utils.getDiscordUsername(
+          profile.username,
+          profile.discriminator
+        ),
         platformAvatar: utils.getDiscordAvatarUrl(profile.id, profile.avatar),
       },
       walletAddress: address,
@@ -93,14 +111,16 @@ const NavBar = (props) => {
       toast.success("Updated profile with discord info!");
       await currentUser.refetch();
     }
-  }
+  };
 
   const getUserAvatar = (user) => {
-    if(!user) {return}
+    if (!user) {
+      return;
+    }
     if (has(user, "data.value.userPlatforms[0].platformAvatar")) {
       return get(user, "data.value.userPlatforms[0].platformAvatar");
     }
-  }
+  };
 
   return (
     <>
@@ -119,10 +139,12 @@ const NavBar = (props) => {
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
               <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
                 <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
-                  <Link href={{
-                    pathname: address ? `/[id]/profile` : `/`,
-                    query: { id: address },
-                  }}>
+                  <Link
+                    href={{
+                      pathname: address ? `/[id]/profile` : `/`,
+                      query: { id: address },
+                    }}
+                  >
                     <Image
                       width="44"
                       height="44"
@@ -132,7 +154,7 @@ const NavBar = (props) => {
                     />
                   </Link>
 
-                  <div className="flex items-center lg:w-[80%] lg:mx-0 lg:max-w-none xl:px-0">
+                  <div className="flex items-center lg:mx-0 lg:w-[80%] lg:max-w-none xl:px-0">
                     <div className="w-full">
                       <label htmlFor="search" className="sr-only">
                         Search
@@ -167,7 +189,11 @@ const NavBar = (props) => {
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
                   <PrimaryButton title={"Ask a question"} onClick={() => {}} />
-                  <ConnectWalletButton onSessionCreated={handleOnUserConnected} setDidSession={setDidSession} removeDidSession={removeDidSession}/>
+                  <ConnectWalletButton
+                    onSessionCreated={handleOnUserConnected}
+                    setDidSession={setDidSession}
+                    removeDidSession={removeDidSession}
+                  />
                 </div>
               </div>
             </div>
@@ -177,7 +203,10 @@ const NavBar = (props) => {
               open={webOnboarding}
               onClose={() => setWebOnBoarding(false)}
             />
-            <InterfacesModal open={socialInterfaces} onClose={() => setSocialInterfaces(false)} />
+            <InterfacesModal
+              open={socialInterfaces}
+              onClose={() => setSocialInterfaces(false)}
+            />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
               <div className="mx-auto max-w-3xl space-y-1 px-2 pt-2 pb-3 sm:px-4">

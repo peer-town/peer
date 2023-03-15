@@ -1,10 +1,14 @@
-import {publicProcedure, router} from "../trpc";
-import {z} from "zod";
-import {composeMutationHandler, composeQueryHandler, definition} from "@devnode/composedb";
-import {ComposeClient} from "@composedb/client";
-import {config} from "../../../config";
-import {left, right} from "../../../utils/fp";
-import {DIDSession} from "did-session";
+import { publicProcedure, router } from "../trpc";
+import { z } from "zod";
+import {
+  composeMutationHandler,
+  composeQueryHandler,
+  definition,
+} from "@devnode/composedb";
+import { ComposeClient } from "@composedb/client";
+import { config } from "../../../config";
+import { left, right } from "../../../utils/fp";
+import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -26,14 +30,16 @@ const getHandler = async (didSession: string) => {
   const session = await DIDSession.fromSession(didSession);
   compose.setDID(session.did);
   return await composeMutationHandler(compose);
-}
+};
 
 export const userRouter = router({
   getUser: publicProcedure
-    .input(z.object({address: z.string()}))
-    .query(async ({input}) => {
+    .input(z.object({ address: z.string() }))
+    .query(async ({ input }) => {
       try {
-        const response = await composeQueryHandler().fetchUserDetails(input.address);
+        const response = await composeQueryHandler().fetchUserDetails(
+          input.address
+        );
         return response && response.node ? right(response.node) : right({});
       } catch (e) {
         return left(e);
@@ -42,11 +48,14 @@ export const userRouter = router({
 
   createUser: publicProcedure
     .input(createUserSchema)
-    .mutation(async ({input}) => {
+    .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
-        const response = await handler.createUser(input.userPlatformDetails as any, input.walletAddress);
-        return (response.errors && response.errors.length > 0)
+        const response = await handler.createUser(
+          input.userPlatformDetails as any,
+          input.walletAddress
+        );
+        return response.errors && response.errors.length > 0
           ? left(response.errors)
           : right(response.data);
       } catch (e) {
@@ -54,15 +63,35 @@ export const userRouter = router({
       }
     }),
 
-    updateUser: publicProcedure
+  updateUser: publicProcedure
     .input(createUserSchema)
-    .mutation(async ({input}) => {
+    .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
-        const response = await handler.updateUser(input.userPlatformDetails as any, input.walletAddress);
-        return (response.errors && response.errors.length > 0)
+        const response = await handler.updateUser(
+          input.userPlatformDetails as any,
+          input.walletAddress
+        );
+        return response.errors && response.errors.length > 0
           ? left(response.errors)
           : right(response.data);
+      } catch (e) {
+        return left(e);
+      }
+    }),
+
+  getUserPlatformDetails: publicProcedure
+    .input(z.object({ address: z.string(), platform: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const authorDiscord =
+          await composeQueryHandler().fetchAuthorPlatformDetails(
+            input.address,
+            input.platform
+          );
+        return authorDiscord 
+          ? right(authorDiscord)
+          : right({});
       } catch (e) {
         return left(e);
       }

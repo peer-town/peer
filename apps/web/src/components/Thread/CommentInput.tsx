@@ -3,8 +3,8 @@ import { useAccount } from "wagmi";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { DIDSession } from "did-session";
 import { trpc } from "../../utils/trpc";
-import { toast } from 'react-toastify';
-
+import { toast } from "react-toastify";
+import { has, get } from "lodash";
 import { Platform } from "./type";
 
 const CommentInput = (props: { threadId: string; refresh: () => void }) => {
@@ -24,14 +24,19 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
     getData();
   }, [didSession]);
 
-  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
-    address: address,
+  const authorPlatformDetails = trpc.user.getUserPlatformDetails.useQuery({
+    address,
+    platform: "discord",
   });
-  const discordUserName = authorPlatformDetails.data?.platformUsername ;
+  const discordUserName = has(
+    authorPlatformDetails,
+    "data.value.platformUsername"
+  )
+    ? get(authorPlatformDetails, "data.value.platformUsername")
+    : "Anonymous";
 
   const onCommentSubmit = async () => {
-
-    if(comment?.length === 0){
+    if (comment?.length === 0) {
       toast.error("Empty comment");
       return;
     }
@@ -43,8 +48,8 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
           threadId: props.threadId,
           comment: String(comment),
           discordUserName: String(discordUserName),
-          didSession:String(didSession),
-          platformId: authorPlatformDetails.data.platformId,
+          didSession: String(didSession),
+          platformId: get(authorPlatformDetails, "data.value.platformId"),
         }),
         method: "POST",
         headers: {
@@ -52,7 +57,7 @@ const CommentInput = (props: { threadId: string; refresh: () => void }) => {
         },
       }
     ).then((response) => {
-      if(!response.ok){
+      if (!response.ok) {
         toast.error("Invalid thread or Api failed");
       }
       setComment("");
