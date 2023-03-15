@@ -44,7 +44,7 @@ const Profile = () => {
       handleDidSession={() => {}}
     >
       <div className="flex flex-row">
-        <div className="w-full h-screen border-x px-12">
+        <div className="w-full h-screen border-r px-12">
           <div className="mt-14">
             <Back link={"/"}/>
             <FlexRow classes="mt-6  justify-between">
@@ -85,7 +85,7 @@ const Profile = () => {
               <Tab.Panels className="mt-11">
                 {Object.values(categories).map((threads, idx) => (
                   <Tab.Panel key={idx}>
-                    <ul>
+                    <ul className="flex flex-col space-y-[36px]">
                       {threads && threads.map((thread, index) => (
                         <ThreadCard key={index} thread={thread.node}/>
                       ))}
