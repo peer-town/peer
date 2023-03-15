@@ -23,7 +23,7 @@ import express, { response } from "express";
 import cors from "cors";
 import { DIDSession } from "did-session";
 import { ComposeClient } from "@composedb/client";
-import { definition, composeMutationHandler } from "@devnode/composedb";
+import { definition, composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
 
 const app = express();
 app.use(cors());
@@ -35,7 +35,7 @@ const INVOCATION_STRING = "devnode";
 const INVOCATION_CHANNEL = "devnode_signin";
 
 const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 
@@ -66,7 +66,7 @@ client.once("ready", async () => {
   let nodeReady = false;
   while (!nodeReady) {
     console.log("ceramic node not ready");
-    await fetch(String(process.env.NEXT_PUBLIC_CERAMIC_NODE))
+    await fetch(String(process.env.CERAMIC_NODE))
       .then(() => {
         nodeReady = true;
         console.log("ceramic node connected");
@@ -120,14 +120,19 @@ const updateCommunities = async () => {
     if (!userRespose || !userRespose.data) {
       return ;
     } 
+    const community = await composeQueryHandler().fetchCommunityUsingPlatformId(guild.id);
+    if(community && community.node ){
+      return;
+    }
     const communityRespose = await handler.createCommunity(guild.name);
+    
     if (!communityRespose || !communityRespose.data) {
       return ;
     } 
 
 
     const socialPlatformInput = {
-      userID: userRespose.data.createUser.document.id as string,
+      userId: userRespose.data.createUser.document.id as string,
       platform: "discord",
       platformId: guild?.id as string,
       communityId: communityRespose.data.createCommunity.document.id as string,

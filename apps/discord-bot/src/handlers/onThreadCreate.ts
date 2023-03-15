@@ -10,7 +10,7 @@ import {
 import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 
@@ -67,7 +67,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
 
   const threadDetails = {
     communityId: communityId as string,
-    userID: id as string,
+    userId: id as string,
     threadId:thread.id,
     title: String(thread.name),
     createdFrom:"discord", 

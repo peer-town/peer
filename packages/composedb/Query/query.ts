@@ -95,7 +95,7 @@ export const composeQueryHandler = () => {
             edges {
               node {
                 id
-                userID
+                userId
                 platform
                 platformId
                 communityId
@@ -377,13 +377,13 @@ export const composeQueryHandler = () => {
             return community.node.socialPlatforms.edges;
         });
       }
-      const platfromAuthor = allCommunities.map((community: any) =>
+      const communities = allCommunities.map((community: any) =>
         community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
           if (socialPlatform && socialPlatform.node!== undefined)
             return socialPlatform.node.platform === communityPlatform;
         })[0]
       );
-      return platfromAuthor;
+      return communities;
     },
     fetchAllUserThreads: async function (walletAddress: string) {
       const allThreads = await this.fetchAllThreads();
@@ -393,5 +393,15 @@ export const composeQueryHandler = () => {
       const allThreads = await this.fetchAllThreads();
       return allThreads.filter((thread: any) => thread.node.communityId === communityId);
     },
+    fetchCommunityUsingPlatformId: async function (platformId: string) {
+      const allCommunities = await this.fetchAllCommunities();
+      const community = allCommunities.map((community: any) =>
+        community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
+          if (socialPlatform && socialPlatform.node!== undefined)
+            return socialPlatform.node.platformId === platformId;
+        })[0]
+    )[0]
+    return community;
+  },
   };
 };

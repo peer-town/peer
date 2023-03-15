@@ -13,7 +13,7 @@ import {
 import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 
@@ -109,7 +109,7 @@ export const onMessageCreate = async (message: Message) => {
 
     const commentInput ={
       threadId: String(thread.id) ,
-      userID:id as string,//streamId of User
+      userId:id as string,//streamId of User
       comment:String(message.content),//comment text
       createdFrom:"discord", //platform name
       createdAt: thread.createdAt?.toISOString(),

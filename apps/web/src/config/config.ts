@@ -3,7 +3,7 @@ export const config = {
   discordApiEndpoint: "https://discord.com/api",
   discordOAuth: {
     clientId: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_ID || "",
-    clientSecret: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_SECRET || "",
+    clientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET || "",
     redirectUrl: process.env.NEXT_PUBLIC_DISCORD_OAUTH_REDIRECT_URL || "",
   },
   walletConnect: {

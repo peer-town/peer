@@ -6,7 +6,7 @@ import { definition ,composeMutationHandler, composeQueryHandler } from "@devnod
 import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: String(process.env.NEXT_PUBLIC_CERAMIC_NODE),
+  ceramic: String(process.env.CERAMIC_NODE),
   definition,
 });
 
@@ -58,7 +58,7 @@ export const onCommentCreateWeb = async (
 
   const commentInput ={
     threadId: threadId ,
-    userID:id as string,//streamId of User
+    userId:id as string,//streamId of User
     comment:String(comment),//comment text
     createdFrom:"discord", //platform name
     createdAt: thread.createdAt?.toISOString() as string,

@@ -1,5 +1,5 @@
 export type SocialPlatformInput = {
-  userID: string;
+  userId: string;
   platform: string;
   platformId: string;
   communityId: string;
@@ -14,7 +14,7 @@ export type UserPlatformDetails = {
 };
 export type ThreadInput = {
   communityId: string;
-  userID: string;
+  userId: string;
   title: string;
   createdFrom: string;
   createdAt: string;
@@ -22,7 +22,7 @@ export type ThreadInput = {
 };
 export type CommentInput = {
   threadId: string;
-  userID: string;
+  userId: string;
   comment: string;
   createdFrom: string;
   createdAt: string;

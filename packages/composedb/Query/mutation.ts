@@ -39,7 +39,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
     },
     createSocialPlatform: function (socialPlatform: SocialPlatformInput) {
       const {
-        userID,
+        userId,
         platform,
         platformId,
         communityAvatar,
@@ -53,7 +53,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
             createSocialPlatform(input: $input) {
               document {
                 id
-                userID
+                userId
                 platform
                 platformId
                 communityId
@@ -75,7 +75,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
         {
           input: {
             content: {
-              userID: userID,
+              userId: userId,
               platform: platform,
               platformId: platformId,
               communityId: communityId,
@@ -120,7 +120,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       );
     },
     createThread: function (threadInput: ThreadInput) {
-      const { communityId, userID, title, createdFrom, createdAt, threadId } =
+      const { communityId, userId, title, createdFrom, createdAt, threadId } =
         threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
@@ -142,7 +142,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
           input: {
             content: {
               communityId: communityId, //streamId of community
-              userId: userID, //streamId of User
+              userId: userId, //streamId of User
               threadId: threadId, //discord thread id
               title: title,
               createdFrom: createdFrom, //platform name
@@ -153,7 +153,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       );
     },
     createComment: function (commentInput: CommentInput) {
-      const { threadId, userID, comment, createdFrom, createdAt } =
+      const { threadId, userId, comment, createdFrom, createdAt } =
         commentInput;
 
       return compose.executeQuery<{
@@ -175,7 +175,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
           input: {
             content: {
               threadId: threadId,
-              userId: userID, //streamId of User
+              userId: userId, //streamId of User
               text: comment, //comment text
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,

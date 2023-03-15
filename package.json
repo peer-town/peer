@@ -24,7 +24,9 @@
     "studio": "dotenv -- turbo run studio",
     "composedb:daemon": "dotenv -- turbo run composedb:daemon",
     "composedb:server": "dotenv -- turbo run composedb:server",
-    "composedb:server:docker": "dotenv -- turbo run composedb:server:docker"
+    "composedb:server:docker": "dotenv -- turbo run composedb:server:docker",
+    "dev:build": "yarn run build ; yarn run dev",
+    "dev:startup": "yarn run clean; yarn install ; yarn run build ; yarn run dev"
   },
   "devDependencies": {
     "prettier": "^2.8.1",
