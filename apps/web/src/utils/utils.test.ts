@@ -1,4 +1,5 @@
 import * as utils from "./index";
+import {isRight, left, right} from "./fp";
 
 describe("utils.text", () => {
   const walletAddress = "0x7c98C2DEc5038f00A2cbe8b7A64089f9c0b51991";
@@ -35,5 +36,19 @@ describe("utils.discord", () => {
   it("should return discord avatar url", () => {
     const expected = "https://cdn.discordapp.com/avatars/123/4567.jpg";
     expect(utils.getDiscordAvatarUrl("123", "4567")).toEqual(expected);
+  });
+});
+
+describe("utils.fp", () => {
+  it("should identify left type of either", () => {
+    const lefty = left("sample");
+    expect(lefty).toEqual({tag: "left", value: "sample"});
+    expect(isRight(lefty)).toBeFalsy();
+  });
+
+  it("should identify right type of either", () => {
+    const righty = right("sample");
+    expect(righty).toEqual({tag: "right", value: "sample"});
+    expect(isRight(righty)).toBeTruthy();
   });
 });
