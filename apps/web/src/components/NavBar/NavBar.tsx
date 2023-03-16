@@ -13,6 +13,11 @@ import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { has, get, isEmpty } from "lodash";
+import {
+  useAppDispatch,
+  updateUserDetails,
+  fetchUserDetails,
+} from "../../store";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -34,12 +39,18 @@ const NavBar = (props) => {
     address,
     platform: "discord",
   });
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserDetails(address));
+  }, [address]);
 
   useEffect(() => {
     if (has(userDiscordDetails, "data.value.platformId")) {
       props.handleDiscordUser(true);
     }
   }, [userDiscordDetails]);
+
   useEffect(() => {
     if (code) {
       handleDiscordAuthCallback(code).catch(console.log);
@@ -87,9 +98,13 @@ const NavBar = (props) => {
       walletAddress: address,
     });
     if (isRight(user)) {
-      await currentUser.refetch();
-      setWebOnBoarding(false);
-      setSocialInterfaces(true);
+      currentUser.refetch().then((response) => {
+        if (has(response, "data.value.id")) {
+          dispatch(updateUserDetails(get(response, "data.value")))
+        }
+        setWebOnBoarding(false);
+        setSocialInterfaces(true);
+      });
     }
   };
 
@@ -109,7 +124,11 @@ const NavBar = (props) => {
     });
     if (isRight(user)) {
       toast.success("Updated profile with discord info!");
-      await currentUser.refetch();
+      currentUser.refetch().then((response) => {
+        if (has(response, "data.value.id")) {
+          dispatch(updateUserDetails(get(response, "data.value")))
+        }
+      });
     }
   };
 
