@@ -16,11 +16,17 @@
     "start": "node dist/index.js",
     "start:bot": "node dist/index.js",
     "build": "tsup",
+    "nodemon": "nodemon",
     "dev": "tsup && node dist/index.js",
-    "dev:bot": "tsup && node dist/index.js"
+    "dev:bot": "tsup && node dist/index.js",
+    "test": "export NODE_ENV=Test && npx mocha tests/**/*.spec.ts -- --silent",
+    "test:bot": "export NODE_ENV=Test && npx mocha -r ts-node/register tests/**/*.spec.ts -- --silent",
+    "test:bot-cov": "export NODE_ENV=Test && npx nyc --reporter=text mocha -r ts-node/register tests/**/*.spec.ts -- --silent && npx nyc report --nycrc-path .nycrc --reporter=lcovonly",
+    "test:bot-watch": "export NODE_ENV=Test && npx mocha -w  --watch-files src/ tests/ -r ts-node/register tests/**/*.spec.ts"
   },
   "dependencies": {
     "@composedb/client": "^0.4.3",
+    "@composedb/types": "0.4.3",
     "@devnode/composedb": "*",
     "@devnode/database": "*",
     "@stablelib/random": "^1.0.2",
@@ -33,10 +39,19 @@
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "@composedb/types": "0.4.3"
+    "joi": "^17.8.4",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@devnode/tsconfig": "*",
+    "@types/chai": "^4.3.4",
+    "@types/lodash": "^4.14.191",
+    "@types/mocha": "^10.0.1",
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.21",
+    "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "tsup": "^6.5.0",
     "typescript": "^4.9.4"

@@ -38,3 +38,4 @@ prisma/dev.db
 
 packages/composedb/.ceramic
 .idea/
+.nyc_output/
