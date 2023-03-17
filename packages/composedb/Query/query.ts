@@ -246,7 +246,7 @@ export const composeQueryHandler = () => {
               threadId
               createdAt
               createdFrom
-              User {
+              user {
                 id
                 walletAddress
                 author {
@@ -264,13 +264,24 @@ export const composeQueryHandler = () => {
                 id
                 title
                 userId
+                threadId
                 createdAt
+                community {
+                  socialPlatforms(first: 10) {
+                    edges {
+                      node {
+                        platformId
+                        platform
+                      }
+                    }
+                  }
+                 }
                 communityId
                 createdFrom
                 author {
                   id
                 }
-                User {
+                user {
                   id
                   walletAddress
                   author {
