@@ -6,7 +6,6 @@ import {communityHasSocial, getSocialCommunityId} from "../utils/data";
 import {config, constants} from "../../config";
 import {Resp} from "../utils/response";
 import {threadHandler as discordThreadHandler} from "../../bots/discord";
-import {logger} from "../utils/logger";
 
 export const postThread = async (clients: Clients, req: Request, res: Response) => {
   const {threadId} = req.body;
@@ -14,14 +13,14 @@ export const postThread = async (clients: Clients, req: Request, res: Response) 
   const socials = _.get(thread, "node.community.socialPlatforms.edges");
 
   if (communityHasSocial(socials, constants.PLATFORM_DISCORD_NAME)) {
-    postThreadToDiscord(clients, thread);
+    const threadId = await postThreadToDiscord(clients, thread);
+    return Resp.okD(res, {threadId}, "Created thread on socials");
   } else {
     return Resp.notOk(res, "No discord for this community, bailing out!");
   }
-  return Resp.ok(res, "Posted to socials!");
 };
 
-export const postThreadToDiscord = (clients: Clients, thread: Node<Thread>) => {
+export const postThreadToDiscord = async (clients: Clients, thread: Node<Thread>) => {
   const title = _.get(thread, "node.title");
   const body = _.get(thread, "node.body");
   const threadStreamId = _.get(thread, "node.id");
@@ -33,6 +32,5 @@ export const postThreadToDiscord = (clients: Clients, thread: Node<Thread>) => {
   const redirectLink = config.devnodeWebsite.concat(`/${threadStreamId}`);
   const serverId = getSocialCommunityId(socials, constants.PLATFORM_DISCORD_NAME);
   const payload = {title, body, userName, serverId, threadStreamId, userAvatar, userProfileLink, redirectLink};
-  discordThreadHandler.postThread(clients, payload)
-    .catch((e) => logger.error('core', {payload, e}));
+  return await discordThreadHandler.postThread(clients, payload);
 }

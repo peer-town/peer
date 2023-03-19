@@ -6,6 +6,17 @@ import * as threadHandler from "./threads/handler";
 import {Client, GatewayIntentBits, Partials} from "discord.js";
 import {commentSchema, threadSchema, validator} from "./middleware/validator";
 import {Clients} from "./types";
+import {logger} from "./utils/logger";
+
+process.on("uncaughtException", (error, origin) => {
+  console.log(error);
+  logger.error('core', {error, origin});
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('core', {reason, promise});
+});
 
 export const initServer = (clients: Clients): Express => {
   const server = express();

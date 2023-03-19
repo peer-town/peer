@@ -1,8 +1,6 @@
 import {AnyThreadChannel, TextChannel} from "discord.js";
 import {Clients, PostThreadToSocialPayload} from "../../../core/types";
-import {config, getBotDid} from "../../../config";
-import {composeMutationHandler} from "@devnode/composedb";
-import {logger} from "../../../core/utils/logger";
+import {config} from "../../../config";
 import {buildMessage, buildThread} from "../utils";
 
 export const handleNewThread = async (thread: AnyThreadChannel<boolean>) => {
@@ -22,13 +20,5 @@ export const postThread = async ({discord, compose}: Clients, payload: PostThrea
 
   const thread = await channel.threads.create(buildThread(payload.title));
   await thread.send(buildMessage({...payload}));
-
-  // updating discord thread id to compose
-  compose.setDID(await getBotDid());
-  const mutation = await composeMutationHandler(compose);
-  await mutation.updateThreadWithSocialThreadId(payload.threadStreamId, thread.id)
-    .catch((e) => {
-      logger.error('compose', {e, payload, msg: "failed to update threadId on compose"});
-      thread.delete();
-    });
+  return thread.id;
 };
