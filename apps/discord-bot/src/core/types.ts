@@ -33,6 +33,7 @@ export interface Author {
 export interface Thread {
   id: string;
   title: string;
+  body: string;
   userId: string;
   threadId: string;
   createdAt: string;
@@ -71,6 +72,20 @@ export interface PostCommentToSocialPayload {
   text: string;
   threadStreamId: string;
   userName: string;
+  userAvatar: string;
+  userProfileLink: string;
+  redirectLink: string;
   serverId: string;
   threadId: string;
+}
+
+export interface PostThreadToSocialPayload {
+  title: string;
+  body: string;
+  userName: string;
+  userAvatar: string;
+  userProfileLink: string;
+  redirectLink: string;
+  threadStreamId: string;
+  serverId: string;
 }

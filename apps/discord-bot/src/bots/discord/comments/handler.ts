@@ -1,24 +1,21 @@
 import {Client, Message, ThreadChannel} from "discord.js";
 import {PostCommentToSocialPayload} from "../../../core/types";
+import {buildMessage} from "../utils";
 
 export const handleNewComment = async (message: Message<boolean>) => {
 
 };
 
-export const postComment = async (client: Client, message: PostCommentToSocialPayload) => {
-  const server = client.guilds.cache.get(message.serverId);
+export const postComment = async (client: Client, payload: PostCommentToSocialPayload) => {
+  const server = client.guilds.cache.get(payload.serverId);
   if (!server) {
-    console.log("unknown server");
-    return;
+    throw new Error("unknown server");
   }
 
-  const thread = server.channels.cache.get(message.threadId) as ThreadChannel;
+  const thread = server.channels.cache.get(payload.threadId) as ThreadChannel;
   if (!thread) {
-    console.log("unknown thread");
-    return;
+    throw new Error("unknown thread")
   }
 
-  const msg = `\`from devnode web ${message.userName} says\` \n ${message.text} \n \`Follow for more at${message.threadStreamId}\``;
-  const result = await thread.send(msg);
-  console.log("result of post comment to discord ", result);
+  return await thread.send(buildMessage({...payload, body: payload.text}));
 };
