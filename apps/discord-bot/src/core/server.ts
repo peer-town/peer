@@ -4,7 +4,7 @@ import {config} from "../config";
 import * as commentHandler from "./comments/handler";
 import * as threadHandler from "./threads/handler";
 import {Client, GatewayIntentBits, Partials} from "discord.js";
-import {commentSchema, validator} from "./middleware/validator";
+import {commentSchema, threadSchema, validator} from "./middleware/validator";
 import {Clients} from "./types";
 
 export const initServer = (clients: Clients): Express => {
@@ -16,7 +16,7 @@ export const initServer = (clients: Clients): Express => {
   const router = express.Router();
   router.get("/ping", (_, res) => res.send("pong"));
   router.post("/web-comment", validator(commentSchema), (req, res) => commentHandler.postComment(clients, req, res));
-  router.post("/web-thread", threadHandler.postThread);
+  router.post("/web-thread", validator(threadSchema), (req, res) =>  threadHandler.postThread(clients, req, res));
   server.use("/api", router);
 
   return server;
