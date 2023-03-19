@@ -348,18 +348,180 @@ export const composeQueryHandler = () => {
       return user;
     },
     fetchThreadDetails: async function (threadId: string) {
-      const allThreads = await this.fetchAllThreads();
-      const thread = allThreads.filter(
-        (thread: any) => thread.node.id === threadId
-      )[0];
-      return thread;
+      const query = gql`
+      query ($id: ID!) {
+        node(id: $id) {
+          ... on Thread {
+            id
+            title
+            body
+            userId
+            threadId
+            createdAt
+            communityId
+            createdFrom
+            author {
+              id
+            }
+            user {
+              id
+              walletAddress
+              author {
+                id
+              }
+              userPlatforms {
+                platformId
+                platformName
+                platformAvatar
+                platformUsername
+              }
+              createdAt
+            }
+            community {
+              id
+              createdAt
+              communityName
+              socialPlatforms(first: 10) {
+                edges {
+                  node {
+                    platformId
+                    platform
+                  }
+                }
+              }
+              author {
+                id
+              }
+            }
+            comments(first: 100) {
+              edges {
+                node {
+                  id
+                  text
+                  userId
+                  threadId
+                  createdAt
+                  createdFrom
+                  user {
+                    id
+                    walletAddress
+                    author {
+                      id
+                    }
+                    userPlatforms {
+                      platformId
+                      platformName
+                      platformAvatar
+                      platformUsername
+                    }
+                    createdAt
+                  }
+                  thread {
+                    id
+                    title
+                    userId
+                    createdAt
+                    communityId
+                    createdFrom
+                    author {
+                      id
+                    }
+                    user {
+                      id
+                      walletAddress
+                      author {
+                        id
+                      }
+                      userPlatforms {
+                        platformId
+                        platformName
+                        platformAvatar
+                        platformUsername
+                      }
+                      createdAt
+                    }
+                  }
+                  author {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      return await client.request(query, {id: threadId});
     },
     fetchCommentDetails: async function (commentId: string) {
-      const allComments = await this.fetchAllComments();
-      const comment = allComments.filter(
-        (comment: any) => comment.node.id === commentId
-      )[0];
-      return comment;
+      const query = gql`
+        query ($id: ID!) {
+          node(id: $id) {
+            ... on Comment {
+              id
+              text
+              userId
+              threadId
+              createdAt
+              createdFrom
+              user {
+                id
+                walletAddress
+                author {
+                  id
+                }
+                userPlatforms {
+                  platformId
+                  platformName
+                  platformAvatar
+                  platformUsername
+                }
+                createdAt
+              }
+              thread {
+                id
+                title
+                userId
+                threadId
+                createdAt
+                community {
+                  socialPlatforms(first: 10) {
+                    edges {
+                      node {
+                        platformId
+                        platform
+                      }
+                    }
+                  }
+                }
+                communityId
+                createdFrom
+                author {
+                  id
+                }
+                user {
+                  id
+                  walletAddress
+                  author {
+                    id
+                  }
+                  userPlatforms {
+                    platformId
+                    platformName
+                    platformAvatar
+                    platformUsername
+                  }
+                  createdAt
+                }
+              }
+              author {
+                id
+              }
+            }
+          }
+        }
+      `
+      return await client.request(query, {id: commentId});
     },
     fetchSocialPlatform: async function (platformId: string) {
       const allSocialPlatforms = await this.fetchAllSocialPlatforms();

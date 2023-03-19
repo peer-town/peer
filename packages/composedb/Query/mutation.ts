@@ -7,9 +7,10 @@ import {
 } from "./type";
 
 import {composeQueryHandler} from "./query";
+import {gql} from "graphql-request";
 
 export const composeMutationHandler = async (compose:ComposeClient) => {
-    
+
   return {
     createCommunity: function (communityName: string) {
       return compose.executeQuery<{
@@ -223,6 +224,24 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
           },
         }
       );
+    },
+    updateThreadWithSocialThreadId: async function (streamId: string, threadId: string) {
+      const query = gql`
+      mutation UpdateThread($input: UpdateThreadInput!) {
+        updateThread(input: $input) {
+          document {
+            id
+            threadId
+          }
+        }
+      }
+      `;
+      return await compose.executeQuery(query, {
+        input: {
+          id: streamId,
+          content: { threadId },
+        }
+      });
     },
   };
 };
