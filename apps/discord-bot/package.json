@@ -19,10 +19,8 @@
     "nodemon": "nodemon",
     "dev": "tsup && node dist/index.js",
     "dev:bot": "tsup && node dist/index.js",
-    "test": "export NODE_ENV=Test && npx mocha tests/**/*.spec.ts -- --silent",
-    "test:bot": "export NODE_ENV=Test && npx mocha -r ts-node/register tests/**/*.spec.ts -- --silent",
-    "test:bot-cov": "export NODE_ENV=Test && npx nyc --reporter=text mocha -r ts-node/register tests/**/*.spec.ts -- --silent && npx nyc report --nycrc-path .nycrc --reporter=lcovonly",
-    "test:bot-watch": "export NODE_ENV=Test && npx mocha -w  --watch-files src/ tests/ -r ts-node/register tests/**/*.spec.ts"
+    "test:bot": "export NODE_ENV=Test && npx mocha tests/**/*.spec.ts tests/**/**/*.spec.ts -- --silent",
+    "coverage": "nyc --reporter=html --reporter=text mocha -r ts-node/esm --node-option experimental-specifier-resolution=node tests/**/*.spec.ts tests/unit/**/*.spec.ts"
   },
   "dependencies": {
     "@composedb/client": "^0.4.3",
@@ -45,14 +43,22 @@
   "devDependencies": {
     "@devnode/tsconfig": "*",
     "@types/chai": "^4.3.4",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/chai-spies": "^1.0.3",
     "@types/lodash": "^4.14.191",
     "@types/mocha": "^10.0.1",
+    "@types/sinon": "^10.0.13",
+    "@types/sinon-chai": "^3.2.9",
     "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
+    "chai-spies": "^1.0.0",
     "mocha": "^10.2.0",
     "nodemon": "^2.0.21",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
+    "sinon": "^15.0.2",
+    "sinon-chai": "^3.7.0",
     "tsup": "^6.5.0",
     "typescript": "^4.9.4"
   }

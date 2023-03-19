@@ -3,11 +3,11 @@
     "check-coverage": true,
     "extension": [".ts"],
     "include": [
+        "src/**/*.ts",
         "src/core/**/*.ts",
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "src/index.ts"
+        "src/bots/discord/**/*.ts",
+        "src/bots/discord/**/**/*.ts",
+        "src/core/utils/response.ts"
     ],
     "loader": "ts-node/esm",
     "branches": 40,

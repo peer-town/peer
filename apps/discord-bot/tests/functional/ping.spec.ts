@@ -2,7 +2,7 @@ import {Express} from "express";
 import {initServer} from "../../src/core";
 import chai, {expect} from "../setup";
 
-describe.only("ping api", () => {
+describe("ping api", () => {
   let server: Express;
   before(() => server = initServer({} as any));
   it("should respond with pong on call", async () => {
