@@ -247,7 +247,7 @@ export const composeQueryHandler = () => {
               threadId
               createdAt
               createdFrom
-              User {
+              user {
                 id
                 walletAddress
                 author {
@@ -271,7 +271,7 @@ export const composeQueryHandler = () => {
                 author {
                   id
                 }
-                User {
+                user {
                   id
                   walletAddress
                   author {
@@ -300,7 +300,7 @@ export const composeQueryHandler = () => {
     fetchUserDetails: async function (walletAddress: string) {
       const allUsers = await this.fetchAllUsers();
       const user = allUsers.filter(
-        (user: any) => user.node.walletAddress === walletAddress
+        (user: any) => user?.node.walletAddress === walletAddress
       )[0];
       return user;
     },
@@ -311,7 +311,7 @@ export const composeQueryHandler = () => {
       const allUsers = await this.fetchAllUsers();
       const user = allUsers.map(
         (user: any) =>
-          user.node.userPlatforms.filter(
+          user?.node.userPlatforms.filter(
             (platform: any) =>
               platform.platformName === platformName &&
               platform.platformId === platformId
@@ -326,7 +326,7 @@ export const composeQueryHandler = () => {
       const allUsers = await this.fetchAllUsers();
       const user = allUsers.map(
         (user: any) => {
-          const userExists = user.node.userPlatforms.filter(
+          const userExists = user?.node.userPlatforms.filter(
             (platform: any) =>
               platform.platformName === platformName &&
               platform.platformId === platformId
