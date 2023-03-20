@@ -4,26 +4,65 @@ import { trpc } from "../../utils/trpc";
 import * as utils from "../../utils";
 import { has, get, isNil, isEmpty } from "lodash";
 import { selectCommunity, useAppDispatch, useAppSelector } from "../../store";
-import { CommunityOnBoardModal } from "../Modal";
+import { CommunityOnBoardModal, InterfacesModal } from "../Modal";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { isRight } from "../../utils/fp";
 
 const Layout = (props) => {
   const dispatch = useAppDispatch();
   const communityId = useAppSelector(
     (state) => state.community.selectedCommunity
   );
+  const userId = useAppSelector((state) => state.user.id);
   const communities = trpc.public.fetchAllCommunities.useQuery();
-
+  const createCommunity = trpc.community.createCommunity.useMutation();
+  const [clicked, setClicked] = useState<boolean>(false);
   const [communityOnboarding, setCommunityOnboarding] =
     useState<boolean>(false);
+  const [socialInterfaces, setSocialInterfaces] = useState(false);
 
   const handleOnCommunityClick = (id: string) => {
     dispatch(selectCommunity(id));
   };
 
-  const handleCreateCommunity = () => {
-    setCommunityOnboarding(true);
+  const handleSubmit = async ({ name, imageUrl }) => {
+    const didSession = localStorage.getItem("didSession");
+    const createCommunityResp = await createCommunity.mutateAsync({
+      session: JSON.parse(didSession),
+      communityName: name ,
+      socialPlatform: {
+        platformId: "devnode",
+        platform: "devnode",
+        communityName: "devnode",
+        userId: userId,
+        communityAvatar: imageUrl,
+      },
+    });
+
+    if (isRight(createCommunityResp)) {
+      const communityId = get(createCommunityResp.value,"createCommunity.document.id");
+      dispatch(selectCommunity(communityId));
+      communities.refetch();
+      setCommunityOnboarding(false);
+      setSocialInterfaces(true);
+    }
   };
+
+  const handleCreateCommunity = () => {
+    const didSession = localStorage.getItem("didSession");
+    if (!userId) {
+      toast.error("Wallet not connected");
+      return;
+    }
+    if (!didSession) {
+      toast.error("Create DID session");
+      return;
+    }
+    setCommunityOnboarding(true);
+    setClicked(true);
+  };
+
   const getCommunityList = () => {
     if (isNil(communities.data) || isEmpty(communities.data)) {
       return <></>;
@@ -69,11 +108,12 @@ const Layout = (props) => {
             width={25}
             name={"create community"}
             image={"/plus.png"}
-            selected={false}
-            onClick={() => {}}
+            selected={clicked}
+            onClick={handleCreateCommunity}
           />
           {getCommunityList()}
         </div>
+        
         <div className="relative mx-auto w-full grow px-6">
           {props.children}
         </div>
@@ -82,8 +122,15 @@ const Layout = (props) => {
           open={communityOnboarding}
           onClose={() => {
             setCommunityOnboarding(false);
+            setClicked(false);
           }}
-          onSubmit={() => {}}
+          onSubmit={handleSubmit}
+        />
+
+        <InterfacesModal
+          type={"community"}
+          open={socialInterfaces}
+          onClose={() => setSocialInterfaces(false)}
         />
       </div>
     </div>
