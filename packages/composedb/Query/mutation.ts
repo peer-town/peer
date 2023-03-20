@@ -121,7 +121,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       );
     },
     createThread: function (threadInput: ThreadInput) {
-      const { communityId, userId, title, createdFrom, createdAt, threadId } =
+      const { communityId, userId, title, body, createdFrom, createdAt, threadId } =
         threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
@@ -131,6 +131,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
             document {
               id
               title
+              body
               userId
               createdAt
               communityId
@@ -146,6 +147,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
               userId: userId, //streamId of User
               threadId: threadId, //discord thread id
               title: title,
+              body: body,
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
             },

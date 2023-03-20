@@ -5,6 +5,9 @@ import { onThreadCreate } from "./onThreadCreate";
 import { onMessageCreate } from "./onMessageCreate";
 
 export const onStart = async (client: Client) => {
+  // TODO:  this function is responsible to submit missed message on ceramic to discord and vice versa.
+  // when the bot starts we will look up a file which will store the last processed message and only
+  // fetch new ones, based on that we write logic to either keep process the message
   //Find our devnode channel
   let devnodeChannel = (await client.channels.cache
     .filter(
