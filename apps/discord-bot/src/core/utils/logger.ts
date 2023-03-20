@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-enum LogLevel {
+export enum LogLevel {
   DEBUG = "debug",
   ERROR = 'error',
   INFO = 'info',
@@ -13,8 +13,29 @@ interface LoggerOptions {
   productionMode: boolean;
 }
 
+const serializeLogMessage = (message: any): any => {
+  if (typeof message === "object" && message !== null) {
+    if (message instanceof Error) {
+      const {name, message: errorMessage, stack} = message;
+      return {name, message: errorMessage, stack};
+    } else if (Array.isArray(message)) {
+      return message.map((value) => serializeLogMessage(value));
+    } else {
+      const serializedMessage: { [key: string]: any } = {};
+      for (const key in message) {
+        serializedMessage[key] = serializeLogMessage(message[key]);
+      }
+      return serializedMessage;
+    }
+  } else {
+    return message;
+  }
+};
+
 const log = (level: LogLevel, event: Event, message: any, options: LoggerOptions): void => {
-  const logString = `[${new Date().toISOString()}] [${level.toUpperCase()}] [${event}] ${JSON.stringify(message)}\n`;
+  const logMessage = typeof message === 'string' ? message : JSON.stringify(serializeLogMessage(message));
+  const logString = `[${new Date().toISOString()}] [${level.toUpperCase()}] [${event}] \n${logMessage}\n`;
+
   if (!options.productionMode) {
     console.log(logString);
   }
@@ -30,5 +51,5 @@ export const createLogger = (options: LoggerOptions) => ({
 });
 
 export const logger = createLogger({
-  productionMode: process.env.NODE_ENV == 'PROD' || false,
+  productionMode: process.env.NODE_ENV === 'PROD' || false,
 });

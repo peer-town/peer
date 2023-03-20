@@ -45,6 +45,7 @@ export interface Thread {
 }
 
 export interface Community {
+  id: string;
   socialPlatforms: Edges<SocialPlatform>;
 }
 

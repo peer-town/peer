@@ -16,6 +16,7 @@ export type ThreadInput = {
   communityId: string;
   userId: string;
   title: string;
+  body: string;
   createdFrom: string;
   createdAt: string;
   threadId: string;
@@ -93,3 +94,10 @@ export type Thread = {
   comments: Comments;
   };
 
+export interface Node<T> {
+  node: T;
+}
+
+export interface Edges<T> {
+  edges: Node<T>[]
+}

@@ -1,4 +1,5 @@
 import { GraphQLClient, gql } from "graphql-request";
+import {Thread, Node, Edges, Community} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -314,20 +315,16 @@ export const composeQueryHandler = () => {
       )[0];
       return user;
     },
-    fetchUserPlatformDetails: async function (
+    fetchUserByPlatformDetails: async function (
       platformName: string,
       platformId: string
     ) {
       const allUsers = await this.fetchAllUsers();
-      const user = allUsers.map(
-        (user: any) =>
-          user.node.userPlatforms.filter(
-            (platform: any) =>
-              platform.platformName === platformName &&
-              platform.platformId === platformId
-          )[0]
-      )[0];
-      return user;
+      return allUsers.find((user: any) => {
+        return user.node.userPlatforms.some((platform: any) =>
+          platform.platformName === platformName && platform.platformId === platformId
+        );
+      });
     },
     fetchUserDetailsFromPlatformId: async function (
       platformName: string,
@@ -566,15 +563,17 @@ export const composeQueryHandler = () => {
       const allThreads = await this.fetchAllThreads();
       return allThreads.filter((thread: any) => thread.node.communityId === communityId);
     },
+    fetchThreadBySocialThreadId: async function (threadId: string) {
+      const allThreads = await this.fetchAllThreads();
+      return allThreads.find((thread: Node<Thread>) => thread.node.threadId === threadId);
+    },
     fetchCommunityUsingPlatformId: async function (platformId: string) {
-      const allCommunities = await this.fetchAllCommunities();
-      const community = allCommunities.map((community: any) =>
-        community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
-          if (socialPlatform && socialPlatform.node!== undefined)
-            return socialPlatform.node.platformId === platformId;
-        })[0]
-    )[0]
-    return community;
+      const allCommunities: Node<Community>[] = await this.fetchAllCommunities();
+      return allCommunities.find((community: any) => {
+        return community.node?.socialPlatforms.edges.some(
+          (platform: any) => platform.node.platformId === platformId
+        );
+      });
   },
   };
 };

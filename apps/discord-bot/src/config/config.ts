@@ -1,5 +1,4 @@
 import {DIDSession} from "did-session";
-import {compose} from "../handlers/onThreadCreateWeb";
 
 export const config = {
   server: {
