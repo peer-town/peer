@@ -11,7 +11,6 @@ import * as utils from "../../utils";
 import { isRight } from "../../utils/fp";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
-import useLocalStorage from "../../hooks/useLocalStorage";
 import { has, get, isEmpty, isNil } from "lodash";
 import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
 
@@ -24,21 +23,9 @@ const NavBar = (props) => {
   const { address } = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
-  const [didSession, setDidSession, removeDidSession] = useLocalStorage(
-    "didSession",
-    ""
-  );
-  const createUser = trpc.user.createUser.useMutation();
-  const updateUser = trpc.user.updateUser.useMutation();
-  const currentUser = trpc.user.getUser.useQuery({ address });
-  const userDiscordDetails = trpc.user.getUserPlatformDetails.useQuery({
-    address,
-    platform: "discord",
-  });
-  const createSocialPlatform =
-    trpc.community.createSocialPlatform.useMutation();
 
   const dispatch = useAppDispatch();
+  const didSession = useAppSelector((state) => state.user.didSession);
   const userPlatforms = useAppSelector((state) => state.user.userPlatforms);
   const communityAndUserDetails = useAppSelector((state) => {
     const { user, community } = state;
@@ -47,12 +34,23 @@ const NavBar = (props) => {
       community,
     };
   });
+
+  const createUser = trpc.user.createUser.useMutation();
+  const updateUser = trpc.user.updateUser.useMutation();
+  const currentUser = trpc.user.getUser.useQuery({ address });
+  const createSocialPlatform =
+    trpc.community.createSocialPlatform.useMutation();
+
+  const userDiscordDetails = userPlatforms?.filter(
+    (platform) => platform.platformName === constants.PLATFORM_DISCORD_NAME
+  )[0];
+
   useEffect(() => {
     dispatch(fetchUserDetails(address));
   }, [address]);
 
   useEffect(() => {
-    if (has(userDiscordDetails, "data.value.platformId")) {
+    if (has(userDiscordDetails, "platformId")) {
       props.handleDiscordUser(true);
     }
   }, [userDiscordDetails]);
@@ -75,6 +73,7 @@ const NavBar = (props) => {
       (platform) => platform.platformName === "discord"
     )[0];
     if (hasDiscord) {
+      props.handleDiscordUser(true);
       return;
     }
     await updateUserProfileWithDiscord(profile);
@@ -98,7 +97,7 @@ const NavBar = (props) => {
       (platform) => platform.platformName === "discord"
     )[0];
 
-    if (isNil(discordPlatform.platformId)) {
+    if (!has(discordPlatform, "platformId")) {
       await updateUserProfileWithDiscord(data.profile);
       props.handleDiscordUser(true);
     }
@@ -177,13 +176,14 @@ const NavBar = (props) => {
       session: didSession,
       socialPlatform: {
         platformId: details.id,
-        platform: "discord",
+        platform: constants.PLATFORM_DISCORD_NAME,
         communityName: details.name,
         userId: communityAndUserDetails.user.id,
         communityId: communityAndUserDetails.community.selectedCommunity,
-        communityAvatar: "https://placekitten.com/200/200",
+        communityAvatar: details.icon,
       },
     });
+
     if (isRight(response)) {
       toast.success("Updated community with discord info!");
     }
@@ -267,8 +267,6 @@ const NavBar = (props) => {
                   <PrimaryButton title={"Ask a question"} onClick={() => {}} />
                   <ConnectWalletButton
                     onSessionCreated={handleOnUserConnected}
-                    setDidSession={setDidSession}
-                    removeDidSession={removeDidSession}
                   />
                 </div>
               </div>

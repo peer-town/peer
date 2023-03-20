@@ -84,13 +84,13 @@ export const userRouter = router({
     .input(z.object({ address: z.string(), platform: z.string() }))
     .query(async ({ input }) => {
       try {
-        const authorDiscord =
+        const platformDiscord =
           await composeQueryHandler().fetchAuthorPlatformDetails(
             input.address,
             input.platform
           );
-        return authorDiscord 
-          ? right(authorDiscord)
+        return platformDiscord 
+          ? right(platformDiscord)
           : right({});
       } catch (e) {
         return left(e);

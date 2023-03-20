@@ -24,6 +24,13 @@ export const getDiscordAvatarUrl = (
   return `https://cdn.discordapp.com/avatars/${userId}/${avatarId}.jpg`;
 };
 
+export const getCommunityDiscordAvatarUrl = (
+  guildId: string,
+  Icon: string
+): string => {
+  return `https://cdn.discordapp.com/icons/${guildId}/${Icon}.png`;
+};
+
 export const getDiscordUsername = (
   username: string,
   discriminator: string
