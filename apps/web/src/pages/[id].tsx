@@ -10,32 +10,34 @@ import {SecondaryButton} from "../components/Button/SecondaryButton";
 import {useAccount} from "wagmi";
 import {get, has} from "lodash";
 import {toast} from "react-toastify";
-import useLocalStorage from "../hooks/useLocalStorage";
 import {constants} from "../config";
 import {isRight} from "../utils/fp";
 import {DIDSession} from "did-session";
 import {config} from "../config";
+import { useAppSelector } from "../store";
 
 const QuestionPage = () => {
   const router = useRouter();
   const threadId = router.query.id as string;
   const {address} = useAccount();
   const [did, setDid] = useState("");
-  const [didSession] = useLocalStorage("didSession", "");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [canComment, setCanComment] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+
+  const didSession = useAppSelector((state)=> state.user.didSession);
 
   const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const currentUser = trpc.user.getUser.useQuery({address});
   const createComment = trpc.comment.createComment.useMutation();
 
   // todo: replace this with updated aggregator call
-  const authorPlatformDetails = trpc.public.getAuthorDiscord.useQuery({
+  const authorPlatformDetails = trpc.user.getUserPlatformDetails.useQuery({
     address: address,
+    platform: 'discord'
   });
-  const discordUserName = authorPlatformDetails.data?.platformUsername ;
+  const discordUserName = authorPlatformDetails.data?.value?.platformUsername ;
 
   useEffect(() => {
     const loadSession = async () => {
@@ -105,7 +107,7 @@ const QuestionPage = () => {
           comment: String(comment),
           discordUserName: String(discordUserName),
           didSession:String(didSession),
-          platformId: authorPlatformDetails.data.platformId,
+          platformId: authorPlatformDetails.data?.value?.platformId,
         }),
         method: "POST",
         headers: {

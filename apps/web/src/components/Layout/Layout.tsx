@@ -14,9 +14,12 @@ const Layout = (props) => {
   const communityId = useAppSelector(
     (state) => state.community.selectedCommunity
   );
+  const didSession = useAppSelector((state)=> state.user.didSession);
   const userId = useAppSelector((state) => state.user.id);
+
   const communities = trpc.public.fetchAllCommunities.useQuery();
   const createCommunity = trpc.community.createCommunity.useMutation();
+
   const [clicked, setClicked] = useState<boolean>(false);
   const [communityOnboarding, setCommunityOnboarding] =
     useState<boolean>(false);
@@ -27,21 +30,23 @@ const Layout = (props) => {
   };
 
   const handleSubmit = async ({ name, imageUrl }) => {
-    const didSession = localStorage.getItem("didSession");
     const createCommunityResp = await createCommunity.mutateAsync({
-      session: JSON.parse(didSession),
-      communityName: name ,
+      session: didSession,
+      communityName: name,
       socialPlatform: {
         platformId: "devnode",
         platform: "devnode",
-        communityName: "devnode",
+        communityName: name,
         userId: userId,
         communityAvatar: imageUrl,
       },
     });
 
     if (isRight(createCommunityResp)) {
-      const communityId = get(createCommunityResp.value,"createCommunity.document.id");
+      const communityId = get(
+        createCommunityResp.value,
+        "createCommunity.document.id"
+      );
       dispatch(selectCommunity(communityId));
       communities.refetch();
       setCommunityOnboarding(false);
@@ -50,7 +55,6 @@ const Layout = (props) => {
   };
 
   const handleCreateCommunity = () => {
-    const didSession = localStorage.getItem("didSession");
     if (!userId) {
       toast.error("Wallet not connected");
       return;
@@ -113,7 +117,7 @@ const Layout = (props) => {
           />
           {getCommunityList()}
         </div>
-        
+
         <div className="relative mx-auto w-full grow px-6">
           {props.children}
         </div>

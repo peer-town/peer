@@ -71,7 +71,6 @@ export const communityRouter = router({
     .input(socialPlatformInputSchema)
     .mutation(async ({ input }) => {
       try {
-        console.log("input",input);
         const handler = await getHandler(input.session);
         const socialPlatformResp = await handler.createSocialPlatform(input.socialPlatform as SocialPlatformInput);
 

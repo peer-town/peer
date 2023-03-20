@@ -1,18 +1,19 @@
 import { DIDSession } from "did-session";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import useLocalStorage from "../../hooks/useLocalStorage";
 import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import { has, get } from "lodash";
 import { Platform } from "./type";
+import { useAppSelector } from "../../store";
 
 const NewThread = (props) => {
   const { isConnected, address } = useAccount();
   const [did, setDid] = useState("");
-  const [didSession] = useLocalStorage("didSession", "");
   const [community, setCommunity] = useState("");
   const [thread, setThread] = useState("");
+
+  const didSession = useAppSelector((state)=> state.user.didSession);
 
   const communities = trpc.public.fetchCommunities.useQuery();
   const authorPlatformDetails = trpc.user.getUserPlatformDetails.useQuery({

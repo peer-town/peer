@@ -1,7 +1,6 @@
 import {useState} from 'react'
 import {WebOnBoardProps} from "../types";
 import {BaseModal} from "../BaseModal/BaseModal";
-import useLocalStorage from '../../../hooks/useLocalStorage';
 
 export const WebOnBoardModal = (props: WebOnBoardProps) => {
   const [name, setName] = useState<string>();
