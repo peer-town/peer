@@ -16,6 +16,9 @@ export interface ModalProps {
   children?: ReactElement;
 }
 
+export interface InterfaceModelProps extends ModalProps{
+  type: "user" | "community"
+}
 export interface BaseModalProps extends ModalProps {
   title: string;
 }

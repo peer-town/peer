@@ -1,11 +1,11 @@
-import {ModalProps} from "../types";
+import {InterfaceModelProps} from "../types";
 import {BaseModal} from "../BaseModal/BaseModal";
 import {getDiscordAuthUrl} from "../../../utils";
 
-export const InterfacesModal = (props: ModalProps) => {
+export const InterfacesModal = (props: InterfaceModelProps) => {
   const connectDiscord = () => {
     props.onClose();
-    window.location.replace(getDiscordAuthUrl());
+    window.location.replace(getDiscordAuthUrl(props.type));
   }
 
   return (
