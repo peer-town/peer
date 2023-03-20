@@ -142,6 +142,7 @@ export const composeQueryHandler = () => {
               node {
                 id
                 title
+                body
                 userId
                 threadId
                 createdAt

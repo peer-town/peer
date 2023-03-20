@@ -12,7 +12,7 @@ describe("<AvatarCard />", () => {
   });
 
   it("should render optional name and address element", () => {
-    render(<AvatarCard image={image} imageSize={imageSize} name={"abc"} />);
+    render(<AvatarCard image={image} href={"/"} imageSize={imageSize} name={"abc"} />);
     expect(screen.getByText("abc")).toBeTruthy();
 
     render(<AvatarCard image={image} imageSize={imageSize} address={"xyz"} />);
