@@ -22,22 +22,23 @@ export type UserState = {
 };
 
 export const initialState = {
-  id: "",
-  createdAt: "",
-  walletAddress: "",
+  id: null,
+  createdAt: null,
+  walletAddress: null,
   userPlatforms: [
     {
-      platformId: "",
-      platformName: "",
-      platformAvatar: "",
-      platformUsername: "",
+      platformId: null,
+      platformName: null,
+      platformAvatar: null,
+      platformUsername: null,
     },
   ],
   author: {
-    id: "",
+    id: null,
   },
-  didSession: "",
-  discordContext: "",
+  didSession: null,
+  did:null,
+  discordContext: null,
 };
 
 export type Address = string;
@@ -63,11 +64,13 @@ export const userSlice = createSlice({
     updateUserDetails: (state, action: PayloadAction<UserState>) => {
       state = { ...state, ...action.payload };
     },
-    updateDidSession: (state, action: PayloadAction<string>) => {
+    updateDidSession: (state, action: PayloadAction<string | null>) => {
       const data = action.payload;
-      if (data) {
-        state.didSession = data;
-      }
+      state.didSession = data;
+    },
+    updateDid: (state, action: PayloadAction<string | null>) => {
+      const data = action.payload;
+      state.did = data;
     },
     updateDiscordContext: (state, action: PayloadAction<string>) => {
       const data = action.payload;
@@ -99,6 +102,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateUserDetails, updateDidSession, updateDiscordContext } =
+export const { updateUserDetails, updateDidSession, updateDiscordContext, updateDid } =
   userSlice.actions;
 export default userSlice.reducer;
