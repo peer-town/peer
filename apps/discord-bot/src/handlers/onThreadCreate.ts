@@ -39,7 +39,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
 
   const user = await queryHandler.fetchUserDetailsFromPlatformId("discord", threadOwner.user.id);
 
-  if (user == null || !user.node) {
+  if (user == null || !user?.node) {
     //User account does not exist at all
     await new Promise((r) => setTimeout(r, 3000));
 
@@ -63,7 +63,7 @@ export const onThreadCreate = async (thread: ThreadChannel) => {
   const socialPlatform = await queryHandler.fetchSocialPlatform(thread.guildId as string);
   const {communityId } = socialPlatform.node;
 
-  const {id} = user.node;
+  const {id} = user?.node;
 
   const threadDetails = {
     communityId: communityId as string,
