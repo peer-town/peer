@@ -132,10 +132,10 @@ const updateCommunities = async () => {
 
 
     const socialPlatformInput = {
-      userId: userRespose.data.createUser.document.id as string,
+      userId: userRespose.data.createUser?.document?.id as string,
       platform: "discord",
       platformId: guild?.id as string,
-      communityId: communityRespose.data.createCommunity.document.id as string,
+      communityId: communityRespose.data.createCommunity?.document?.id as string,
       communityName: guild.name,
       communityAvatar: guild.iconURL() || "",
   };
