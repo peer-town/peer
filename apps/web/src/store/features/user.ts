@@ -1,8 +1,8 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice, createAsyncThunk ,current} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import { trpcProxy } from "../../utils/trpc";
 import { has, get } from "lodash";
-import { isRight, right, left } from "../../utils/fp";
+import { isRight } from "../../utils/fp";
 
 export type UserState = {
   id?: string;
@@ -21,7 +21,7 @@ export type UserState = {
   };
 };
 
-export const initialState: UserState = {
+export const initialState = {
   id: "",
   createdAt: "",
   walletAddress: "",
@@ -36,6 +36,8 @@ export const initialState: UserState = {
   author: {
     id: "",
   },
+  didSession: "",
+  discordContext: "",
 };
 
 export type Address = string;
@@ -45,12 +47,11 @@ export const fetchUserDetails = createAsyncThunk(
   async (address: string) => {
     try {
       const response = await trpcProxy.user.getUser.query({ address });
-      console.log("value",response.value);
       return isRight(response) && has(response, "value.id")
         ? response.value
-        : initialState;
+        : null;
     } catch (e) {
-      return initialState;
+      return null;
     }
   }
 );
@@ -62,20 +63,42 @@ export const userSlice = createSlice({
     updateUserDetails: (state, action: PayloadAction<UserState>) => {
       state = { ...state, ...action.payload };
     },
+    updateDidSession: (state, action: PayloadAction<string>) => {
+      const data = action.payload;
+      if (data) {
+        state.didSession = data;
+      }
+    },
+    updateDiscordContext: (state, action: PayloadAction<string>) => {
+      const data = action.payload;
+      if (data) {
+        state.discordContext = data;
+      }
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUserDetails.fulfilled, (state, action: PayloadAction<UserState>) => {
-      const data = action.payload;
-      console.log("data",data);
-      state.id = data.id;
-      state.author = data.author;
-      state.createdAt = data.createdAt;
-      state.userPlatforms = data.userPlatforms;
-      state.walletAddress =  data.walletAddress;
-      console.log("state",current(state));
-    });
+    builder.addCase(
+      fetchUserDetails.fulfilled,
+      (state, action: PayloadAction<UserState | null>) => {
+        const data = action.payload;
+        if (data) {
+          state.id = data.id;
+          state.author = data.author;
+          state.createdAt = data.createdAt;
+          state.userPlatforms = data.userPlatforms;
+          state.walletAddress = data.walletAddress;
+        } else {
+          state.id = null;
+          state.author = null;
+          state.createdAt = null;
+          state.userPlatforms = null;
+          state.walletAddress = null;
+        }
+      }
+    );
   },
 });
 
-export const { updateUserDetails } = userSlice.actions;
+export const { updateUserDetails, updateDidSession, updateDiscordContext } =
+  userSlice.actions;
 export default userSlice.reducer;
