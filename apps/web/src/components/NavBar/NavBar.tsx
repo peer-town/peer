@@ -12,18 +12,15 @@ import { isRight } from "../../utils/fp";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { has, get, isEmpty } from "lodash";
-import {
-  useAppDispatch,
-  updateUserDetails,
-  fetchUserDetails,
-} from "../../store";
+import { has, get, isEmpty, isNil } from "lodash";
+import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
   const router = useRouter();
   const code = router.query.code as string;
+  const guild = router.query.guild_id as string;
   const { address } = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
@@ -31,7 +28,6 @@ const NavBar = (props) => {
     "didSession",
     ""
   );
-
   const createUser = trpc.user.createUser.useMutation();
   const updateUser = trpc.user.updateUser.useMutation();
   const currentUser = trpc.user.getUser.useQuery({ address });
@@ -39,8 +35,18 @@ const NavBar = (props) => {
     address,
     platform: "discord",
   });
-  const dispatch = useAppDispatch();
+  const createSocialPlatform =
+    trpc.community.createSocialPlatform.useMutation();
 
+  const dispatch = useAppDispatch();
+  const userPlatforms = useAppSelector((state) => state.user.userPlatforms);
+  const communityAndUserDetails = useAppSelector((state) => {
+    const { user, community } = state;
+    return {
+      user,
+      community,
+    };
+  });
   useEffect(() => {
     dispatch(fetchUserDetails(address));
   }, [address]);
@@ -52,10 +58,12 @@ const NavBar = (props) => {
   }, [userDiscordDetails]);
 
   useEffect(() => {
-    if (code) {
+    if (code && guild) {
+      handleCommunityDiscordAuthCallback(code, guild).catch(console.log);
+    } else if (code) {
       handleDiscordAuthCallback(code).catch(console.log);
     }
-  }, [code]);
+  }, [code, guild]);
 
   const handleDiscordAuthCallback = async (code: string) => {
     const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
@@ -63,8 +71,39 @@ const NavBar = (props) => {
       return;
     }
     const profile = await response.json();
+    const hasDiscord = userPlatforms.filter(
+      (platform) => platform.platformName === "discord"
+    )[0];
+    if (hasDiscord) {
+      return;
+    }
     await updateUserProfileWithDiscord(profile);
     props.handleDiscordUser(true);
+  };
+
+  const handleCommunityDiscordAuthCallback = async (
+    code: string,
+    guild: string
+  ) => {
+    const response = await fetch(
+      `/api/community/discord-auth/profile?code=${code}&guildId=${guild}`
+    );
+    if (!response) {
+      return;
+    }
+
+    const data = await response.json();
+
+    const discordPlatform = userPlatforms.filter(
+      (platform) => platform.platformName === "discord"
+    )[0];
+
+    if (isNil(discordPlatform.platformId)) {
+      await updateUserProfileWithDiscord(data.profile);
+      props.handleDiscordUser(true);
+    }
+
+    await updateCommunityDetailsWithDiscord(data.guild);
   };
 
   const handleOnUserConnected = async () => {
@@ -100,7 +139,7 @@ const NavBar = (props) => {
     if (isRight(user)) {
       currentUser.refetch().then((response) => {
         if (has(response, "data.value.id")) {
-          dispatch(updateUserDetails(get(response, "data.value")))
+          dispatch(fetchUserDetails(address));
         }
         setWebOnBoarding(false);
         setSocialInterfaces(true);
@@ -123,12 +162,30 @@ const NavBar = (props) => {
       walletAddress: address,
     });
     if (isRight(user)) {
-      toast.success("Updated profile with discord info!");
       currentUser.refetch().then((response) => {
         if (has(response, "data.value.id")) {
-          dispatch(updateUserDetails(get(response, "data.value")))
+          dispatch(fetchUserDetails(address));
         }
       });
+      toast.success("Updated profile with discord info!");
+      props.handleDiscordUser(true);
+    }
+  };
+
+  const updateCommunityDetailsWithDiscord = async (details) => {
+    const response = await createSocialPlatform.mutateAsync({
+      session: didSession,
+      socialPlatform: {
+        platformId: details.id,
+        platform: "discord",
+        communityName: details.name,
+        userId: communityAndUserDetails.user.id,
+        communityId: communityAndUserDetails.community.selectedCommunity,
+        communityAvatar: "https://placekitten.com/200/200",
+      },
+    });
+    if (isRight(response)) {
+      toast.success("Updated community with discord info!");
     }
   };
 
@@ -223,6 +280,7 @@ const NavBar = (props) => {
               onClose={() => setWebOnBoarding(false)}
             />
             <InterfacesModal
+              type={"user"}
               open={socialInterfaces}
               onClose={() => setSocialInterfaces(false)}
             />

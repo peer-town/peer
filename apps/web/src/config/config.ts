@@ -18,5 +18,5 @@ export const config = {
   ceramic: {
     nodeUrl: process.env.CERAMIC_NODE || "",
     graphqlUrl: process.env.CERAMIC_GRAPH || "",
-  }
-}
+  },
+};
