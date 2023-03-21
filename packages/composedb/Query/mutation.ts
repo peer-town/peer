@@ -7,9 +7,10 @@ import {
 } from "./type";
 
 import {composeQueryHandler} from "./query";
+import {gql} from "graphql-request";
 
 export const composeMutationHandler = async (compose:ComposeClient) => {
-    
+
   return {
     createCommunity: function (communityName: string) {
       return compose.executeQuery<{
@@ -120,7 +121,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       );
     },
     createThread: function (threadInput: ThreadInput) {
-      const { communityId, userId, title, createdFrom, createdAt, threadId } =
+      const { communityId, userId, title, body, createdFrom, createdAt, threadId } =
         threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
@@ -130,6 +131,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
             document {
               id
               title
+              body
               userId
               createdAt
               communityId
@@ -145,6 +147,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
               userId: userId, //streamId of User
               threadId: threadId, //discord thread id
               title: title,
+              body: body,
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
             },
@@ -223,6 +226,24 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
           },
         }
       );
+    },
+    updateThreadWithSocialThreadId: async function (streamId: string, threadId: string) {
+      const query = gql`
+      mutation UpdateThread($input: UpdateThreadInput!) {
+        updateThread(input: $input) {
+          document {
+            id
+            threadId
+          }
+        }
+      }
+      `;
+      return await compose.executeQuery(query, {
+        input: {
+          id: streamId,
+          content: { threadId },
+        }
+      });
     },
   };
 };

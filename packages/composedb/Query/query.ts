@@ -1,4 +1,5 @@
 import { GraphQLClient, gql } from "graphql-request";
+import {Thread, Node, Edges, Community} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -265,7 +266,18 @@ export const composeQueryHandler = () => {
                 id
                 title
                 userId
+                threadId
                 createdAt
+                community {
+                  socialPlatforms(first: 10) {
+                    edges {
+                      node {
+                        platformId
+                        platform
+                      }
+                    }
+                  }
+                 }
                 communityId
                 createdFrom
                 author {
@@ -304,20 +316,16 @@ export const composeQueryHandler = () => {
       )[0];
       return user;
     },
-    fetchUserPlatformDetails: async function (
+    fetchUserByPlatformDetails: async function (
       platformName: string,
       platformId: string
     ) {
       const allUsers = await this.fetchAllUsers();
-      const user = allUsers.map(
-        (user: any) =>
-          user?.node.userPlatforms.filter(
-            (platform: any) =>
-              platform.platformName === platformName &&
-              platform.platformId === platformId
-          )[0]
-      )[0];
-      return user;
+      return allUsers.find((user: any) => {
+        return user.node.userPlatforms.some((platform: any) =>
+          platform.platformName === platformName && platform.platformId === platformId
+        );
+      });
     },
     fetchUserDetailsFromPlatformId: async function (
       platformName: string,
@@ -338,18 +346,180 @@ export const composeQueryHandler = () => {
       return user;
     },
     fetchThreadDetails: async function (threadId: string) {
-      const allThreads = await this.fetchAllThreads();
-      const thread = allThreads.filter(
-        (thread: any) => thread.node.id === threadId
-      )[0];
-      return thread;
+      const query = gql`
+      query ($id: ID!) {
+        node(id: $id) {
+          ... on Thread {
+            id
+            title
+            body
+            userId
+            threadId
+            createdAt
+            communityId
+            createdFrom
+            author {
+              id
+            }
+            user {
+              id
+              walletAddress
+              author {
+                id
+              }
+              userPlatforms {
+                platformId
+                platformName
+                platformAvatar
+                platformUsername
+              }
+              createdAt
+            }
+            community {
+              id
+              createdAt
+              communityName
+              socialPlatforms(first: 10) {
+                edges {
+                  node {
+                    platformId
+                    platform
+                  }
+                }
+              }
+              author {
+                id
+              }
+            }
+            comments(first: 100) {
+              edges {
+                node {
+                  id
+                  text
+                  userId
+                  threadId
+                  createdAt
+                  createdFrom
+                  user {
+                    id
+                    walletAddress
+                    author {
+                      id
+                    }
+                    userPlatforms {
+                      platformId
+                      platformName
+                      platformAvatar
+                      platformUsername
+                    }
+                    createdAt
+                  }
+                  thread {
+                    id
+                    title
+                    userId
+                    createdAt
+                    communityId
+                    createdFrom
+                    author {
+                      id
+                    }
+                    user {
+                      id
+                      walletAddress
+                      author {
+                        id
+                      }
+                      userPlatforms {
+                        platformId
+                        platformName
+                        platformAvatar
+                        platformUsername
+                      }
+                      createdAt
+                    }
+                  }
+                  author {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      return await client.request(query, {id: threadId});
     },
     fetchCommentDetails: async function (commentId: string) {
-      const allComments = await this.fetchAllComments();
-      const comment = allComments.filter(
-        (comment: any) => comment.node.id === commentId
-      )[0];
-      return comment;
+      const query = gql`
+        query ($id: ID!) {
+          node(id: $id) {
+            ... on Comment {
+              id
+              text
+              userId
+              threadId
+              createdAt
+              createdFrom
+              user {
+                id
+                walletAddress
+                author {
+                  id
+                }
+                userPlatforms {
+                  platformId
+                  platformName
+                  platformAvatar
+                  platformUsername
+                }
+                createdAt
+              }
+              thread {
+                id
+                title
+                userId
+                threadId
+                createdAt
+                community {
+                  socialPlatforms(first: 10) {
+                    edges {
+                      node {
+                        platformId
+                        platform
+                      }
+                    }
+                  }
+                }
+                communityId
+                createdFrom
+                author {
+                  id
+                }
+                user {
+                  id
+                  walletAddress
+                  author {
+                    id
+                  }
+                  userPlatforms {
+                    platformId
+                    platformName
+                    platformAvatar
+                    platformUsername
+                  }
+                  createdAt
+                }
+              }
+              author {
+                id
+              }
+            }
+          }
+        }
+      `
+      return await client.request(query, {id: commentId});
     },
     fetchSocialPlatform: async function (platformId: string) {
       const allSocialPlatforms = await this.fetchAllSocialPlatforms();
@@ -394,15 +564,17 @@ export const composeQueryHandler = () => {
       const allThreads = await this.fetchAllThreads();
       return allThreads.filter((thread: any) => thread.node.communityId === communityId);
     },
+    fetchThreadBySocialThreadId: async function (threadId: string) {
+      const allThreads = await this.fetchAllThreads();
+      return allThreads.find((thread: Node<Thread>) => thread.node.threadId === threadId);
+    },
     fetchCommunityUsingPlatformId: async function (platformId: string) {
-      const allCommunities = await this.fetchAllCommunities();
-      const community = allCommunities.map((community: any) =>
-        community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
-          if (socialPlatform && socialPlatform.node!== undefined)
-            return socialPlatform.node.platformId === platformId;
-        })[0]
-    )[0]
-    return community;
+      const allCommunities: Node<Community>[] = await this.fetchAllCommunities();
+      return allCommunities.find((community: any) => {
+        return community.node?.socialPlatforms.edges.some(
+          (platform: any) => platform.node.platformId === platformId
+        );
+      });
   },
   };
 };
