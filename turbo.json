@@ -51,9 +51,6 @@
     "generate": {
       "cache": false
     },
-    "db:push": {
-      "cache": false
-    },
     "studio": {
       "cache": false
     }
