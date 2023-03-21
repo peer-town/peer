@@ -22,7 +22,6 @@
     "@ceramicnetwork/stream-tile": "^2.11.1",
     "@composedb/client": "^0.4.3",
     "@devnode/composedb": "*",
-    "@devnode/database": "*",
     "@didtools/pkh-ethereum": "^0.0.3",
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "v2",
