@@ -26,7 +26,8 @@ describe("utils.text", () => {
 describe("utils.discord", () => {
 
   it("should return auth url", () => {
-    expect(utils.getDiscordAuthUrl()).not.toBeNull();
+    expect(utils.getDiscordAuthUrl('user')).not.toBeNull();
+    expect(utils.getDiscordAuthUrl('community')).not.toBeNull();
   });
 
   it("should return discord username structure", () => {
@@ -35,7 +36,9 @@ describe("utils.discord", () => {
 
   it("should return discord avatar url", () => {
     const expected = "https://cdn.discordapp.com/avatars/123/4567.jpg";
+    const expectedCommunity = "https://cdn.discordapp.com/icons/123/4567.png";
     expect(utils.getDiscordAvatarUrl("123", "4567")).toEqual(expected);
+    expect(utils.getCommunityDiscordAvatarUrl("123", "4567")).toEqual(expectedCommunity);
   });
 });
 
