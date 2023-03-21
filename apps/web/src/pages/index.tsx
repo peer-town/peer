@@ -4,28 +4,33 @@ import { Layout } from "../components/Layout";
 import NewThread from "../components/Thread/NewThread";
 import ThreadCard from "../components/ThreadCard";
 import { useAccount } from "wagmi";
-import useLocalStorage from "../hooks/useLocalStorage";
 import { trpc } from "../utils/trpc";
-import {Modal} from "../components/Modal";
-import {useAppSelector} from "../store";
+import { Modal } from "../components/Modal";
+import { useAppSelector } from "../store";
 
 const Home: NextPage = () => {
-  const communityId = useAppSelector(state => state.community.selectedCommunity);
-  const threads = trpc.public.fetchAllCommunityThreads.useQuery({communityId});
-  const [didSession] = useLocalStorage("didSession", "");
+  const communityId = useAppSelector(
+    (state) => state.community.selectedCommunity
+  );
+  const threads = trpc.public.fetchAllCommunityThreads.useQuery({
+    communityId,
+  });
+
+  const didSession = useAppSelector((state) => state.user.didSession);
+
   const { isConnected } = useAccount();
   const [isDidSession, setDidSession] = useState(didSession ? true : false);
   const [isDiscordUser, setDiscordUser] = useState(false);
   const [isOpen, setOpen] = useState(false);
-  const [loading,setLoading] = useState(true);
-  // todo we can write a custom hook for fetching all threads
-  useEffect(()=>{
-    if (threads.data && threads.data?.length>=0){
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (threads.data && threads.data?.length >= 0) {
       setLoading(false);
     }
-  },[threads])
+  }, [threads]);
 
-  if(loading){
+  if (loading) {
     return <div>Loading...</div>;
   }
 
@@ -85,9 +90,10 @@ const Home: NextPage = () => {
             </div>
           </div>
           <div className="flex flex-col space-y-[36px] py-[40px]">
-            {threads.data && threads.data.map((thread) => (
-              <ThreadCard key={thread.node.id} thread={thread.node} />
-            ))}
+            {threads.data &&
+              threads.data.map((thread) => (
+                <ThreadCard key={thread.node.id} thread={thread.node} />
+              ))}
           </div>
 
           <div className="flex flex-col space-y-[36px] py-[40px]">

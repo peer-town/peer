@@ -7,18 +7,18 @@ describe("<InterfacesModal />", () => {
   beforeAll(() => mockWindow());
 
   it("should render modal with no issues", () => {
-    const result = render(<InterfacesModal open={true} onClose={onClose} />);
+    const result = render(<InterfacesModal open={true} onClose={onClose} type ={"user"}/>);
     expect(result.container).toBeInTheDocument();
     expect(document.getElementById("interface-modal")).toBeTruthy();
   });
 
   it("should not render dialog if open is false", () => {
-    render(<InterfacesModal open={false} onClose={onClose} />);
+    render(<InterfacesModal open={false} onClose={onClose} type ={"user"}/>);
     expect(document.getElementById("interface-modal")).toBeFalsy();
   });
 
   it('should handle click on discord button', async () => {
-    render(<InterfacesModal open={true} onClose={onClose} />);
+    render(<InterfacesModal open={true} onClose={onClose} type ={"user"}/>);
     const button = document.getElementById("discord-button");
     await button.click();
     expect(button).toBeTruthy();

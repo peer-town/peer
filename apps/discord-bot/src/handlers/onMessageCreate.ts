@@ -66,9 +66,9 @@ export const onMessageCreate = async (message: Message) => {
       .catch(() => {
         return null;
       });
-    const {id} = user.node;
+    const {id} = user?.node;
     //If the user does not have a devnode account, delete it and tell the user to create one
-    if (user == null || !user.node) {
+    if (user == null || !user?.node) {
       await new Promise((r) => setTimeout(r, 3000));
 
       if (existingMessage) {
