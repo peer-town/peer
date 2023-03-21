@@ -13,6 +13,7 @@ import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import { has, get, isEmpty, isNil } from "lodash";
 import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
+import { CreateThread } from "../Thread";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -23,6 +24,7 @@ const NavBar = (props) => {
   const { address } = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
+  const [questionModel, setQuestionModel] = useState(false);
 
   const dispatch = useAppDispatch();
   const didSession = useAppSelector((state) => state.user.didSession);
@@ -198,6 +200,24 @@ const NavBar = (props) => {
     }
   };
 
+  const handleQuestionModel = () => {
+    const userId = communityAndUserDetails.user.id;
+    const communityId = communityAndUserDetails.community.selectedCommunity;
+    if (!address) {
+      toast.error("Please connect with your wallet!");
+      return;
+    }
+    if (!userId || !didSession) {
+      toast.error("Please re-connect with your wallet!");
+      return;
+    }
+    if(!communityId){
+      toast.error("Please select community");
+      return;
+    }
+    setQuestionModel(true);
+  };
+
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
@@ -264,7 +284,10 @@ const NavBar = (props) => {
                   </div>
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
-                  <PrimaryButton title={"Ask a question"} onClick={() => {}} />
+                  <PrimaryButton
+                    title={"Ask a question"}
+                    onClick={handleQuestionModel}
+                  />
                   <ConnectWalletButton
                     onSessionCreated={handleOnUserConnected}
                   />
@@ -281,6 +304,15 @@ const NavBar = (props) => {
               type={"user"}
               open={socialInterfaces}
               onClose={() => setSocialInterfaces(false)}
+            />
+            <CreateThread
+              title={"Ask Question"}
+              open={questionModel}
+              onClose={() => setQuestionModel(false)}
+              did={communityAndUserDetails.user.did}
+              user={communityAndUserDetails.user}
+              community={communityAndUserDetails.community}
+              didSession={didSession}
             />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
