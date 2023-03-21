@@ -95,20 +95,6 @@ const Home: NextPage = () => {
                 <ThreadCard key={thread.node.id} thread={thread.node} />
               ))}
           </div>
-
-          <div className="flex flex-col space-y-[36px] py-[40px]">
-            {isConnected && isDidSession && isDiscordUser ? (
-              <NewThread
-                isDidSession={isDidSession}
-                isDiscordUser={isDiscordUser}
-                refresh={() => {
-                  threads.refetch();
-                }}
-              />
-            ) : (
-              checkConnected()
-            )}
-          </div>
         </div>
       </main>
       {isOpen && <Modal handleClick={handleClick} />}
