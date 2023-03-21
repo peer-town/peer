@@ -74,7 +74,7 @@ const Layout = (props) => {
     }
 
     return communities.data.map((community, index) => {
-      if (!community.node) return <></>;
+      if (!community.node) return null;
 
       const name = community.node.communityName;
       const image =
@@ -103,6 +103,7 @@ const Layout = (props) => {
       <div className="flex flex-row">
         <div className="flex h-screen flex-col gap-7 border-r py-10 sm:hidden md:flex ">
           <CommunityAvatar
+            key={'create'}
             classes={utils.classNames(
               "bg-slate-300	w-full rounded-full hover:rounded-xl hover:bg-slate-500"
             )}

@@ -103,10 +103,10 @@ client.on("threadCreate", async (thread) => {
 const updateCommunities = async () => {
 
   (await client.guilds.fetch()).map(async (guild) => {
-    
-    const session = await DIDSession.fromSession("eyJzZXNzaW9uS2V5U2VlZCI6InN3b0l1TE4zTXpESmc2WjhPS25pZ0Rmc1AwU1hpQS9mU3lmOXBFd2F2Yjg9IiwiY2FjYW8iOnsiaCI6eyJ0IjoiZWlwNDM2MSJ9LCJwIjp7ImRvbWFpbiI6ImRldm5vZGUtd2ViLXN0YWdpbmcudXAucmFpbHdheS5hcHAiLCJpYXQiOiIyMDIzLTAxLTE2VDE0OjM2OjIzLjAwMVoiLCJpc3MiOiJkaWQ6cGtoOmVpcDE1NToxOjB4OGIyYTZhMjJlYzA1NTIyNUM0YzRiNTgxNWU3ZDlGNTY2YjhiZTY4RiIsImF1ZCI6ImRpZDprZXk6ejZNa3RLNG1wNXhld29WZlM3cXlCWE01THRtczNEQ2dYU0NkSHlLenB4R2dGVGVrIiwidmVyc2lvbiI6IjEiLCJub25jZSI6ImY5RVg2QmM3V1QiLCJleHAiOiIyMDI0LTEyLTE2VDE0OjM2OjIzLjAwMVoiLCJzdGF0ZW1lbnQiOiJHaXZlIHRoaXMgYXBwbGljYXRpb24gYWNjZXNzIHRvIHNvbWUgb2YgeW91ciBkYXRhIG9uIENlcmFtaWMiLCJyZXNvdXJjZXMiOlsiY2VyYW1pYzovLyoiXX0sInMiOnsidCI6ImVpcDE5MSIsInMiOiIweDU4MGE3Njg4M2U0ZmQyNGZmNzkzMGVhMWM5NDRhOGFjZGQ1YjBhZjc5OTRiNDJkMDU4NTczYjE2Y2E3NzM2YWU0YWZlZTE5YjNmYWY0MTRhNWQ4MThhNGVjZTdkYmI3MTUzZDY4MjUwZWM0OTI4MzdlMDUxZDQ0OGM1ZmJmODFlMWIifX19");
+
+    const session = await DIDSession.fromSession("");
     compose.setDID(session.did);
-    const handler = await composeMutationHandler(compose) 
+    const handler = await composeMutationHandler(compose)
 
     const owner = await (await guild.fetch()).fetchOwner();
 
@@ -119,16 +119,16 @@ const updateCommunities = async () => {
     const userRespose = await handler.createUser(userDetails,"not Added");
     if (!userRespose || !userRespose.data) {
       return ;
-    } 
+    }
     const community = await composeQueryHandler().fetchCommunityUsingPlatformId(guild.id);
     if(community && community.node ){
       return;
     }
     const communityRespose = await handler.createCommunity(guild.name);
-    
+
     if (!communityRespose || !communityRespose.data) {
       return ;
-    } 
+    }
 
 
     const socialPlatformInput = {

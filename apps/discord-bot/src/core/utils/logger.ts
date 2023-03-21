@@ -7,7 +7,7 @@ export enum LogLevel {
   INFO = 'info',
 }
 
-type Event = 'discord' | 'core' | 'compose' | 'verbose';
+type Event = 'discord' | 'core' | 'compose' | 'verbose' | 'test';
 
 interface LoggerOptions {
   productionMode: boolean;
@@ -39,6 +39,8 @@ const log = (level: LogLevel, event: Event, message: any, options: LoggerOptions
   if (!options.productionMode) {
     console.log(logString);
   }
+
+  if (event === 'test') return;
 
   const logFilePath = path.join("./", `${level}.log`);
   fs.appendFileSync(logFilePath, logString);

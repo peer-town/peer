@@ -13,7 +13,7 @@ export const config = {
     expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
   },
   aggregator: {
-    endpoint: process.env.NEXT_PUBLIC_DISCORD_BOT_URL || "",
+    endpoint: process.env.NEXT_PUBLIC_DISCORD_BOT_URL || "http://localhost:4000/api/",
   },
   ceramic: {
     nodeUrl: process.env.CERAMIC_NODE || "",

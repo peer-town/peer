@@ -17,10 +17,7 @@ export const handleNewComment = async (compose: ComposeClient, message: Message<
       return; // not in text or thread channel
   }
 
-  if (
-    message.channel.name !== config.discord.channel &&
-    message.channel.parent?.name !== config.discord.channel
-  ) return; // not in devnode channel
+  if (message.channel.parent?.name !== config.discord.channel) return; // not in devnode channel
 
   switch (message.type) {
     case MessageType.ThreadCreated:
@@ -73,8 +70,8 @@ export const postComment = async (client: Client, payload: PostCommentToSocialPa
   const server = client.guilds.cache.get(payload.serverId);
   const thread = server?.channels.cache.get(payload.threadId) as ThreadChannel;
 
-  if (!server) {
-    throw new Error("unknown server");
+  if (!server || !thread) {
+    throw new Error("unknown server or thread!");
   }
 
   return await thread.send(buildMessage({...payload, body: payload.text}));
