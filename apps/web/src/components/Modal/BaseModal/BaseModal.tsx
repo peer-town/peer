@@ -1,11 +1,12 @@
-import {BaseModalProps} from "../types";
-import {Dialog, Transition} from "@headlessui/react";
-import {Fragment} from "react";
+import { BaseModalProps } from "../types";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import * as utils from "../../../utils";
 
 export const BaseModal = (props: BaseModalProps) => {
   return (
     <>
-      {props.open &&
+      {props.open && (
         <Transition appear show={props.open} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={props.onClose}>
             <Transition.Child
@@ -17,7 +18,7 @@ export const BaseModal = (props: BaseModalProps) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-black bg-opacity-60"/>
+              <div className="fixed inset-0 bg-black bg-opacity-60" />
             </Transition.Child>
 
             <div className="fixed inset-0 overflow-y-auto">
@@ -32,10 +33,17 @@ export const BaseModal = (props: BaseModalProps) => {
                   leaveTo="opacity-0 scale-95"
                 >
                   <Dialog.Panel
-                    className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white px-4 py-7 text-left align-middle shadow-xl transition-all">
+                    className={utils.classNames(
+                      "w-full max-w-sm transform overflow-hidden rounded-2xl bg-white px-4 py-7 text-left align-middle shadow-xl transition-all ",
+                      props?.classNameContent
+                    )}
+                  >
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-bold w-full text-center font-medium leading-6 text-black"
+                      className={utils.classNames(
+                        "w-full text-center text-lg font-bold font-medium leading-6 text-black",
+                        props?.classNameTitle
+                      )}
                     >
                       {props.title}
                     </Dialog.Title>
@@ -46,7 +54,7 @@ export const BaseModal = (props: BaseModalProps) => {
             </div>
           </Dialog>
         </Transition>
-      }
+      )}
     </>
-  )
-}
+  );
+};

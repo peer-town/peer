@@ -21,6 +21,8 @@ export interface InterfaceModelProps extends ModalProps{
 }
 export interface BaseModalProps extends ModalProps {
   title: string;
+  classNameTitle?: string;
+  classNameContent?: string;
 }
 
 export interface WebOnBoardProps extends ModalProps {
@@ -30,3 +32,4 @@ export interface WebOnBoardProps extends ModalProps {
 export interface CommunityOnBoardProps extends ModalProps {
   onSubmit(data: CommunityOnBoardData): void;
 }
+
