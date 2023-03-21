@@ -33,7 +33,8 @@ export const commentRouter = router({
     .mutation(async ({input}) => {
       try {
         const handler = await getHandler(input.session);
-        const response = await handler.createComment(omit(input, "session"));
+        const payload = omit(input, ["session"]);
+        const response = await handler.createComment(payload as any);
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
           : right(response.data);
