@@ -21,13 +21,13 @@ export interface UserState {
   };
 }
 
-export interface UserInitialState extends UserState {
+export interface CompleteUserState extends UserState {
   didSession: string;
   did: string;
   discordContext: string;
 }
 
-export const initialState: UserInitialState = {
+export const initialState: CompleteUserState = {
   id: null,
   createdAt: null,
   walletAddress: null,
