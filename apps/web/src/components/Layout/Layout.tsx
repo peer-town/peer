@@ -15,7 +15,7 @@ const Layout = (props) => {
   const communityId = useAppSelector(
     (state) => state.community.selectedCommunity
   );
-  const didSession = useAppSelector((state)=> state.user.didSession);
+  const didSession = useAppSelector((state) => state.user.didSession);
   const userId = useAppSelector((state) => state.user.id);
 
   const communities = trpc.public.fetchAllCommunities.useQuery();
@@ -26,8 +26,11 @@ const Layout = (props) => {
     useState<boolean>(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
 
-  const handleOnCommunityClick = (id: string) => {
-    dispatch(selectCommunity(id));
+  const handleOnCommunityClick = (communityDetails: {
+    selectedCommunity: string;
+    communityName: string;
+  }) => {
+    dispatch(selectCommunity(communityDetails));
   };
 
   const handleSubmit = async ({ name, imageUrl }) => {
@@ -44,11 +47,11 @@ const Layout = (props) => {
     });
 
     if (isRight(createCommunityResp)) {
-      const communityId = get(
-        createCommunityResp.value,
-        "createCommunity.document.id"
-      );
-      dispatch(selectCommunity(communityId));
+      const communityDetails = {
+        selectedCommunity: get(communities, "createCommunity.document.id"),
+        communityName: get(communities, "createCommunity.document.communityName"),
+      };
+      dispatch(selectCommunity(communityDetails));
       communities.refetch();
       setCommunityOnboarding(false);
       setSocialInterfaces(true);
@@ -70,12 +73,20 @@ const Layout = (props) => {
     }
 
     if (isEmpty(communityId) && has(communities, "data[0].node.id")) {
-      handleOnCommunityClick(get(communities, "data[0].node.id"));
+      const communityDetails = {
+        selectedCommunity: get(communities, "data[0].node.id"),
+        communityName: get(communities, "data[0].node.communityName"),
+      };
+      handleOnCommunityClick(communityDetails);
     }
 
     return communities.data.map((community, index) => {
       if (!community.node) return null;
 
+      const communityDetails = {
+        selectedCommunity: community.node.id,
+        communityName: community.node.communityName,
+      };
       const name = community.node.communityName;
       const image =
         get(community, "node.socialPlatforms.edges[0].node.communityAvatar") ||
@@ -88,7 +99,7 @@ const Layout = (props) => {
           name={name}
           image={image}
           selected={selected}
-          onClick={() => handleOnCommunityClick(community.node.id)}
+          onClick={() => handleOnCommunityClick(communityDetails)}
         />
       );
     });
@@ -103,7 +114,7 @@ const Layout = (props) => {
       <div className="flex flex-row">
         <div className="flex h-screen flex-col gap-7 border-r py-10 sm:hidden md:flex ">
           <CommunityAvatar
-            key={'create'}
+            key={"create"}
             classes={utils.classNames(
               "bg-slate-300	w-full rounded-full hover:rounded-xl hover:bg-slate-500"
             )}
