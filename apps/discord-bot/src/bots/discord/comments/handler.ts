@@ -17,10 +17,7 @@ export const handleNewComment = async (compose: ComposeClient, message: Message<
       return; // not in text or thread channel
   }
 
-  if (
-    message.channel.name !== config.discord.channel &&
-    message.channel.parent?.name !== config.discord.channel
-  ) return; // not in devnode channel
+  if (message.channel.parent?.name !== config.discord.channel) return; // not in devnode channel
 
   switch (message.type) {
     case MessageType.ThreadCreated:
