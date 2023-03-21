@@ -545,7 +545,7 @@ export const composeQueryHandler = () => {
       if (!communityPlatform) {
         return allCommunities.map((community: any) => {
           if (community && community.node!== undefined)
-            return community.node.socialPlatforms.edges;
+            return community.node?.socialPlatforms.edges;
         });
       }
       const communities = allCommunities.map((community: any) =>
@@ -572,7 +572,7 @@ export const composeQueryHandler = () => {
       const allCommunities: Node<Community>[] = await this.fetchAllCommunities();
       return allCommunities.find((community: any) => {
         return community.node?.socialPlatforms.edges.some(
-          (platform: any) => platform.node.platformId === platformId
+          (platform: any) => platform.node?.platformId === platformId
         );
       });
   },

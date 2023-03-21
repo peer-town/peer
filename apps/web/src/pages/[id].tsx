@@ -32,13 +32,6 @@ const QuestionPage = () => {
   const currentUser = trpc.user.getUser.useQuery({address});
   const createComment = trpc.comment.createComment.useMutation();
 
-  // todo: replace this with updated aggregator call
-  const authorPlatformDetails = trpc.user.getUserPlatformDetails.useQuery({
-    address: address,
-    platform: 'discord'
-  });
-  const discordUserName = authorPlatformDetails.data?.value?.platformUsername ;
-
   useEffect(() => {
     const loadSession = async () => {
       if (didSession) {
@@ -90,24 +83,21 @@ const QuestionPage = () => {
     }).finally(() => setIsCommenting(false));
 
     if (isRight(result)) {
+      const commentId = get(result, "value.createComment.document.id");
       setComment("");
       toast.success("Comment posted successfully!");
       await currentThread.refetch();
-      await handleWebToAggregator();
+      handleWebToAggregator(commentId).catch(console.log);
     } else {
       toast.error("Failed to post message. Try again in a while!");
     }
   }
 
-  const handleWebToAggregator = async () => {
-    const endpoint = `${config.aggregator.endpoint}/webcomment`;
+  const handleWebToAggregator = async (commentId: string) => {
+    const endpoint = `${config.aggregator.endpoint}/web-comment`;
     await fetch(endpoint, {
         body: JSON.stringify({
-          threadId: threadId,
-          comment: String(comment),
-          discordUserName: String(discordUserName),
-          didSession:String(didSession),
-          platformId: authorPlatformDetails.data?.value?.platformId,
+          commentId: commentId,
         }),
         method: "POST",
         headers: {
