@@ -1,126 +1,173 @@
-import { Layout } from "../components/Layout";
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import Thread from "../components/Thread";
-import Comment from "../components/Comment";
-import { trpc } from "../utils/trpc";
+import {Layout} from "../components/Layout";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/router";
+import {Thread} from "../components/Thread";
+import {Comment} from "../components/Comment";
+import {trpc} from "../utils/trpc";
 import ThreadInformation from "../components/Thread/ThreadInformation";
-import CommentInput from "../components/Thread/CommentInput";
-import { useAccount } from "wagmi";
-import useLocalStorage from "../hooks/useLocalStorage";
+import {Back} from "../components/Button/Back/Back";
+import {SecondaryButton} from "../components/Button/SecondaryButton";
+import {useAccount} from "wagmi";
+import {get, has} from "lodash";
+import {toast} from "react-toastify";
+import {constants} from "../config";
+import {isRight} from "../utils/fp";
+import {DIDSession} from "did-session";
+import {config} from "../config";
+import { useAppSelector } from "../store";
 
-const QuestionPage =  () => {
+const QuestionPage = () => {
   const router = useRouter();
-  const id = router.query.id as string;
+  const threadId = router.query.id as string;
+  const {address} = useAccount();
+  const [did, setDid] = useState("");
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [canComment, setCanComment] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
 
-  const threads = trpc.public.fetchAllThreads.useQuery();
+  const didSession = useAppSelector((state)=> state.user.didSession);
 
-  const [didSession] = useLocalStorage("didSession","");
-  const { isConnected } = useAccount();
-  const [isDidSession, setDidSession] = useState(didSession?true:false);
-  const [isDiscordUser, setDiscordUser] = useState(false);
-  const [loading,setLoading] = useState(true);
+  const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
+  const currentUser = trpc.user.getUser.useQuery({address});
+  const createComment = trpc.comment.createComment.useMutation();
 
-  // todo we can write a custom hook for fetching all threads
-  useEffect(()=>{
-    if (threads.data && threads.data?.length>=0){
+  // todo: replace this with updated aggregator call
+  const authorPlatformDetails = trpc.user.getUserPlatformDetails.useQuery({
+    address: address,
+    platform: 'discord'
+  });
+  const discordUserName = authorPlatformDetails.data?.value?.platformUsername ;
+
+  useEffect(() => {
+    const loadSession = async () => {
+      if (didSession) {
+        const session = await DIDSession.fromSession(didSession);
+        setDid(session.did.id);
+      }
+    };
+    loadSession().catch(console.log);
+  }, [didSession]);
+
+  useEffect(() => {
+    if (currentThread.data && currentThread.data.node) {
       setLoading(false);
-    } 
-  },[threads])
-  
-  if(loading){
+    }
+  }, [currentThread])
+
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  const thisThread = threads.data.filter((thread) => thread.node.id == id)[0].node;
+  const thisThread = currentThread.data.node;
   const commentsForThread = thisThread.comments.edges;
 
-  const handleDidSession = (value) =>{
-    setDidSession(value)
-  }
-  const handleDiscordUser = (value) => {
-    setDiscordUser(value)
-  }
-
-  const checkConnected = () =>{
-    if (!isConnected)
-      return (
-        <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700">
-            Please connect to publish comments.
-          </div>
-        </div>
-      );
-
-    if (!isDidSession)
-      return (
-        <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700">
-            Please create a DID session
-          </div>
-        </div>
-      );
-
-    if (!isDiscordUser)
-      return (
-        <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700">
-            Please connect to Discord
-          </div>
-        </div>
-      );
+  const handleOnAnswerClick = () => {
+    if (has(currentUser, "data.value.id")) {
+      setCanComment(true);
+    } else {
+      toast.warn("You need an account to post a comment");
     }
+  }
+
+  const handleOnCommentSubmit = async () => {
+    if (comment.length === 0) {
+      toast.warn("Comment cannot be empty");
+      return;
+    }
+    if (!has(currentUser, "data.value.id")) {
+      return;
+    }
+
+    setIsCommenting(true);
+    const result = await createComment.mutateAsync({
+      session: didSession,
+      threadId: threadId,
+      userId: get(currentUser, "data.value.id"),
+      comment: comment,
+      createdFrom: constants.CREATED_FROM_DEVNODE,
+      createdAt: new Date().toISOString()
+    }).finally(() => setIsCommenting(false));
+
+    if (isRight(result)) {
+      setComment("");
+      toast.success("Comment posted successfully!");
+      await currentThread.refetch();
+      await handleWebToAggregator();
+    } else {
+      toast.error("Failed to post message. Try again in a while!");
+    }
+  }
+
+  const handleWebToAggregator = async () => {
+    const endpoint = `${config.aggregator.endpoint}/webcomment`;
+    await fetch(endpoint, {
+        body: JSON.stringify({
+          threadId: threadId,
+          comment: String(comment),
+          discordUserName: String(discordUserName),
+          didSession:String(didSession),
+          platformId: authorPlatformDetails.data?.value?.platformId,
+        }),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 
   return (
     <Layout
-      handleDiscordUser = {handleDiscordUser}
-      handleDidSession = {handleDidSession}
+      handleDiscordUser={() => {}}
+      handleDidSession={() => {}}
     >
-      <main className="absolute inset-0 m-5 lg:m-0 lg:flex lg:gap-[50px]">
-        <div className="pt-[50px] lg:max-w-[75%] lg:border-r-[1px]">
-          <Link href="/" legacyBehavior>
-            <a className="flex w-fit items-center gap-[3px] text-[16px] font-[500] text-[#BAB2C4] hover:text-[#08010D]">
-              <svg
-                className="h-[20px] w-[20px]"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                aria-hidden="true"
-              >
-                <path d="M0 0h24v24H0z" stroke="none" />
-                <path d="M5 12h14M5 12l4 4M5 12l4-4" />
-              </svg>
-              Back
-            </a>
-          </Link>
-          <div className="mt-[80px] lg:mr-[50px]">
+      <main className="absolute inset-0 m-5 lg:m-0 lg:flex">
+        <div className="pt-[50px] px-12 lg:w-full lg:border-r-[1px]">
+          <Back link={"/"}/>
+          <div className="mt-[80px]">
             <div>
-            {thisThread && <Thread thread={thisThread} />}
+              {thisThread && <Thread thread={thisThread}/>}
             </div>
-            <div className="mt-[94px] pb-[40px]">
-              <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
+            {
+              canComment ?
+                <div className="block w-full bg-white my-12">
+                  <div className="text-xs text-gray-400">Posting as {did}</div>
+                  <div className="form-group mb-6">
+                      <textarea
+                        className="form-control block w-full min-h-[120px] rounded-[10px] border border-solid border-gray-400 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 focus:border-gray-600 focus:bg-white focus:text-gray-700 focus:outline-none"
+                        placeholder="comment"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                    <SecondaryButton
+                      classes={"ml-auto mt-4"}
+                      loading={isCommenting}
+                      title={isCommenting ? "Posting..." : "Post Comment"}
+                      onClick={handleOnCommentSubmit}
+                    />
+                  </div>
+                </div>
+                :
+                <SecondaryButton classes={"ml-auto my-8"} title={"Answer question"} onClick={handleOnAnswerClick}/>
+            }
+
+            {/* comments section */}
+            <hr className="border-[#EAEAEA]"/>
+            <div className="pb-[40px]">
               <div className="mt-[40px] space-y-[40px]">
-                {commentsForThread && commentsForThread?.length>0 && commentsForThread.map((item) => (
-                  <Comment key={item.node.id} comment={item.node} />
+                {commentsForThread && commentsForThread?.length > 0 && commentsForThread.map((item) => (
+                  <Comment key={item.node.id} comment={item.node}/>
                 ))}
               </div>
             </div>
-            <div className="border-b border-gray-200 pb-5 sm:pb-0"></div>
-            {isConnected && isDidSession && isDiscordUser ?<CommentInput
-              threadId={id}
-              refresh={() => {
-                threads.refetch();
-              }}
-            /> : checkConnected()}
           </div>
         </div>
 
-        {/* Right column */}
-        <ThreadInformation Comments={commentsForThread} />
+        {/* right panel */}
+        <div className="max-w-sm w-full pl-12">
+          <ThreadInformation comments={commentsForThread}/>
+        </div>
       </main>
     </Layout>
   );

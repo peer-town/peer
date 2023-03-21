@@ -38,14 +38,14 @@ export const onCommentCreateWeb = async (
 
   const user = await queryHandler.fetchUserDetailsFromPlatformId("discord",platformId )
 
-  if (user == null || !user.node ) {
+  if (user == null || !user?.node ) {
     return {
       result: false,
       value: "user not signed in from discord or did session has expired",
     };
   }
 
-  const {id} = user.node;
+  const {id} = user?.node;
 
   if (existhreaingThread) {
     const thread = client.channels.cache.get(

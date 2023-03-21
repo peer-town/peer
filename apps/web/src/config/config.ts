@@ -12,8 +12,11 @@ export const config = {
   didSession: {
     expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
   },
+  aggregator: {
+    endpoint: process.env.NEXT_PUBLIC_DISCORD_BOT_URL || "",
+  },
   ceramic: {
     nodeUrl: process.env.CERAMIC_NODE || "",
     graphqlUrl: process.env.CERAMIC_GRAPH || "",
-  }
-}
+  },
+};

@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { config } from "../../../../config";
 import axios from "axios";
+import { pick } from "lodash";
+import { getCommunityDiscordAvatarUrl } from "../../../../utils";
 
 const getAccessToken = async (code: string) => {
   const url = `${config.discordApiEndpoint}/oauth2/token`;
@@ -52,9 +54,17 @@ export default async function handler(
     tokenResp.data.token_type,
     tokenResp.data.access_token
   );
+
   if (profile.status !== 200) {
     return res.status(400).json(profile.data);
   }
 
-  return res.status(200).json(profile.data);
+  const guild = pick(tokenResp.data.guild, ["id", "name", "icon", "owner_id"]);
+  guild.icon = guild.icon
+    ? getCommunityDiscordAvatarUrl(guild.id, guild.icon)
+    : "https://placekitten.com/200/200";
+
+  const data = { guild: guild, profile: profile.data };
+
+  return res.status(200).json(data);
 }
