@@ -2,7 +2,6 @@ import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import {
   composeMutationHandler,
-  composeQueryHandler,
   definition,
   SocialPlatformInput,
 } from "@devnode/composedb";
