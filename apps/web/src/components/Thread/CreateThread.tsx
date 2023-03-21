@@ -8,8 +8,9 @@ import { trpc } from "../../utils/trpc";
 import { constants } from "../../config";
 import { isRight } from "../../utils/fp";
 import {config} from "../../config";
+import { CreateThreadProps } from "./type";
 
-const CreateThread = (props) => {
+const CreateThread = (props : CreateThreadProps) => {
   const [question, setQuestion] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
