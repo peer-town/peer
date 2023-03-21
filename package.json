@@ -21,7 +21,6 @@
     "lint": "dotenv -- turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "generate": "dotenv -- turbo run generate",
-    "db:push": "dotenv -- turbo run db:push",
     "daemon": "dotenv -- turbo run daemon",
     "studio": "dotenv -- turbo run studio",
     "composedb:daemon": "dotenv -- turbo run composedb:daemon",
