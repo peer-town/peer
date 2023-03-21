@@ -8,6 +8,7 @@ import { CommunityOnBoardModal, InterfacesModal } from "../Modal";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { isRight } from "../../utils/fp";
+import { constants } from "../../config";
 
 const Layout = (props) => {
   const dispatch = useAppDispatch();
@@ -34,8 +35,8 @@ const Layout = (props) => {
       session: didSession,
       communityName: name,
       socialPlatform: {
-        platformId: "devnode",
-        platform: "devnode",
+        platformId: constants.PLATFORM_DEVNODE_ID,
+        platform: constants.PLATFORM_DEVNODE_NAME,
         communityName: name,
         userId: userId,
         communityAvatar: imageUrl,
@@ -55,12 +56,8 @@ const Layout = (props) => {
   };
 
   const handleCreateCommunity = () => {
-    if (!userId) {
-      toast.error("Wallet not connected");
-      return;
-    }
-    if (!didSession) {
-      toast.error("Create DID session");
+    if (!userId || !didSession) {
+      toast.error("Please re-connect with your wallet!");
       return;
     }
     setCommunityOnboarding(true);
