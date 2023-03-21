@@ -3,18 +3,21 @@ import {createSlice} from '@reduxjs/toolkit';
 
 export interface CommunityState {
   selectedCommunity: string;
+  communityName: string;
 }
 
 const initialState: CommunityState = {
   selectedCommunity: "",
+  communityName:"",
 };
 
 export const communitySlice = createSlice({
   name: 'community',
   initialState,
   reducers: {
-    selectCommunity: (state, action: PayloadAction<string>) => {
-      state.selectedCommunity = action.payload;
+    selectCommunity: (state, action: PayloadAction<CommunityState>) => {
+      state.selectedCommunity = action.payload?.selectedCommunity;
+      state.communityName = action.payload?.communityName;
     },
   },
 });
