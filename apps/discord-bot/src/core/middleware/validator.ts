@@ -15,7 +15,7 @@ export const validator = (schema: joi.Schema) => {
       req.body = await schema.validateAsync(req.body);
       return next();
     } catch (e) {
-      return res.status(401).json(e);
+      return res.status(400).json(e);
     }
   }
 }

@@ -73,8 +73,8 @@ export const postComment = async (client: Client, payload: PostCommentToSocialPa
   const server = client.guilds.cache.get(payload.serverId);
   const thread = server?.channels.cache.get(payload.threadId) as ThreadChannel;
 
-  if (!server) {
-    throw new Error("unknown server");
+  if (!server || !thread) {
+    throw new Error("unknown server or thread!");
   }
 
   return await thread.send(buildMessage({...payload, body: payload.text}));

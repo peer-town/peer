@@ -7,7 +7,7 @@ describe('log()', () => {
 
   it('should log a string message', () => {
     const spy = sinon.spy(console, 'log');
-    logger.info('core', 'hello world');
+    logger.info('test', 'hello world');
     expect(spy.calledOnce).to.be.true;
     expect(spy.firstCall.args[0]).to.include('[INFO] [core] \nhello world');
   });
@@ -15,7 +15,7 @@ describe('log()', () => {
   it('should log an Error object with a stack trace', () => {
     const spy = sinon.spy(console, 'log');
     const error = new Error('something went wrong');
-    logger.error('core', error);
+    logger.error('test', error);
     expect(spy.calledOnce).to.be.true;
     expect(spy.firstCall.args[0]).to.include('[ERROR] [core] \n{"name":"Error","message":"something went wrong","stack":');
   });
@@ -23,7 +23,7 @@ describe('log()', () => {
   it('should log an object containing an Error object with a stack trace', () => {
     const spy = sinon.spy(console, 'log');
     const message = { e: new Error('something went wrong'), data: { s: 'a' } };
-    logger.debug('core', message);
+    logger.debug('test', message);
     expect(spy.calledOnce).to.be.true;
     expect(spy.firstCall.args[0]).to.include('"data":{"s":"a"}}');
   });
