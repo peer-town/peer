@@ -1,7 +1,7 @@
 import {Events} from "discord.js";
 import * as commentHandler from "./comments/handler";
 import * as threadHandler from "./threads/handler";
-import * as channelHandler from "./channel/handler";
+import * as channelHandler from "./channels/handler";
 import {Clients} from "../../core/types";
 
 export {commentHandler, threadHandler};
