@@ -27,4 +27,12 @@ describe('log()', () => {
     expect(spy.calledOnce).to.be.true;
     expect(spy.firstCall.args[0]).to.contains('"data":{"s":"a"}}');
   });
+
+  it('should log an object containing an Error object as array with a stack trace', () => {
+    const spy = sinon.spy(console, 'log');
+    const message = { e: [new Error('something went wrong')], data: { s: 'a' } };
+    logger.debug('test', message);
+    expect(spy.calledOnce).to.be.true;
+    expect(spy.firstCall.args[0]).to.contains('"data":{"s":"a"}}');
+  });
 });

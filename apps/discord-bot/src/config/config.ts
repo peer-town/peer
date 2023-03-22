@@ -13,6 +13,7 @@ export const config = {
     token: process.env.DISCORD_TOKEN || "",
     bot: process.env.DISCORD_BOT_NAME || "devnode-bot",
     channel: process.env.DISCORD_SERVER_NAME || "devnode",
+    channelCategory: process.env.DISCORD_CHANNEL_CATEGORY_NAME || "DEVNODE COMMS"
   },
   devnodeWebsite: process.env.DEVNODE_WEBSITE || "http://localhost:3000",
 };
