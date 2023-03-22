@@ -9,7 +9,7 @@ export const handleServerJoin = async (guild: Guild) => {
   ));
   const channel = guild.channels.cache.find((channel) => (
     channel.name === config.discord.channel &&
-    channel.type === ChannelType.GuildCategory
+    channel.type === ChannelType.GuildText
   ));
 
   if (!category) {
