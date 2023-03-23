@@ -7,22 +7,24 @@ import { toast } from "react-toastify";
 import { trpc } from "../../utils/trpc";
 import { constants } from "../../config";
 import { isRight } from "../../utils/fp";
-import {config} from "../../config";
+import { config } from "../../config";
 import { CreateThreadProps } from "./type";
 
-const CreateThread = (props : CreateThreadProps) => {
+const CreateThread = (props: CreateThreadProps) => {
   const [question, setQuestion] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
-  const { user, community, did, didSession } = props;
+  const { user, community, did, didSession, refetch } = props;
   const userName = user.userPlatforms && user.userPlatforms[0].platformUsername;
   const communityName = community.communityName;
   const communityId = community.selectedCommunity;
 
   const createThread = trpc.thread.createThread.useMutation();
+  const updateThreadWithSocilaId =
+    trpc.thread.updateThreadWithSocialId.useMutation();
 
   const handleQuestionInput = (e) => {
     questionError && !isEmpty(e.target.value.trim())
@@ -59,7 +61,7 @@ const CreateThread = (props : CreateThreadProps) => {
       return;
     }
 
-    if(!communityId){
+    if (!communityId) {
       toast.error("Please select community");
       return;
     }
@@ -77,14 +79,31 @@ const CreateThread = (props : CreateThreadProps) => {
         createdFrom: constants.CREATED_FROM_DEVNODE,
         createdAt: new Date().toISOString(),
       })
-      .finally(() => setCreatingThread(false));
+      
 
     if (isRight(result)) {
       const threadId = get(result, "value.createThread.document.id");
-      setQuestion("");
-      setDescription("");
-      toast.success("Thread created successfully!");
-      handleWebToAggregator(threadId).catch(console.log);
+      await handleWebToAggregator(threadId)
+        .then(async (response) => {
+          const data = await response.json();
+          const result = await updateThreadWithSocilaId.mutateAsync({
+            session: didSession,
+            streamId: threadId,
+            threadId: get(data,"data.threadId"),
+          });
+
+          if (isRight(result)) {
+            setQuestion("");
+            setDescription("");
+            toast.success("Thread created successfully!");
+            refetch();
+          } else {
+            toast.error("Failed to create thread. Try again in a while!");
+          }
+        })
+        .catch(() => {
+          toast.error("Failed to create thread. Try again in a while!");
+        }).finally(() => setCreatingThread(false));
     } else {
       toast.error("Failed to create thread. Try again in a while!");
     }
@@ -92,17 +111,16 @@ const CreateThread = (props : CreateThreadProps) => {
 
   const handleWebToAggregator = async (threadId: string) => {
     const endpoint = `${config.aggregator.endpoint}/web-thread`;
-    await fetch(endpoint, {
-        body: JSON.stringify({
-          threadId: threadId,
-        }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  }
+    return await fetch(endpoint, {
+      body: JSON.stringify({
+        threadId: threadId,
+      }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  };
 
   return (
     <Question title={"Ask question"} open={props.open} onClose={props.onClose}>
