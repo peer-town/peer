@@ -13,7 +13,6 @@ import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import { has, get, isEmpty, isNil } from "lodash";
 import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
-import { CreateThread } from "../Thread";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -24,7 +23,7 @@ const NavBar = (props) => {
   const { address } = useAccount();
   const [webOnboarding, setWebOnBoarding] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
-  const [questionModel, setQuestionModel] = useState(false);
+  const [hasUserId, setUserId] = useState(false);
 
   const dispatch = useAppDispatch();
   const didSession = useAppSelector((state) => state.user.didSession);
@@ -43,19 +42,9 @@ const NavBar = (props) => {
   const createSocialPlatform =
     trpc.community.createSocialPlatform.useMutation();
 
-  const userDiscordDetails = userPlatforms?.filter(
-    (platform) => platform.platformName === constants.PLATFORM_DISCORD_NAME
-  )[0];
-
   useEffect(() => {
     dispatch(fetchUserDetails(address));
   }, [address]);
-
-  useEffect(() => {
-    if (has(userDiscordDetails, "platformId")) {
-      props.handleDiscordUser(true);
-    }
-  }, [userDiscordDetails]);
 
   useEffect(() => {
     if (code && guild) {
@@ -64,6 +53,21 @@ const NavBar = (props) => {
       handleDiscordAuthCallback(code).catch(console.log);
     }
   }, [code, guild]);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      if (address) {
+        const existingUser = await trpcProxy.user.getUser.query({ address });
+        if (has(existingUser, "value.id")) {
+          setUserId(true);
+        }
+      }
+      else{
+        setUserId(false);
+      }
+    };
+    checkUser();
+  }, [address]);
 
   const handleDiscordAuthCallback = async (code: string) => {
     const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
@@ -75,11 +79,9 @@ const NavBar = (props) => {
       (platform) => platform.platformName === "discord"
     )[0];
     if (hasDiscord) {
-      props.handleDiscordUser(true);
       return;
     }
     await updateUserProfileWithDiscord(profile);
-    props.handleDiscordUser(true);
   };
 
   const handleCommunityDiscordAuthCallback = async (
@@ -101,7 +103,6 @@ const NavBar = (props) => {
 
     if (!has(discordPlatform, "platformId")) {
       await updateUserProfileWithDiscord(data.profile);
-      props.handleDiscordUser(true);
     }
 
     await updateCommunityDetailsWithDiscord(data.guild);
@@ -113,6 +114,7 @@ const NavBar = (props) => {
       setWebOnBoarding(true);
     } else {
       if (has(existingUser, "value.userPlatforms")) {
+        setUserId(true);
         const platforms = get(existingUser, "value.userPlatforms");
         const hasDiscord = platforms.filter(
           (platform) =>
@@ -123,7 +125,6 @@ const NavBar = (props) => {
         }
       }
     }
-    props.handleDidSession(true);
   };
 
   const handleWebOnboardSubmit = async (details) => {
@@ -169,7 +170,6 @@ const NavBar = (props) => {
         }
       });
       toast.success("Updated profile with discord info!");
-      props.handleDiscordUser(true);
     }
   };
 
@@ -200,24 +200,20 @@ const NavBar = (props) => {
     }
   };
 
-  const handleQuestionModel = () => {
-    const userId = communityAndUserDetails.user.id;
-    const communityId = communityAndUserDetails.community.selectedCommunity;
+  const createAccount = () => {
     if (!address) {
-      toast.error("Please connect with your wallet!");
+      toast.error("Please connect with your wallet");
       return;
     }
-    if (!userId || !didSession) {
-      toast.error("Please re-connect with your wallet!");
+    if (address && isNil(communityAndUserDetails.user.didSession)) {
+      toast.error("Please create did session");
       return;
     }
-    if(!communityId){
-      toast.error("Please select community");
+    if (communityAndUserDetails.user.id) {
       return;
     }
-    setQuestionModel(true);
+    setWebOnBoarding(true);
   };
-
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
@@ -237,8 +233,8 @@ const NavBar = (props) => {
                 <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
                   <Link
                     href={{
-                      pathname: address ? `/[id]/profile` : `/`,
-                      query: { id: address },
+                      pathname: hasUserId ? `/[id]/profile` : `/`,
+                      query: { id: hasUserId ? address : null },
                     }}
                   >
                     <Image
@@ -284,10 +280,18 @@ const NavBar = (props) => {
                   </div>
                 </div>
                 <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
-                  <PrimaryButton
-                    title={"Ask a question"}
-                    onClick={handleQuestionModel}
-                  />
+                  <Link
+                    href={{
+                      pathname: hasUserId ? `/[id]/profile` : "/",
+                      query: { id: hasUserId ? address : null },
+                    }}
+                  >
+                    <PrimaryButton
+                      title={hasUserId ? "Profile" : "Create Account"}
+                      onClick={createAccount}
+                    />
+                  </Link>
+
                   <ConnectWalletButton
                     onSessionCreated={handleOnUserConnected}
                   />
@@ -304,15 +308,6 @@ const NavBar = (props) => {
               type={"user"}
               open={socialInterfaces}
               onClose={() => setSocialInterfaces(false)}
-            />
-            <CreateThread
-              title={"Ask Question"}
-              open={questionModel}
-              onClose={() => setQuestionModel(false)}
-              did={communityAndUserDetails.user.did}
-              user={communityAndUserDetails.user}
-              community={communityAndUserDetails.community}
-              didSession={didSession}
             />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
