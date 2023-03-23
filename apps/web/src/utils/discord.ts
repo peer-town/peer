@@ -10,7 +10,7 @@ export const getDiscordAuthUrl = (type): string => {
   const communityParams = new URLSearchParams({
     client_id: config.discordOAuth.clientId,
     redirect_uri: config.discordOAuth.redirectUrl,
-    scope: "guilds bot applications.commands identify",
+    scope: "guilds bot applications.commands identify guilds.members.read messages.read guilds.join",
     response_type: "code",
   });
   const data = type === "user" ? userParams : communityParams;
