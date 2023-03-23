@@ -2,6 +2,7 @@ import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import {
   composeMutationHandler,
+  composeQueryHandler,
   definition,
   SocialPlatformInput,
 } from "@devnode/composedb";
@@ -15,6 +16,8 @@ export const compose = new ComposeClient({
   definition,
 });
 
+export const queryHandler = composeQueryHandler();
+
 const socialPlatformSchema = z.object({
   userId: z.string().min(1),
   platform: z.string().min(1),
@@ -24,8 +27,8 @@ const socialPlatformSchema = z.object({
   communityAvatar: z.string().min(1),
 });
 const socialPlatformInputSchema = z.object({
-  session : z.string(),
-  socialPlatform: socialPlatformSchema
+  session: z.string(),
+  socialPlatform: socialPlatformSchema,
 });
 
 const createCommunitySchema = z.object({
@@ -71,11 +74,27 @@ export const communityRouter = router({
     .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
-        const socialPlatformResp = await handler.createSocialPlatform(input.socialPlatform as SocialPlatformInput);
+        const socialPlatformResp = await handler.createSocialPlatform(
+          input.socialPlatform as SocialPlatformInput
+        );
 
         return socialPlatformResp.errors && socialPlatformResp.errors.length > 0
           ? left(socialPlatformResp.errors)
           : right(socialPlatformResp.data);
+      } catch (e) {
+        return left(e);
+      }
+    }),
+  fetchCommunityUsingStreamId: publicProcedure
+    .input(z.object({ streamId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const response = await queryHandler.fetchCommunityDetails(
+          input.streamId as string
+        );
+        return response.errors && response.errors.length > 0
+          ? left(response.errors)
+          : right(response);
       } catch (e) {
         return left(e);
       }
