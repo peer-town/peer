@@ -29,6 +29,7 @@ const Layout = (props) => {
   const handleOnCommunityClick = (communityDetails: {
     selectedCommunity: string;
     communityName: string;
+    communityAvatar: string;
   }) => {
     dispatch(selectCommunity(communityDetails));
   };
@@ -45,11 +46,20 @@ const Layout = (props) => {
         communityAvatar: imageUrl,
       },
     });
-
     if (isRight(createCommunityResp)) {
       const communityDetails = {
-        selectedCommunity: get(communities, "createCommunity.document.id"),
-        communityName: get(communities, "createCommunity.document.communityName"),
+        selectedCommunity: get(
+          createCommunityResp.value,
+          "createCommunity.document.id"
+        ),
+        communityName: get(
+          createCommunityResp.value,
+          "createCommunity.document.communityName"
+        ),
+        communityAvatar: get(
+          createCommunityResp.value,
+          "createSocialPlatform.document.communityAvatar"
+        ),
       };
       dispatch(selectCommunity(communityDetails));
       communities.refetch();
@@ -76,6 +86,10 @@ const Layout = (props) => {
       const communityDetails = {
         selectedCommunity: get(communities, "data[0].node.id"),
         communityName: get(communities, "data[0].node.communityName"),
+        communityAvatar: get(
+          communities,
+          "data[0].node.socialPlatforms.edges[0].node.communityAvatar"
+        ),
       };
       handleOnCommunityClick(communityDetails);
     }
@@ -86,6 +100,10 @@ const Layout = (props) => {
       const communityDetails = {
         selectedCommunity: community.node.id,
         communityName: community.node.communityName,
+        communityAvatar: get(
+          community,
+          "node.socialPlatforms.edges[0].node.communityAvatar"
+        ),
       };
       const name = community.node.communityName;
       const image =
@@ -107,10 +125,7 @@ const Layout = (props) => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <NavBar
-        handleDiscordUser={props.handleDiscordUser}
-        handleDidSession={props.handleDidSession}
-      />
+      <NavBar />
       <div className="flex flex-row">
         <div className="flex h-screen flex-col gap-7 border-r py-10 sm:hidden md:flex ">
           <CommunityAvatar
