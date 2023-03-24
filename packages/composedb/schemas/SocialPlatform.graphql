@@ -1,0 +1,26 @@
+type Community 
+  @loadModel(
+     id: "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1"
+    ) {
+  id: ID!
+}
+
+type User 
+  @loadModel(
+     id: "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju"
+    ) {
+  id: ID!
+}
+
+type SocialPlatform
+@createModel(accountRelation: LIST, description: "Social Platform") {
+    author: DID! @documentAccount
+    userId: StreamID! @documentReference(model: "User")
+    user: User! @relationDocument(property: "userId")
+    communityId: StreamID! @documentReference(model: "Community")
+    community: Community! @relationDocument(property: "communityId")
+    platform: String! @string(maxLength: 2000) 
+    platformId: String! @string(maxLength: 2000) 
+    communityName: String! @string(maxLength: 2000) 
+    communityAvatar: String! @string(maxLength: 2000) 
+}

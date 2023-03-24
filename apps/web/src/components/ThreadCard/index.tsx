@@ -1,26 +1,8 @@
 import Link from "next/link";
-import { trpc } from "../../utils/trpc";
 import Image from "next/image";
 
 const ThreadCard = ({ thread }) => {
-  const { id, title, author, createdAt } = thread;
-
-  const allComments = trpc.public.getAllComments.useQuery();
-
-  const user = trpc.public.getAuthor.useQuery({
-    pkh: author.id,
-  });
-
-  if (!allComments.data) return <div>Loading</div>;
-
-  const commentsForThread = allComments.data
-    .filter((comment) => comment.node.threadID == id)
-    .map((comment) => comment.node);
-
-  const avatar =
-    user.data?.discordAvatar !== ""
-      ? user.data?.discordAvatar
-      : "http://placekitten.com/200/200";
+  const { id, title, author, createdAt, user } = thread;
 
   return (
     <Link href={`/${id}`} passHref>
@@ -31,12 +13,12 @@ const ThreadCard = ({ thread }) => {
               width={32}
               height={32}
               className="rounded-full"
-              src={avatar}
+              src={user.userPlatforms[0].platformAvatar || "https://placekitten.com/200/200"}
               alt=""
             />
             <div>
               <div className="font-semibold">
-                {user.data?.discordUsername ?? "Anonymous"}
+                {user.userPlatforms[0].platformUsername}
               </div>
               <div className="font-light text-gray-400">{author.id}</div>
             </div>
@@ -45,13 +27,6 @@ const ThreadCard = ({ thread }) => {
         </div>
         <div className="font-ibm flex items-center justify-end border-t-[1px] border-[#EBEAEB] px-[10px] pt-[7px] text-[11px] text-gray-400">
           <div>{new Date(createdAt).toLocaleString()}</div>
-        </div>
-        <div className="px-5 pb-5 text-[16px] font-medium  text-gray-500">
-          {commentsForThread.length ? (
-            <div>{commentsForThread[0].text}</div>
-          ) : (
-            <></>
-          )}
         </div>
       </div>
     </Link>

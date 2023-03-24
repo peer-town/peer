@@ -1,58 +1,53 @@
-import { type AppType } from "next/app";
-
-import { trpc } from "../utils/trpc";
-
+import {type AppType} from "next/app";
+import {trpc} from "../utils/trpc";
 import "../styles/globals.css";
-
-import { publicProvider } from "wagmi/providers/public";
-
-import { InjectedConnector } from "wagmi/connectors/injected";
-
-import { Session } from "next-auth";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { mainnet, optimism } from "wagmi/chains";
-
-import { ToastContainer } from 'react-toastify';
-
+import {configureChains, createClient, WagmiConfig} from "wagmi";
+import {arbitrum, avalanche, bsc, fantom, gnosis, mainnet, optimism, polygon} from "wagmi/chains";
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {EthereumClient, modalConnectors, walletConnectProvider} from "@web3modal/ethereum";
+import {Web3Modal} from '@web3modal/react'
+import {config} from '../config';
+import {Provider} from "react-redux";
+import {store} from "../store";
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [mainnet],
-  [publicProvider()]
-);
-
+const projectId = config.walletConnect.projectId;
+const chains = [mainnet, polygon, avalanche, arbitrum, bsc, optimism, gnosis, fantom]
+const {provider} = configureChains(chains, [walletConnectProvider({projectId})])
 const client = createClient({
   autoConnect: true,
-  connectors: [
-    new InjectedConnector({
-      chains,
-      options: {
-        name: "Injected",
-        shimDisconnect: true,
-      },
-    }),
-  ],
-  provider,
-  webSocketProvider,
-});
+  connectors: modalConnectors({version: '1', appName: 'web3Modal', chains, projectId}),
+  provider
+})
+const ethereumClient = new EthereumClient(client, chains)
 
-const MyApp: AppType = ({ Component, pageProps }) => {
+const MyApp: AppType = ({Component, pageProps}) => {
   return (
-    <WagmiConfig client={client}>
-       <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <Component {...pageProps} />
-    </WagmiConfig>
+    <>
+      <WagmiConfig client={client}>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        <Provider store={store}>
+          <Component {...pageProps} />
+        </Provider>
+      </WagmiConfig>
+      <Web3Modal
+        themeMode="light"
+        themeColor="blackWhite"
+        themeBackground="themeColor"
+        projectId={projectId}
+        ethereumClient={ethereumClient}/>
+    </>
   );
 };
 

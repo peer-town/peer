@@ -2,7 +2,12 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "lint": {
       "outputs": []
@@ -28,6 +33,12 @@
     "dev": {
       "cache": false
     },
+    "test:web": {
+      "cache": true
+    },
+    "test:bot": {
+      "cache": true
+    },
     "composedb:daemon": {
       "cache": false
     },
@@ -38,9 +49,6 @@
       "cache": false
     },
     "generate": {
-      "cache": false
-    },
-    "db:push": {
       "cache": false
     },
     "studio": {

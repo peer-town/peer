@@ -1,94 +1,120 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import NewThread from "../components/Thread/NewThread";
+import { toast } from "react-toastify";
 import ThreadCard from "../components/ThreadCard";
 import { useAccount } from "wagmi";
-import useLocalStorage from "../hooks/useLocalStorage";
-
 import { trpc } from "../utils/trpc";
-import Modal from "../components/Modal/Modal";
+import { Modal } from "../components/Modal";
+import { useAppSelector } from "../store";
+import { PrimaryButton } from "../components/Button";
+import { CreateThread } from "../components/Thread";
+import { AvatarCard } from "../components/AvatarCard";
+import { get } from "lodash";
+import Link from "next/link";
 
 const Home: NextPage = () => {
-  const threads = trpc.public.getAllThreads.useQuery();
-  const [didSession] = useLocalStorage("didSession","");
-  const { isConnected } = useAccount();
-  const [isDidSession, setDidSession] = useState(didSession?true:false);
-  const [isDiscordUser, setDiscordUser] = useState(false);
-  const [isOpen, setOpen] = useState(false);
+  const { address } = useAccount();
+  const [loading, setLoading] = useState(true);
+  const [questionModel, setQuestionModel] = useState(false);
 
-  if (!threads.data) return <div>Loading...</div>;
+  const communityId = useAppSelector(
+    (state) => state.community.selectedCommunity
+  );
+  const didSession = useAppSelector((state) => state.user.didSession);
+  const communityAndUserDetails = useAppSelector((state) => {
+    const { user, community } = state;
+    return {
+      user,
+      community,
+    };
+  });
 
-  const handleDidSession = (value) =>{
-    setDidSession(value)
+  const threads = trpc.public.fetchAllCommunityThreads.useQuery({
+    communityId,
+  });
+
+  useEffect(() => {
+    if (threads.data && threads.data?.length >= 0 && loading) {
+      setLoading(false);
+    }
+  }, [threads]);
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
-  const handleDiscordUser = (value) => {
-    setDiscordUser(value)
+
+  const refetchThread = async () =>{
+    await threads.refetch();
   }
-  
-  const handleClick = () => {
-    setOpen((state) => !state);
+  const handleQuestionModel = () => {
+    const userId = communityAndUserDetails.user.id;
+    const communityId = communityAndUserDetails.community.selectedCommunity;
+    if (!address) {
+      toast.error("Please connect with your wallet!");
+      return;
+    }
+    if (!userId || !didSession) {
+      toast.error("Please re-connect with your wallet!");
+      return;
+    }
+    if (!communityId) {
+      toast.error("Please select community");
+      return;
+    }
+    setQuestionModel(true);
   };
 
-  const checkConnected = () =>{
-    if (!isConnected)
-    return (
-      <div className="flex w-full justify-center bg-white py-6">
-        <div className=" bg-white text-base font-normal text-gray-700">
-          Please connect to publish comments.
-        </div>
-      </div>
-    );
-
-    if (!isDidSession)
-      return (
-        <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700">
-            Please create a DID session
-          </div>
-        </div>
-      );
-
-    if (!isDiscordUser)
-      return (
-        <div className="flex w-full justify-center bg-white py-6">
-          <div className=" bg-white text-base font-normal text-gray-700 cursor-pointer" onClick={handleClick}>
-            Please connect to Discord
-          </div>
-        </div>
-      );
-  }
-
   return (
-    <Layout
-    handleDiscordUser = {handleDiscordUser}
-    handleDidSession = {handleDidSession}
-    >
+    <Layout handleDiscordUser={() => {}} handleDidSession={() => {}}>
       <main className="h-full">
         <div className="pt-[50px]">
-          <div className="space-y-[50px] border-b border-gray-200 pb-5 sm:pb-0">
+          <div className="flex w-full w-full justify-between items-center gap-[100px] border-b border-gray-200 pb-5 sm:pb-0">
             <div className="text-[48px] font-medium text-[#08010D]">
-              Discover
+              <AvatarCard
+                href={{
+                  pathname: communityId ? `/[id]/community` : `/`,
+                  query: { id: communityId },
+                }}
+                image={get(
+                  communityAndUserDetails,
+                  "community.communityAvatar"
+                )}
+                imageSize={45}
+                name={get(communityAndUserDetails, "community.communityName")}
+              />
+            </div>
+            <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
+              <PrimaryButton
+                title={"Ask a question"}
+                onClick={handleQuestionModel}
+              />
+              <Link href={{
+                  pathname: communityId ? `/[id]/community` : `/#`,
+                  query: { id: communityId },
+                }} >
+                <PrimaryButton title={"Community Profile"} onClick={() => {}} />
+              </Link>
             </div>
           </div>
           <div className="flex flex-col space-y-[36px] py-[40px]">
-            {threads.data.map((thread) => (
-              <ThreadCard key={thread.id} thread={thread.node} />
-            ))}
-          </div>
-
-          <div className="flex flex-col space-y-[36px] py-[40px]">
-            {isConnected && isDidSession && isDiscordUser ? <NewThread
-              isDidSession= {isDidSession}
-              isDiscordUser= {isDiscordUser} 
-              refresh={() => {
-                threads.refetch();
-              }}
-            /> : checkConnected()}
+            {threads.data &&
+              threads.data.map((thread) => (
+                <ThreadCard key={thread.node.id} thread={thread.node} />
+              ))}
           </div>
         </div>
+        <CreateThread
+          title={"Ask Question"}
+          open={questionModel}
+          onClose={() => setQuestionModel(false)}
+          did={communityAndUserDetails.user.did}
+          user={communityAndUserDetails.user}
+          community={communityAndUserDetails.community}
+          didSession={didSession}
+          refetch = {refetchThread}
+        />
       </main>
-      {isOpen && <Modal handleClick={handleClick} />}
     </Layout>
   );
 };

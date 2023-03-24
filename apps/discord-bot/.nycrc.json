@@ -1,0 +1,22 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "extension": [
+    ".ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/core/**/*.ts",
+    "src/bots/**/*.ts"
+  ],
+  "exclude": [
+    "src/core/server.ts",
+    "src/**/index.ts",
+    "src/**/types.ts"
+  ],
+  "loader": "ts-node/esm",
+  "branches": 65,
+  "lines": 65,
+  "functions": 65,
+  "statements": 65
+}

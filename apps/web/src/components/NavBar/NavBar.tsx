@@ -1,86 +1,226 @@
-import { Popover, Transition } from "@headlessui/react";
-import { useConnect, useAccount, useDisconnect } from "wagmi";
+import { Popover } from "@headlessui/react";
+import { useAccount } from "wagmi";
 import Image from "next/image";
-import { Fragment, useState } from "react";
-import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-import { DIDSession } from "did-session";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import { Resolver } from "did-resolver";
-import { getResolver } from "pkh-did-resolver";
-import { trpc } from "../../utils/trpc";
-import { Modal } from "../Modal";
+import { useEffect, useState } from "react";
+import { trpc, trpcProxy } from "../../utils/trpc";
 import Link from "next/link";
-
-const pkhResolver = getResolver();
-const resolver = new Resolver(pkhResolver);
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { ConnectWalletButton, PrimaryButton } from "../Button";
+import * as utils from "../../utils";
+import { isRight } from "../../utils/fp";
+import { InterfacesModal, WebOnBoardModal } from "../Modal";
+import { constants } from "../../config";
+import { has, get, isEmpty, isNil } from "lodash";
+import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
 const NavBar = (props) => {
-  const { disconnectAsync } = useDisconnect();
-  const { connectors, connectAsync } = useConnect();
-  const { address, isConnected } = useAccount();
+  const router = useRouter();
+  const code = router.query.code as string;
+  const guild = router.query.guild_id as string;
+  const { address } = useAccount();
+  const [webOnboarding, setWebOnBoarding] = useState(false);
+  const [socialInterfaces, setSocialInterfaces] = useState(false);
+  const [hasUserId, setUserId] = useState(false);
 
-  const [did, setDid] = useLocalStorage("did", "");
-  const [didSession, setDidSession] = useLocalStorage("didSession", "");
-
-  const [isOpen, setOpen] = useState(false);
-
-  const authorDiscord = trpc.public.getDiscordUser.useQuery({
-    didSession: didSession,
+  const dispatch = useAppDispatch();
+  const didSession = useAppSelector((state) => state.user.didSession);
+  const userPlatforms = useAppSelector((state) => state.user.userPlatforms);
+  const communityAndUserDetails = useAppSelector((state) => {
+    const { user, community } = state;
+    return {
+      user,
+      community,
+    };
   });
-  const discordUserName = authorDiscord.data?.discordUsername;
 
-  discordUserName && props.handleDiscordUser(true);
-  const connectWallet = async () => {
-    await Promise.all(
-      connectors.map(async (connector) => {
-        if (!isConnected) await connectAsync({ connector });
-      })
-    );
+  const createUser = trpc.user.createUser.useMutation();
+  const updateUser = trpc.user.updateUser.useMutation();
+  const currentUser = trpc.user.getUser.useQuery({ address });
+  const createSocialPlatform =
+    trpc.community.createSocialPlatform.useMutation();
+
+  useEffect(() => {
+    dispatch(fetchUserDetails(address));
+  }, [address]);
+
+  useEffect(() => {
+    if (code && guild) {
+      handleCommunityDiscordAuthCallback(code, guild).catch(console.log);
+    } else if (code) {
+      handleDiscordAuthCallback(code).catch(console.log);
+    }
+  }, [code, guild]);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      if (address) {
+        const existingUser = await trpcProxy.user.getUser.query({ address });
+        if (has(existingUser, "value.id")) {
+          setUserId(true);
+        }
+      }
+      else{
+        setUserId(false);
+      }
+    };
+    checkUser();
+  }, [address]);
+
+  const handleDiscordAuthCallback = async (code: string) => {
+    const response = await fetch(`/api/user/discord-auth/profile?code=${code}`);
+    if (!response.ok) {
+      return;
+    }
+    const profile = await response.json();
+    const hasDiscord = userPlatforms.filter(
+      (platform) => platform.platformName === "discord"
+    )[0];
+    if (hasDiscord) {
+      return;
+    }
+    await updateUserProfileWithDiscord(profile);
   };
 
-  const handleDIDSession = async () => {
-    if (!isConnected) return;
-
-    const accountId = await getAccountId(window.ethereum, address);
-    const authMethod = await EthereumWebAuth.getAuthMethod(
-      window.ethereum,
-      accountId
+  const handleCommunityDiscordAuthCallback = async (
+    code: string,
+    guild: string
+  ) => {
+    const response = await fetch(
+      `/api/community/discord-auth/profile?code=${code}&guildId=${guild}`
     );
+    if (!response) {
+      return;
+    }
 
-    const oneHundredWeeks = 60 * 60 * 24 * 7 * 100;
-    const session = await DIDSession.authorize(authMethod, {
-      resources: [`ceramic://*`],
-      expiresInSecs: oneHundredWeeks,
+    const data = await response.json();
+
+    const discordPlatform = userPlatforms.filter(
+      (platform) => platform.platformName === "discord"
+    )[0];
+
+    if (!has(discordPlatform, "platformId")) {
+      await updateUserProfileWithDiscord(data.profile);
+    }
+
+    await updateCommunityDetailsWithDiscord(data.guild);
+  };
+
+  const handleOnUserConnected = async () => {
+    const existingUser = await trpcProxy.user.getUser.query({ address });
+    if (isRight(existingUser) && !existingUser.value.id) {
+      setWebOnBoarding(true);
+    } else {
+      if (has(existingUser, "value.userPlatforms")) {
+        setUserId(true);
+        const platforms = get(existingUser, "value.userPlatforms");
+        const hasDiscord = platforms.filter(
+          (platform) =>
+            platform.platformName === constants.PLATFORM_DISCORD_NAME
+        );
+        if (isEmpty(hasDiscord)) {
+          setSocialInterfaces(true);
+        }
+      }
+    }
+  };
+
+  const handleWebOnboardSubmit = async (details) => {
+    const user = await createUser.mutateAsync({
+      session: didSession,
+      userPlatformDetails: {
+        platformId: constants.PLATFORM_DEVNODE_ID,
+        platformName: constants.PLATFORM_DEVNODE_NAME,
+        platformUsername: details.name,
+        platformAvatar: details.imageUrl,
+      },
+      walletAddress: address,
+    });
+    if (isRight(user)) {
+      currentUser.refetch().then((response) => {
+        if (has(response, "data.value.id")) {
+          dispatch(fetchUserDetails(address));
+        }
+        setWebOnBoarding(false);
+        setSocialInterfaces(true);
+      });
+    }
+  };
+
+  const updateUserProfileWithDiscord = async (profile) => {
+    const user = await updateUser.mutateAsync({
+      session: didSession,
+      userPlatformDetails: {
+        platformId: profile.id,
+        platformName: constants.PLATFORM_DISCORD_NAME,
+        platformUsername: utils.getDiscordUsername(
+          profile.username,
+          profile.discriminator
+        ),
+        platformAvatar: utils.getDiscordAvatarUrl(profile.id, profile.avatar),
+      },
+      walletAddress: address,
+    });
+    if (isRight(user)) {
+      currentUser.refetch().then((response) => {
+        if (has(response, "data.value.id")) {
+          dispatch(fetchUserDetails(address));
+        }
+      });
+      toast.success("Updated profile with discord info!");
+    }
+  };
+
+  const updateCommunityDetailsWithDiscord = async (details) => {
+    const response = await createSocialPlatform.mutateAsync({
+      session: didSession,
+      socialPlatform: {
+        platformId: details.id,
+        platform: constants.PLATFORM_DISCORD_NAME,
+        communityName: details.name,
+        userId: communityAndUserDetails.user.id,
+        communityId: communityAndUserDetails.community.selectedCommunity,
+        communityAvatar: details.icon,
+      },
     });
 
-    fetch(
-      `/api/user/didSession?&did=${
-        session.did.id
-      }&didSession=${session.serialize()}&didpkh=did:pkh:eip155:1:${address}`
-    );
-
-    setDidSession(session.serialize());
-    props.handleDidSession(true);
-    setDid(session.did.id);
+    if (isRight(response)) {
+      toast.success("Updated community with discord info!");
+    }
   };
 
-  const handleClick = () => {
-    setOpen((state) => !state);
+  const getUserAvatar = (user) => {
+    if (!user) {
+      return;
+    }
+    if (has(user, "data.value.userPlatforms[0].platformAvatar")) {
+      return get(user, "data.value.userPlatforms[0].platformAvatar");
+    }
   };
 
+  const createAccount = () => {
+    if (!address) {
+      toast.error("Please connect with your wallet");
+      return;
+    }
+    if (address && isNil(communityAndUserDetails.user.didSession)) {
+      toast.error("Please create did session");
+      return;
+    }
+    if (communityAndUserDetails.user.id) {
+      return;
+    }
+    setWebOnBoarding(true);
+  };
   return (
     <>
       {/* When the mobile menu is open, add `overflow-hidden` to the `body` element to prevent double scrollbars */}
       <Popover
         as="header"
         className={({ open }) =>
-          classNames(
+          utils.classNames(
             open ? "fixed inset-0 z-40 overflow-y-auto" : "",
             "border-b-[1px] border-[#08010D12] lg:static lg:overflow-y-visible"
           )
@@ -89,19 +229,24 @@ const NavBar = (props) => {
         {({ open }) => (
           <>
             <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
-              <div className="flex h-full items-center gap-[34px] lg:gap-[50px]">
-                <div className="flex min-w-0 grow items-center justify-center gap-[30px] lg:max-w-[75%]">
-                  <Link href="/">
+              <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
+                <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
+                  <Link
+                    href={{
+                      pathname: hasUserId ? `/[id]/profile` : `/`,
+                      query: { id: hasUserId ? address : null },
+                    }}
+                  >
                     <Image
                       width="44"
                       height="44"
                       className="rounded-full"
-                      src="/logo.svg"
+                      src={getUserAvatar(currentUser) || "/logo.svg"}
                       alt=""
                     />
                   </Link>
 
-                  <div className="flex grow items-center lg:mx-0 lg:max-w-none xl:px-0">
+                  <div className="flex items-center lg:mx-0 lg:w-[80%] lg:max-w-none xl:px-0">
                     <div className="w-full">
                       <label htmlFor="search" className="sr-only">
                         Search
@@ -134,115 +279,36 @@ const NavBar = (props) => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center lg:hidden">
-                  {/* Mobile menu button */}
-                  {/* <Popover.Button className="-mx-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black">
-                    <span className="sr-only">Open menu</span>
-                    {open ? (
-                      <XIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Popover.Button> */}
-                </div>
-                <div className="hidden gap-[16px] lg:flex lg:w-[40%] lg:items-center lg:justify-start">
-                  {isConnected ? (
-                    <button
-                      onClick={() => {
-                        disconnectAsync();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      {address.slice(0, 8) + "..."}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        connectWallet();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Connect wallet
-                    </button>
-                  )}
+                <div className="hidden gap-[16px] lg:flex lg:w-max lg:items-end lg:justify-end">
+                  <Link
+                    href={{
+                      pathname: hasUserId ? `/[id]/profile` : "/",
+                      query: { id: hasUserId ? address : null },
+                    }}
+                  >
+                    <PrimaryButton
+                      title={hasUserId ? "Profile" : "Create Account"}
+                      onClick={createAccount}
+                    />
+                  </Link>
 
-                  {isConnected && did.length > 0 ? (
-                    <Popover className="relative">
-                      <Popover.Button
-                        onClick={async () => {
-                          await navigator.clipboard.writeText(did);
-                        }}
-                        className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                      >
-                        {did.slice(8, 12) +
-                          "..." +
-                          did.slice(did.length - 4, did.length)}
-                      </Popover.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-max -translate-x-1/2 transform">
-                          <div className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                            <p>DID copied to clipboard!</p>
-                          </div>
-                        </Popover.Panel>
-                      </Transition>
-                    </Popover>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        handleDIDSession();
-                      }}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Create DID
-                    </button>
-                  )}
-
-                  {discordUserName ? (
-                    <Popover className="relative">
-                      <Popover.Button
-                        onClick={async () => {
-                          await navigator.clipboard.writeText(did);
-                        }}
-                        className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                      >
-                        {discordUserName}
-                      </Popover.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <Popover.Panel className="absolute left-1/2 z-10 mt-3 w-max -translate-x-1/2 transform">
-                          <div className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
-                            <p>Discord user name copied to clipboard!</p>
-                          </div>
-                        </Popover.Panel>
-                      </Transition>
-                    </Popover>
-                  ) : (
-                    <button
-                      onClick={handleClick}
-                      className="flex h-[50px] items-center justify-center rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-2 text-[#97929B] hover:border-[#08010D] hover:text-[#08010D] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-                    >
-                      Connect with Discord bot
-                    </button>
-                  )}
-                  {isOpen && <Modal handleClick={handleClick} />}
+                  <ConnectWalletButton
+                    onSessionCreated={handleOnUserConnected}
+                  />
                 </div>
               </div>
             </div>
+
+            <WebOnBoardModal
+              onSubmit={handleWebOnboardSubmit}
+              open={webOnboarding}
+              onClose={() => setWebOnBoarding(false)}
+            />
+            <InterfacesModal
+              type={"user"}
+              open={socialInterfaces}
+              onClose={() => setSocialInterfaces(false)}
+            />
 
             <Popover.Panel as="nav" className="lg:hidden" aria-label="Global">
               <div className="mx-auto max-w-3xl space-y-1 px-2 pt-2 pb-3 sm:px-4">
@@ -251,7 +317,7 @@ const NavBar = (props) => {
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
-                    className={classNames(
+                    className={utils.classNames(
                       item.current
                         ? "bg-gray-100 text-gray-900"
                         : "hover:bg-gray-50",
