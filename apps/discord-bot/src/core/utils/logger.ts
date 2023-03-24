@@ -53,5 +53,5 @@ export const createLogger = (options: LoggerOptions) => ({
 });
 
 export const logger = createLogger({
-  productionMode: process.env.NODE_ENV === 'PROD' || false,
+  productionMode: process.env.NODE_ENV === 'production' || false,
 });

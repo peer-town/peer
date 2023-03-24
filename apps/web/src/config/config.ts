@@ -10,10 +10,10 @@ export const config = {
     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "",
   },
   didSession: {
-    expiresInSecs: 60 * 60 * 24 * 7 * 100, // 100 weeks
+    expiresInSecs: 60 * 60 * 24 * 7 * 1, // 1 week
   },
   aggregator: {
-    endpoint: process.env.NEXT_PUBLIC_DISCORD_BOT_URL || "http://localhost:4000/api",
+    endpoint: process.env.NEXT_PUBLIC_AGGREGATOR_URL || "http://localhost:4000/api",
     apiKey: process.env.AGGREGATOR_API_KEY || "sample-api-key",
   },
   ceramic: {
