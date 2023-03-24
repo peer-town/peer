@@ -15,8 +15,8 @@
     "src/**/types.ts"
   ],
   "loader": "ts-node/esm",
-  "branches": 40,
-  "lines": 40,
-  "functions": 40,
-  "statements": 40
+  "branches": 65,
+  "lines": 65,
+  "functions": 65,
+  "statements": 65
 }
