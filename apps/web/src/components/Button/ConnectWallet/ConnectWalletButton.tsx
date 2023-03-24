@@ -1,5 +1,5 @@
 import { useWeb3Modal } from "@web3modal/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 import * as utils from "../../../utils";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
@@ -13,6 +13,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const { open } = useWeb3Modal();
   const { disconnect } = useDisconnect();
   const [loading, setLoading] = useState(false);
+  const [connected, setConnected] = useState(false);
   const dispatch = useAppDispatch();
 
   const generateDidSession = async (address: string, connector: any) => {
@@ -46,6 +47,11 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
     },
   });
 
+  useEffect(() => {
+
+    setConnected(isConnected);
+  }, [isConnected]);
+
   const onOpen = async () => {
     setLoading(true);
     await open();
@@ -70,7 +76,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
       onClick={onClick}
       disabled={loading}
     >
-      {isConnected ? getAddress() : "Connect Wallet"}
+      {connected ? getAddress() : "Connect Wallet"}
     </button>
   );
 };

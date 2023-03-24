@@ -4,7 +4,7 @@ import { trpcProxy } from "../../utils/trpc";
 import { has, get } from "lodash";
 import { isRight } from "../../utils/fp";
 
-export type UserState = {
+export interface UserState {
   id?: string;
   createdAt?: string;
   walletAddress?: string;
@@ -19,9 +19,15 @@ export type UserState = {
   author?: {
     id: string;
   };
-};
+}
 
-export const initialState = {
+export interface CompleteUserState extends UserState {
+  didSession: string;
+  did: string;
+  discordContext: string;
+}
+
+export const initialState: CompleteUserState = {
   id: null,
   createdAt: null,
   walletAddress: null,
@@ -37,7 +43,7 @@ export const initialState = {
     id: null,
   },
   didSession: null,
-  did:null,
+  did: null,
   discordContext: null,
 };
 
@@ -102,6 +108,10 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateUserDetails, updateDidSession, updateDiscordContext, updateDid } =
-  userSlice.actions;
+export const {
+  updateUserDetails,
+  updateDidSession,
+  updateDiscordContext,
+  updateDid,
+} = userSlice.actions;
 export default userSlice.reducer;
