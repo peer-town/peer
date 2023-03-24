@@ -5,13 +5,12 @@ import {config, constants} from "../../config";
 import {Resp} from "../utils/response";
 import {Client} from "discord.js";
 import {commentHandler as discordCommentHandler} from "../../bots/discord";
-import {composeQueryHandler} from "@devnode/composedb";
 import {logger} from "../utils/logger";
 import {communityHasSocial, getSocialCommunityId} from "../utils/data";
 
 export const postComment = async (clients: Clients, req: Request, res: Response) => {
   const {commentId} = req.body;
-  const comment: Node<Comment> = await composeQueryHandler().fetchCommentDetails(commentId);
+  const comment: Node<Comment> = await clients.composeQuery().fetchCommentDetails(commentId);
   const socials = _.get(comment, "node.thread.community.socialPlatforms.edges");
 
   if (communityHasSocial(socials, constants.PLATFORM_DISCORD_NAME)) {
