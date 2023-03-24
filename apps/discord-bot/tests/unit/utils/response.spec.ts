@@ -23,9 +23,18 @@ describe('Resp', () => {
     expect(res.end).to.have.been.calledOnce;
   });
 
-  it('should send a 401 response with the given message', () => {
+  it('should send a 400 response with the given message', () => {
     const message = 'test message';
     Resp.notOk(res, message);
+
+    expect(res.status).to.have.been.calledWith(400);
+    expect(res.json).to.have.been.calledWith({msg: message});
+    expect(res.end).to.have.been.calledOnce;
+  });
+
+  it('should send a 401 response with the given message', () => {
+    const message = 'test message';
+    Resp.unAuth(res, message);
 
     expect(res.status).to.have.been.calledWith(401);
     expect(res.json).to.have.been.calledWith({msg: message});

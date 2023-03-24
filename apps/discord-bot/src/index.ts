@@ -1,7 +1,7 @@
 import {initDiscord, initServer} from "./core";
 import {config} from "./config";
 import {ComposeClient} from "@composedb/client";
-import {definition} from "@devnode/composedb";
+import {composeQueryHandler, definition} from "@devnode/composedb";
 import {attachListeners} from "./bots/discord";
 import {Clients} from "./core/types";
 
@@ -15,6 +15,7 @@ const start = async () => {
   const clients: Clients = {
     discord: discordClient,
     compose: composeClient,
+    composeQuery: composeQueryHandler,
   };
 
   const server = initServer(clients);

@@ -7,6 +7,7 @@ import {Client, GatewayIntentBits, Partials} from "discord.js";
 import {commentSchema, threadSchema, validator} from "./middleware/validator";
 import {Clients} from "./types";
 import {logger} from "./utils/logger";
+import {apiKeyAuth} from "./middleware/auth";
 
 process.on("uncaughtException", (error, origin) => {
   console.log(error);
@@ -23,6 +24,7 @@ export const initServer = (clients: Clients): Express => {
   server.use(cors());
   server.use(express.urlencoded({extended: true}));
   server.use(express.json());
+  server.use(apiKeyAuth(config.server.apiKey));
 
   const router = express.Router();
   router.get("/ping", (_, res) => res.send("pong"));
