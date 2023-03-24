@@ -13,7 +13,6 @@ import {toast} from "react-toastify";
 import {constants} from "../config";
 import {isRight} from "../utils/fp";
 import {DIDSession} from "did-session";
-import {config} from "../config";
 import { useAppSelector } from "../store";
 
 const QuestionPage = () => {
@@ -83,28 +82,12 @@ const QuestionPage = () => {
     }).finally(() => setIsCommenting(false));
 
     if (isRight(result)) {
-      const commentId = get(result, "value.createComment.document.id");
       setComment("");
       toast.success("Comment posted successfully!");
       await currentThread.refetch();
-      handleWebToAggregator(commentId).catch(console.log);
     } else {
       toast.error("Failed to post message. Try again in a while!");
     }
-  }
-
-  const handleWebToAggregator = async (commentId: string) => {
-    const endpoint = `${config.aggregator.endpoint}/web-comment`;
-    await fetch(endpoint, {
-        body: JSON.stringify({
-          commentId: commentId,
-        }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
   }
 
   return (

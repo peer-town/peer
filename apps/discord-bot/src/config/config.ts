@@ -3,6 +3,7 @@ import {DIDSession} from "did-session";
 export const config = {
   server: {
     port: process.env.AGGREGATOR_PORT || 4000,
+    apiKey: process.env.AGGREGATOR_API_KEY || "sample-api-key",
   },
   compose: {
     nodeUrl: process.env.CERAMIC_NODE || "",

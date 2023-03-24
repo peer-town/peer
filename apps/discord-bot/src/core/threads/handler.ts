@@ -1,22 +1,27 @@
 import {Request, Response} from "express";
-import {composeQueryHandler} from "@devnode/composedb";
 import {Clients, Node, Thread} from "../types";
 import _ from "lodash";
 import {communityHasSocial, getSocialCommunityId} from "../utils/data";
 import {config, constants} from "../../config";
 import {Resp} from "../utils/response";
 import {threadHandler as discordThreadHandler} from "../../bots/discord";
+import {logger} from "../utils/logger";
 
 export const postThread = async (clients: Clients, req: Request, res: Response) => {
-  const {threadId} = req.body;
-  const thread: Node<Thread> = await composeQueryHandler().fetchThreadDetails(threadId);
-  const socials = _.get(thread, "node.community.socialPlatforms.edges");
+  try {
+    const {threadId} = req.body;
+    const thread: Node<Thread> = await clients.composeQuery().fetchThreadDetails(threadId);
+    const socials = _.get(thread, "node.community.socialPlatforms.edges");
 
-  if (communityHasSocial(socials, constants.PLATFORM_DISCORD_NAME)) {
-    const threadId = await postThreadToDiscord(clients, thread);
-    return Resp.okD(res, {threadId}, "Created thread on socials");
-  } else {
-    return Resp.notOk(res, "No discord for this community, bailing out!");
+    if (communityHasSocial(socials, constants.PLATFORM_DISCORD_NAME)) {
+      const threadId = await postThreadToDiscord(clients, thread);
+      return Resp.okD(res, {threadId}, "Created thread on socials");
+    } else {
+      return Resp.notOk(res, "No discord for this community, bailing out!");
+    }
+  } catch (e) {
+    logger.error('core', {e, body: req.body});
+    return Resp.error(res, "Server error occurred");
   }
 };
 

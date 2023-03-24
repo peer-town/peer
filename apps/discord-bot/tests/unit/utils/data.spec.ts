@@ -2,7 +2,7 @@ import {SocialPlatform, Node} from "../../../src/core/types";
 import {expect} from "../../setup";
 import {communityHasSocial, getSocialCommunityId} from "../../../src/core/utils/data";
 
-describe('socialFunctions', () => {
+describe('utils.data', () => {
   const socialPlatforms: Node<SocialPlatform>[] = [
     {
       node: {

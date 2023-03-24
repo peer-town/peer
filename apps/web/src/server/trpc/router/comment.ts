@@ -4,7 +4,7 @@ import {composeMutationHandler, definition} from "@devnode/composedb";
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
-import {omit} from "lodash";
+import {omit, get} from "lodash";
 import {DIDSession} from "did-session";
 
 export const compose = new ComposeClient({
@@ -35,6 +35,10 @@ export const commentRouter = router({
         const handler = await getHandler(input.session);
         const payload = omit(input, ["session"]);
         const response = await handler.createComment(payload as any);
+        if(response.data) {
+          const commentId = get(response.data, "createComment.document.id");
+          handleWebToAggregator(commentId);
+        }
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
           : right(response.data);
@@ -43,3 +47,18 @@ export const commentRouter = router({
       }
     }),
 });
+
+const handleWebToAggregator = async (commentId: string) => {
+  const endpoint = `${config.aggregator.endpoint}/web-comment`;
+  await fetch(endpoint, {
+      body: JSON.stringify({
+        commentId: commentId,
+      }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": config.aggregator.apiKey,
+      },
+    }
+  );
+}

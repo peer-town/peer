@@ -1,8 +1,10 @@
 import {ComposeClient} from "@composedb/client";
 import {Client as DiscordClient} from "discord.js";
+import {composeQueryHandler} from "@devnode/composedb";
 
 export type Clients = {
   compose: ComposeClient,
+  composeQuery: typeof composeQueryHandler,
   discord: DiscordClient,
 };
 

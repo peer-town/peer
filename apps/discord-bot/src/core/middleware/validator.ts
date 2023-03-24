@@ -1,5 +1,6 @@
 import joi from "joi";
 import {NextFunction, Request, Response} from "express";
+import {Resp} from "../utils/response";
 
 export const commentSchema = joi.object({
   commentId: joi.string().required(),
@@ -15,7 +16,7 @@ export const validator = (schema: joi.Schema) => {
       req.body = await schema.validateAsync(req.body);
       return next();
     } catch (e) {
-      return res.status(400).json(e);
+      return Resp.notOk(res, "invalid payload");
     }
   }
 }

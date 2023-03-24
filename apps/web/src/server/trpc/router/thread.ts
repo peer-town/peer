@@ -7,8 +7,8 @@ import {
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
-import { left, right } from "../../../utils/fp";
-import { omit } from "lodash";
+import {isRight, left, right} from "../../../utils/fp";
+import {get, has, omit} from "lodash";
 import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
@@ -47,9 +47,23 @@ export const threadRouter = router({
         const handler = await getHandler(input.session);
         const payload = omit(input, ["session"]);
         const response = await handler.createThread(payload as ThreadInput);
-        return response.errors && response.errors.length > 0
-          ? left(response.errors)
-          : right(response.data);
+        if(response.data) {
+          const threadId = get(response.data, "createThread.document.id");
+          const apiResponse = await handleWebToAggregator(threadId);
+          const data = await apiResponse.json();
+          if (has(data, "data.threadId")) {
+            const updated = await updateThread(handler, threadId, data.data.threadId);
+            if (isRight(updated)) {
+              return right({createThread: response.data, updateThread: updated.value});
+            } else {
+              return updated;
+            }
+          } else {
+            return left(data);
+          }
+        } else {
+          return left(response.errors);
+        }
       } catch (e) {
         return left(e);
       }
@@ -59,7 +73,6 @@ export const threadRouter = router({
     .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
-        const payload = omit(input, ["session"]);
         const response = await handler.updateThreadWithSocialThreadId(
           input.streamId,
           input.threadId
@@ -72,3 +85,31 @@ export const threadRouter = router({
       }
     }),
 });
+
+const updateThread = async (handler, streamId, threadId) => {
+  try {
+    const response = await handler.updateThreadWithSocialThreadId(
+      streamId,
+      threadId
+    );
+    return response.errors && response.errors.length > 0
+      ? left(response.errors)
+      : right(response.data);
+  } catch (e) {
+    return left(e);
+  }
+}
+
+const handleWebToAggregator = async (threadId: string) => {
+  const endpoint = `${config.aggregator.endpoint}/web-thread`;
+  return await fetch(endpoint, {
+    body: JSON.stringify({
+      threadId: threadId,
+    }),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": config.aggregator.apiKey,
+    },
+  });
+};

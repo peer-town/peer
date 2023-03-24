@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { SecondaryButton } from "../Button/SecondaryButton";
+import {useState} from "react";
+import {SecondaryButton} from "../Button/SecondaryButton";
 import Question from "../Modal/Question/Question";
 import * as utils from "../../utils";
-import { get, has, isEmpty } from "lodash";
-import { toast } from "react-toastify";
-import { trpc } from "../../utils/trpc";
-import { constants } from "../../config";
-import { isRight } from "../../utils/fp";
-import { config } from "../../config";
-import { CreateThreadProps } from "./type";
+import {has, isEmpty} from "lodash";
+import {toast} from "react-toastify";
+import {trpc} from "../../utils/trpc";
+import {config, constants} from "../../config";
+import {isRight} from "../../utils/fp";
+import {CreateThreadProps} from "./type";
 
 const CreateThread = (props: CreateThreadProps) => {
   const [question, setQuestion] = useState<string>("");
@@ -17,14 +16,12 @@ const CreateThread = (props: CreateThreadProps) => {
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
-  const { user, community, did, didSession, refetch } = props;
+  const {user, community, did, didSession, refetch} = props;
   const userName = user.userPlatforms && user.userPlatforms[0].platformUsername;
   const communityName = community.communityName;
   const communityId = community.selectedCommunity;
 
   const createThread = trpc.thread.createThread.useMutation();
-  const updateThreadWithSocilaId =
-    trpc.thread.updateThreadWithSocialId.useMutation();
 
   const handleQuestionInput = (e) => {
     questionError && !isEmpty(e.target.value.trim())
@@ -79,47 +76,16 @@ const CreateThread = (props: CreateThreadProps) => {
         createdFrom: constants.CREATED_FROM_DEVNODE,
         createdAt: new Date().toISOString(),
       })
-      
 
     if (isRight(result)) {
-      const threadId = get(result, "value.createThread.document.id");
-      await handleWebToAggregator(threadId)
-        .then(async (response) => {
-          const data = await response.json();
-          const result = await updateThreadWithSocilaId.mutateAsync({
-            session: didSession,
-            streamId: threadId,
-            threadId: get(data,"data.threadId"),
-          });
-
-          if (isRight(result)) {
-            setQuestion("");
-            setDescription("");
-            toast.success("Thread created successfully!");
-            refetch();
-          } else {
-            toast.error("Failed to create thread. Try again in a while!");
-          }
-        })
-        .catch(() => {
-          toast.error("Failed to create thread. Try again in a while!");
-        }).finally(() => setCreatingThread(false));
+      setQuestion("");
+      setDescription("");
+      toast.success("Thread created successfully!");
+      refetch();
     } else {
       toast.error("Failed to create thread. Try again in a while!");
     }
-  };
-
-  const handleWebToAggregator = async (threadId: string) => {
-    const endpoint = `${config.aggregator.endpoint}/web-thread`;
-    return await fetch(endpoint, {
-      body: JSON.stringify({
-        threadId: threadId,
-      }),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    setCreatingThread(false)
   };
 
   return (
@@ -146,7 +112,8 @@ const CreateThread = (props: CreateThreadProps) => {
           onChange={handleDescriptionInput}
           required
         />
-        <div className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
+        <div
+          className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
           <div className="flex w-full flex-row items-center justify-center ">
             <div className="w-1/4 whitespace-normal break-all p-2 font-bold">
               User name
