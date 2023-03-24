@@ -14,6 +14,7 @@ export const config = {
   },
   aggregator: {
     endpoint: process.env.NEXT_PUBLIC_DISCORD_BOT_URL || "http://localhost:4000/api",
+    apiKey: process.env.AGGREGATOR_API_KEY || "sample-api-key",
   },
   ceramic: {
     nodeUrl: process.env.CERAMIC_NODE || "",
