@@ -2,29 +2,14 @@
   "anchor": {},
   "http-api": {
     "cors-allowed-origins": [".*"],
-    "admin-dids": ["did:key:z6MkoddUiEXf21k19ewQfACp48dqDM3bwEuCFvSKUggn9MRX"]
+    "admin-dids": ["did:key:z6MkfDDjANPKGcij7yca5tf4eH9bkdKUWKuPwNAcKKh6uwJL"]
   },
-  "ipfs": {
-    "mode": "bundled"
-  },
-  "logger": {
-    "log-level": 2,
-    "log-to-files": false
-  },
-  "metrics": {
-    "metrics-exporter-enabled": false,
-    "metrics-port": 9090
-  },
-  "network": {
-    "name": "testnet-clay"
-  },
-  "node": {
-    "stream-cache-limit": 10
-  },
-  "state-store": {
-    "mode": "fs",
-    "local-directory": "./.ceramic/statestore/"
-  },
+  "ipfs": { "mode": "bundled" },
+  "logger": { "log-level": 2, "log-to-files": false },
+  "metrics": { "metrics-exporter-enabled": false, "metrics-port": 9090 },
+  "network": { "name": "testnet-clay" },
+  "node": { "stream-cache-limit": 10 },
+  "state-store": { "mode": "fs", "local-directory": "./.ceramic/statestore/" },
   "indexing": {
     "db": "sqlite:./.ceramic/indexing.sqlite",
     "allow-queries-before-historical-sync": true
