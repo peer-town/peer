@@ -12,6 +12,7 @@ export const getDiscordAuthUrl = (type): string => {
     redirect_uri: config.discordOAuth.redirectUrl,
     scope: "guilds bot applications.commands identify guilds.members.read messages.read guilds.join",
     response_type: "code",
+    permissions: config.discordOAuth.permissions,
   });
   const data = type === "user" ? userParams : communityParams;
   return `${config.discordApiEndpoint}/oauth2/authorize?${data}`;
