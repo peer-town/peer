@@ -1,13 +1,13 @@
 type Community 
   @loadModel(
-     id: "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1"
+     id: "kjzl6hvfrbw6c9qs7houn2f6yy7jsf1peksg5q0v28xzwkldorfcak6w6z1umj6"
     ) {
   id: ID!
 }
 
 type User 
   @loadModel(
-     id: "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju"
+     id: "kjzl6hvfrbw6c9mr6z1obgw3qobf3k72mr1u3r8cljzlebzx149j9d3na70s1vb"
     ) {
   id: ID!
 }

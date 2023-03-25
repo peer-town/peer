@@ -1,13 +1,13 @@
 type SocialPlatform 
   @loadModel(
-     id: "kjzl6hvfrbw6c726uxs60oywkxn9wv9c8ybysxnppw8cuqzcbw9pssrmcok1nyi"
+     id: "kjzl6hvfrbw6c9hxylzsdiyh7n7apwautqpfq598djxh0hnsrmwu2grlr3fob2e"
     ) {
   id: ID!
 }
 
 type Community 
   @loadModel(
-     id: "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1"
+     id: "kjzl6hvfrbw6c9qs7houn2f6yy7jsf1peksg5q0v28xzwkldorfcak6w6z1umj6"
     ) {
   socialPlatforms: [SocialPlatform] @relationFrom(model: "SocialPlatform", property: "communityId")
 }

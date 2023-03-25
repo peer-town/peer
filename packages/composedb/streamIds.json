@@ -1,9 +1,16 @@
 {
-    "0.4.3":{
-    "User":"kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju",
-    "Community":"kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1",
-    "SocialPlatform":"kjzl6hvfrbw6c726uxs60oywkxn9wv9c8ybysxnppw8cuqzcbw9pssrmcok1nyi",
-    "Thread":"kjzl6hvfrbw6cacg7g3hky17flj3qrom0948a2a9zzt6hv15d9x4c2iqar5i4j3",
-    "Comments":"kjzl6hvfrbw6c95pvk38yw31titjrq01rqg7ua5sfu4t1p8zcmn4o9gg4j51gvm"
-    }
+  "0.4.3": {
+    "User": "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju",
+    "Community": "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1",
+    "SocialPlatform": "kjzl6hvfrbw6c726uxs60oywkxn9wv9c8ybysxnppw8cuqzcbw9pssrmcok1nyi",
+    "Thread": "kjzl6hvfrbw6cacg7g3hky17flj3qrom0948a2a9zzt6hv15d9x4c2iqar5i4j3",
+    "Comments": "kjzl6hvfrbw6c95pvk38yw31titjrq01rqg7ua5sfu4t1p8zcmn4o9gg4j51gvm"
+  },
+  "staging": {
+    "User": "kjzl6hvfrbw6c9mr6z1obgw3qobf3k72mr1u3r8cljzlebzx149j9d3na70s1vb",
+    "Community": "kjzl6hvfrbw6c9qs7houn2f6yy7jsf1peksg5q0v28xzwkldorfcak6w6z1umj6",
+    "SocialPlatform": "kjzl6hvfrbw6c9hxylzsdiyh7n7apwautqpfq598djxh0hnsrmwu2grlr3fob2e",
+    "Thread": "kjzl6hvfrbw6c9mchwmcaqap4amcbe1g611slztz1h81aje4vh7a2fs7c5n6hjy",
+    "Comments": "kjzl6hvfrbw6c6jjn50jk9xmst31qhm5fuei89djua2ccsnawzu8gmon214vpzd"
+  }
 }
