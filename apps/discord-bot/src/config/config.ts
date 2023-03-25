@@ -8,7 +8,7 @@ export const config = {
   compose: {
     nodeUrl: process.env.CERAMIC_NODE || "",
     graphqlUrl: process.env.CERAMIC_GRAPH || "",
-    did: process.env.CERAMIC_DID_KEY || "",
+    session: process.env.CERAMIC_SESSION || "",
   },
   discord: {
     token: process.env.DISCORD_TOKEN || "",
@@ -19,5 +19,6 @@ export const config = {
 };
 
 export const getBotDid = async (): Promise<any> => {
-  return config.compose.did;
+  const session = await DIDSession.fromSession(config.compose.session);
+  return session.did;
 }
