@@ -42,14 +42,22 @@ const Profile = () => {
         await trpcProxy.community.fetchCommunityUsingStreamId.query({
           streamId: communityId,
         });
-      console.log("communityNode", communityNode);
       if (has(communityNode, "value.node.id")) {
+        //below statement should be optimised . INstead checking 1st index of array it should be checked for discord paltform.It is just a fix for now.
+        if (has(communityNode, "value.node.socialPlatforms.edges[1]")) {
+          return;
+        }
         const devnodePlatform = get(
           communityNode,
           "value.node.socialPlatforms.edges[0]"
         );
         const userStreamId = get(devnodePlatform, "node.userId");
-        console.log("userStreamId",userStreamId,"state.user.id",state.user.id);
+        console.log(
+          "userStreamId",
+          userStreamId,
+          "state.user.id",
+          state.user.id
+        );
         if (userStreamId === state.user.id) {
           setIsAdmin(true);
         }
