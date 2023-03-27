@@ -96,6 +96,7 @@ const CreateThread = (props: CreateThreadProps) => {
             "form-control mb-3 block w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none",
             questionError ? "border-red-600 focus:border-red-600" : ""
           )}
+          maxLength={500}
           placeholder="What is your question?"
           type="text"
           value={question}
@@ -109,6 +110,7 @@ const CreateThread = (props: CreateThreadProps) => {
           )}
           placeholder="Describe your question"
           value={description}
+          maxLength={2000}
           onChange={handleDescriptionInput}
           required
         />
