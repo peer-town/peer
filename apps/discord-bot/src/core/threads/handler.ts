@@ -9,6 +9,7 @@ import {logger} from "../utils/logger";
 
 export const postThread = async (clients: Clients, req: Request, res: Response) => {
   try {
+    logger.info('core', {body: req.body});
     const {threadId} = req.body;
     const thread: Node<Thread> = await clients.composeQuery().fetchThreadDetails(threadId);
     const socials = _.get(thread, "node.community.socialPlatforms.edges");
