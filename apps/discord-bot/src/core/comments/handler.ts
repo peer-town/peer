@@ -10,6 +10,7 @@ import {communityHasSocial, getSocialCommunityId} from "../utils/data";
 
 export const postComment = async (clients: Clients, req: Request, res: Response) => {
   const {commentId} = req.body;
+  logger.info('core', {body: req.body});
   const comment: Node<Comment> = await clients.composeQuery().fetchCommentDetails(commentId);
   const socials = _.get(comment, "node.thread.community.socialPlatforms.edges");
 
