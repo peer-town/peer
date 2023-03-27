@@ -77,7 +77,6 @@ export interface PostCommentToSocialPayload {
   userName: string;
   userAvatar: string;
   userProfileLink: string;
-  redirectLink: string;
   serverId: string;
   threadId: string;
 }
@@ -88,7 +87,6 @@ export interface PostThreadToSocialPayload {
   userName: string;
   userAvatar: string;
   userProfileLink: string;
-  redirectLink: string;
   threadStreamId: string;
   serverId: string;
 }
