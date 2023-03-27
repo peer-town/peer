@@ -30,11 +30,10 @@ export const postCommentToDiscord = (discordClient: Client, comment: Node<Commen
   const userId = _.get(comment, "node.user.walletAddress");
   const userAvatar = _.get(comment, "node.user.userPlatforms[0].platformAvatar");
   const userProfileLink = config.devnodeWebsite.concat(`/${userId}/profile`);
-  const redirectLink = config.devnodeWebsite.concat(`/${threadStreamId}`);
   const serverId = getSocialCommunityId(socials, constants.PLATFORM_DISCORD_NAME);
   const threadId = _.get(comment, "node.thread.threadId");
 
-  const payload = {text, userName, serverId, threadId, threadStreamId, userAvatar, userProfileLink, redirectLink};
+  const payload = {text, userName, serverId, threadId, threadStreamId, userAvatar, userProfileLink};
   discordCommentHandler.postComment(discordClient, payload)
     .catch((e) => logger.error('core', {payload, e}));
 }

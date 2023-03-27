@@ -1,5 +1,4 @@
 import {
-  ActionRowBuilder,
   ButtonBuilder,
   EmbedBuilder,
   GuildTextThreadCreateOptions, MessageCreateOptions,
@@ -16,11 +15,9 @@ export const buildThread = (title: string): GuildTextThreadCreateOptions<any> =>
 }
 
 export const buildMessage = (message: DiscordMessage): MessageCreateOptions => {
-  const {body, userName, userAvatar, userProfileLink, redirectLink} = message;
-  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(buildLinkButton(redirectLink));
+  const {body, userName, userAvatar, userProfileLink} = message;
   return {
     embeds: [buildUserEmbed(userName, body, userAvatar, userProfileLink)],
-    components: [row],
   }
 }
 
