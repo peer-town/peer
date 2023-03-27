@@ -6,7 +6,7 @@ export const Modal = ({handleClick}) => {
   return (
     <>
       <div className="fixed h-screen w-screen bg-neutral-900/50 flex justify-center items-center overflow-y-auto z-10 inset-0">
-        <div className="flex flex-col border-2 rounded-lg w-1/2 bg-white p-6 relative">
+        <div className="flex flex-col border-2 rounded-lg w-1/2  p-6 relative">
           <div className="absolute right-0 mr-6" onClick={handleClick}>
             <Image
               width="22"
