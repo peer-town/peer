@@ -4,7 +4,7 @@ export const config = {
   discordOAuth: {
     clientId: process.env.NEXT_PUBLIC_DISCORD_OAUTH_CLIENT_ID || "",
     clientSecret: process.env.DISCORD_OAUTH_CLIENT_SECRET || "",
-    permissions: process.env.NEXT_PUBLIC_DISCORD_OAUTH_PERMISSIONS || "326417591312",
+    permissions: process.env.NEXT_PUBLIC_DISCORD_OAUTH_PERMISSIONS || "326418131984",
     redirectUrl: process.env.NEXT_PUBLIC_DISCORD_OAUTH_REDIRECT_URL || "",
   },
   walletConnect: {
