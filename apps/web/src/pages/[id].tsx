@@ -110,6 +110,7 @@ const QuestionPage = () => {
                       <textarea
                         className="form-control block w-full min-h-[120px] rounded-[10px] border border-solid border-gray-400 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 focus:border-gray-600 focus:bg-white focus:text-gray-700 focus:outline-none"
                         placeholder="comment"
+                        maxLength={2000}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                       />
