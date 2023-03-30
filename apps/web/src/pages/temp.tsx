@@ -4,11 +4,13 @@ import {Search} from "../components/Search";
 import Link from "next/link";
 
 const Temp = () => {
+  // @ts-ignore
   const { data, fetchNextPage } = trpc.public.fetchCommunities.useInfiniteQuery(
     {
       first: 1,
       after: undefined,
-    },{
+    },
+    {
       getNextPageParam: (lastPage) => {
         if (lastPage.pageInfo.hasNextPage) {
           return { cursor: {
@@ -30,9 +32,7 @@ const Temp = () => {
       <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-8 mt-12 m-4">
         {data && data.pages && data.pages.map((page) => {
           return page && page.edges.map((community, index) => {
-          const about = " this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting" +
-            " this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting" +
-            "this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting"
+          const about = " this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting";
           return (
             <Link key={index} href={"/"} >
               <CommunityCard
