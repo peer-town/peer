@@ -645,3 +645,40 @@ export const composeQueryHandler = () => {
     },
   };
 };
+
+export const fetchCommunities = async (first: number, after?: string) => {
+  const query = gql`
+  query($first: Int!, $after: String!) {
+    communityIndex(first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      edges {
+        node {
+          id
+          communityName
+          createdAt
+          socialPlatforms(first: 5) {
+            edges {
+              node {
+                id
+                platform
+                platformId
+                communityName
+                communityAvatar
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+  const response = await client.request(query, {
+    first: first,
+    after: after || "",
+  });
+  return response.communityIndex;
+}
