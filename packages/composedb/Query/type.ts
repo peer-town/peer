@@ -103,12 +103,30 @@ export interface SocialPlatform {
   communityAvatar: string;
 }
 
+export interface Comment {
+  id: string;
+  text: string;
+  userId: string;
+  threadId: string;
+  createdAt: string;
+  createdFrom: string;
+  user: User;
+  author: {
+    id: string;
+  };
+}
+
 export interface Node<T> {
   node: T;
 }
 
 export interface Edges<T> {
   edges: Node<T>[]
+}
+
+export interface PageResponse<T> {
+  pageInfo: PageInfo;
+  edges: Node<T>[];
 }
 
 export interface PageInfo {
@@ -122,4 +140,3 @@ export interface Communities {
   pageInfo: PageInfo;
   edges: Node<Community>[];
 }
-
