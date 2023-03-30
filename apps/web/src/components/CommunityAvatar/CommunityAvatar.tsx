@@ -13,7 +13,7 @@ export const CommunityAvatar = (props: CommunityAvatarProps) => {
       <div
         id="community-avatar"
         className={utils.classNames(
-          "group relative flex h-12 w-12 cursor-pointer items-center justify-center ",
+          "group relative flex h-12 w-12 cursor-pointer items-center justify-center z-2",
           props.classes
         )}
         onClick={props.onClick}

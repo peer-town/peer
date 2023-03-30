@@ -510,9 +510,9 @@
     tweetnacl "^1.0.3"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/cli@next":
+"@ceramicnetwork/cli@2.28.0":
   version "2.28.0"
-  resolved "https://registry.npmjs.org/@ceramicnetwork/cli/-/cli-2.28.0.tgz"
+  resolved "https://registry.yarnpkg.com/@ceramicnetwork/cli/-/cli-2.28.0.tgz#d4cc100dfc1401d22e669603b9ebfa55e8c490b1"
   integrity sha512-jpjuN+nzhJYGxyvAdnFADu6J2xICM0clGf7agzSmhduUmXV5cNGu5UW0h+7LlW4iiK1ddUWlmYYUh1nzWKulnQ==
   dependencies:
     "@awaitjs/express" "^0.9.0"
