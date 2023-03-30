@@ -27,11 +27,11 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   const [comment, setComment] = useState("");
   const [isCommenting, setIsCommenting] = useState(false);
 
+  const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const createComment = trpc.comment.createComment.useMutation();
   const comments = trpc.comment.fetchCommentsByThreadId.useQuery({
     threadId, last: 20, before: undefined
   });
-  const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   if (currentThread.isLoading) {
     return <div>Loading...</div>;
   }

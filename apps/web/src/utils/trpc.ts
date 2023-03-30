@@ -4,6 +4,7 @@ import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 
 import { type AppRouter } from "../server/trpc/router/_app";
+import {getFetch} from "@trpc/react-query";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -23,6 +24,12 @@ export const trpc = createTRPCNext<AppRouter>({
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          fetch: async (input, init?) => {
+            const fetch = getFetch();
+            return fetch(input, {
+              ...init,
+            });
+          },
         }),
       ],
     };
@@ -40,6 +47,12 @@ export const trpcProxy = createTRPCProxyClient<AppRouter>({
     }),
     httpBatchLink({
       url: `${getBaseUrl()}/api/trpc`,
+      fetch: async (input, init?) => {
+        const fetch = getFetch();
+        return fetch(input, {
+          ...init,
+        });
+      },
     }),
   ],
 });
