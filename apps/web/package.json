@@ -10,6 +10,7 @@
     "clean": "rimraf .turbo node_modules dist .next",
     "start:web": "next start",
     "dev:web": "next dev",
+    "test": "jest --coverage",
     "test:web": "jest",
     "test:web-coverage": "jest --coverage"
   },
