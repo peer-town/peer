@@ -1,5 +1,5 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {Comment, Communities, Community, Node, PageResponse, Thread} from "./type";
+import {Comment, Communities, Community, Node, PageResponse, Thread, User} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -654,6 +654,71 @@ export const composeQueryHandler = () => {
         before: before || "",
       });
       return response?.node?.comments;
+    },
+    fetchUserByStreamId: async (id: string): Promise<Node<User>> => {
+      const query = gql`
+      query UserByStream($id: ID!) {
+        node(id: $id) {
+          ... on User {
+            id
+            createdAt
+            walletAddress
+            userPlatforms {
+              platformId
+              platformName
+              platformAvatar
+              platformUsername
+            }
+            author {
+              id
+            }
+          }
+        }
+      }`;
+      return await client.request(query, { id });
+    },
+    // todo: update to new query
+    fetchUserCommunities: async(id: string, first?: number, after?: string): Promise<Communities> => {
+      const query = gql`
+      query UserCommunities($id: ID!, $first: Int!, $after: String!) {
+        node(id: $id) {
+          ...on User {
+            author {
+              communityList(first: $first, after: $after) {
+                pageInfo {
+                  startCursor
+                  endCursor
+                  hasNextPage
+                  hasPreviousPage
+                }
+                edges {
+                  node {
+                    id
+                    communityName
+                    socialPlatforms (first:10) {
+                      edges {
+                        node {
+                          platform
+                          platformId
+                          communityName
+                          communityAvatar
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query, {
+        id: id,
+        first: first || 20,
+        after: after || "",
+      });
+      return response?.node?.author?.communityList;
     },
   };
 };

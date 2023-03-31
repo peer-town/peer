@@ -10,16 +10,7 @@ import {fetch} from "node-fetch";
 const globalAny = global as any;
 globalAny.fetch = fetch;
 
-export const testApi = createTRPCReact<AppRouter>({
-  unstable_overrides: {
-    useMutation: {
-      async onSuccess(opts) {
-        await opts.originalFn();
-        await opts.queryClient.invalidateQueries();
-      },
-    },
-  },
-});
+export const testApi = createTRPCReact<AppRouter>();
 
 const queryClient = new QueryClient();
 const trpcClient = () =>

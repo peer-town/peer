@@ -46,6 +46,17 @@ export const userRouter = router({
       }
     }),
 
+  getUserByStreamId: publicProcedure
+    .input(z.object({ streamId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const response = await composeQueryHandler().fetchUserByStreamId(input.streamId);
+        return response && response.node ? right(response.node) : right({});
+      } catch (e) {
+        return left(e);
+      }
+    }),
+
   createUser: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ input }) => {
@@ -89,11 +100,17 @@ export const userRouter = router({
             input.address,
             input.platform
           );
-        return platformDiscord 
+        return platformDiscord
           ? right(platformDiscord)
           : right({});
       } catch (e) {
         return left(e);
       }
+    }),
+
+  getUserCommunities: publicProcedure
+    .input(z.object({ streamId: z.string() }))
+    .query(async ({ input }) => {
+        return await composeQueryHandler().fetchUserCommunities(input.streamId);
     }),
 });
