@@ -68,12 +68,12 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           theme="light"
         />
         <Provider store={store}>
-          
-            <LeftPanel style={'w-[6%]'}/>
-            <div className={"w-[93%] h-auto border-box absolute right-0"} >
+          <div className={"w-screen h-auto box-border"}>
+            <LeftPanel style={'w-[75px]'}/>
+            <div className={"max-w-full h-auto ml-[75px] box-border"} >
               <Component {...pageProps} />
             </div>
-         
+          </div>
         </Provider>
       </WagmiConfig>
       <Web3Modal
