@@ -9,7 +9,7 @@ export const InterfacesModal = (props: InterfaceModelProps) => {
   }
 
   return (
-    <BaseModal title={"add interfaces"} open={props.open} onClose={props.onClose}>
+    <BaseModal title={"add interfaces"} open={props.open} onClose={()=>{}}>
       <div id="interface-modal">
         <button
           id="discord-button"

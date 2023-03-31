@@ -6,14 +6,14 @@ export const CommunityAvatar = (props: CommunityAvatarProps) => {
   return (
     <div
     className={utils.classNames(
-      " inline-block px-5 ",
+      " inline-block ",
       props.selected ? " border-r-[3px] rounded-r-sm border-black" : ""
     )}
     >
       <div
         id="community-avatar"
         className={utils.classNames(
-          "group relative flex h-12 w-12 cursor-pointer items-center justify-center z-2",
+          "group relative flex h-12 w-12 cursor-pointer items-center justify-center z-2 mx-auto",
           props.classes
         )}
         onClick={props.onClick}
