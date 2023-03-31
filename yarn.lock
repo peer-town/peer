@@ -510,9 +510,9 @@
     tweetnacl "^1.0.3"
     uint8arrays "^4.0.3"
 
-"@ceramicnetwork/cli@next":
+"@ceramicnetwork/cli@2.28.0":
   version "2.28.0"
-  resolved "https://registry.npmjs.org/@ceramicnetwork/cli/-/cli-2.28.0.tgz"
+  resolved "https://registry.yarnpkg.com/@ceramicnetwork/cli/-/cli-2.28.0.tgz#d4cc100dfc1401d22e669603b9ebfa55e8c490b1"
   integrity sha512-jpjuN+nzhJYGxyvAdnFADu6J2xICM0clGf7agzSmhduUmXV5cNGu5UW0h+7LlW4iiK1ddUWlmYYUh1nzWKulnQ==
   dependencies:
     "@awaitjs/express" "^0.9.0"
@@ -3339,6 +3339,11 @@
   integrity sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==
   dependencies:
     defer-to-connect "^2.0.0"
+
+"@tailwindcss/line-clamp@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@tailwindcss/line-clamp/-/line-clamp-0.4.4.tgz#767cf8e5d528a5d90c9740ca66eb079f5e87d423"
+  integrity sha512-5U6SY5z8N42VtrCrKlsTAA35gy2VSyYtHWCsg1H87NU1SXnEfekTVlrga9fzUDrrHcGi2Lb5KenUWb4lRQT5/g==
 
 "@tanstack/query-core@4.15.1":
   version "4.15.1"
