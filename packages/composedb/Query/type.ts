@@ -82,6 +82,7 @@ export type Comments = {
 export type Thread = {
   id: string;
   title: string;
+  body: string;
   userId: string;
   threadId: string;
   createdAt: string;
@@ -90,7 +91,7 @@ export type Thread = {
   author: {
     id: string;
   };
-  User: User;
+  user: User;
   community: Community;
   comments: Comments;
   };
@@ -114,6 +115,12 @@ export interface Comment {
   author: {
     id: string;
   };
+}
+
+export interface UserFeedResponse {
+  community: {
+    threads: Edges<Thread>;
+  }
 }
 
 export interface Node<T> {

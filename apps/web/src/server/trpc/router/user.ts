@@ -113,4 +113,14 @@ export const userRouter = router({
     .query(async ({ input }) => {
         return await composeQueryHandler().fetchUserCommunities(input.streamId);
     }),
+
+  getUserFeed: publicProcedure
+    .input(z.object({
+      userStreamId: z.string(),
+      communityCount: z.number().nullish(),
+      threadCount: z.number().nullish(),
+    })).query(async ({input}) => {
+      const {userStreamId, communityCount, threadCount} = input;
+      return await composeQueryHandler().fetchFeedThreads(userStreamId, communityCount, threadCount);
+    }),
 });
