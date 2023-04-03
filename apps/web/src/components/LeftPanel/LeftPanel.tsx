@@ -3,6 +3,7 @@ import { LeftPanelProp } from "./type";
 import { useRouter } from "next/router";
 import * as utils from "../../utils";
 import UserOnboard from "../UserOnboard/UserOnboard";
+import { CommunityOnboard } from "../CommunityOnboard";
 
 const LeftPanel = (props: LeftPanelProp) => {
   const { style } = props;
@@ -13,7 +14,7 @@ const LeftPanel = (props: LeftPanelProp) => {
       className={`fixed left-0 h-screen border-r border-solid border-[#08010d12] ${style}`}
     >
       <div
-        className={`z-1 absolute w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}
+        className={`sticky z-1 w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}
       >
           <CommunityAvatar
             key={"create"}
@@ -41,9 +42,11 @@ const LeftPanel = (props: LeftPanelProp) => {
           onClick={() => {}}
         />
       </div>
-      <div></div>
+      <div  className={` relative z-0 w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}>
+      <CommunityOnboard />
+      </div>
       <div
-        className={`z-1 absolute bottom-0 my-[14px] flex h-auto flex-col gap-[30px] w-full`}
+        className={`absolute z-1 bottom-0 my-[14px] flex h-auto flex-col gap-[30px] w-full`}
       >
         <UserOnboard />
       </div>
