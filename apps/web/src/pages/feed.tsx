@@ -9,7 +9,7 @@ import { Search } from "../components/Search";
 import {useAppSelector} from "../store";
 import {flatten} from "lodash";
 
-const CommunityPage = () => {
+const FeedPage = () => {
   const router = useRouter();
   const threadId = router.query.threadId as string;
   const [currentThread, setCurrentThread] = useState<string>(threadId);
@@ -56,4 +56,4 @@ const CommunityPage = () => {
   );
 };
 
-export default CommunityPage;
+export default FeedPage;
