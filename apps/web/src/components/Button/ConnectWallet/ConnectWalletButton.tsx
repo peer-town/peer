@@ -7,7 +7,8 @@ import { DIDSession } from "did-session";
 import { config } from "../../../config";
 import { toast } from "react-toastify";
 import { ConnectWalletProps } from "./types";
-import { useAppDispatch, updateDidSession, updateDid } from "../../../store";
+import { useAppDispatch, updateDidSession, updateDid, useAppSelector } from "../../../store";
+import { isNil } from "lodash";
 
 export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const { open } = useWeb3Modal();
@@ -48,7 +49,6 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   });
 
   useEffect(() => {
-
     setConnected(isConnected);
   }, [isConnected]);
 
@@ -65,18 +65,18 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const getAddress = () => {
     return address ? utils.formatWalletAddress(address) : "";
   };
-
+  
   return (
     <button
       className={utils.classNames(
-        "flex h-[48px] items-center justify-center",
-        "rounded-[10px] border-[1px] border-[#DAD8E2] bg-white px-8 py-3 hover:border-[#08010D] focus:outline-none",
-        "font-medium text-[#97929B] hover:text-[#08010D]"
+        "flex h-[74px] items-center justify-center w-full",
+        "bg-[#DDDDDD] focus:outline-none",
+        "font-medium text-white "
       )}
       onClick={onClick}
       disabled={loading}
     >
-      {connected ? getAddress() : "Connect Wallet"}
+      {connected ? getAddress() : "Connect"}
     </button>
   );
 };
