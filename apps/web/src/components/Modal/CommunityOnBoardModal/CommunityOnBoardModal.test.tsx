@@ -22,10 +22,12 @@ describe("<CommunityOnBoardModel />", () => {
     const name = screen.getByPlaceholderText("community name");
     const url = screen.getByPlaceholderText("image url");
     const tags = screen.getByPlaceholderText("tags");
+    const description = screen.getByPlaceholderText("community description");
     const save = screen.getByRole("button");
     expect(name).toBeInTheDocument();
     expect(url).toBeInTheDocument();
     expect(tags).toBeInTheDocument();
+    expect(description).toBeInTheDocument();
     expect(save).toBeInTheDocument();
   });
 
@@ -33,12 +35,14 @@ describe("<CommunityOnBoardModel />", () => {
     const name = screen.getByPlaceholderText("community name");
     const url = screen.getByPlaceholderText("image url");
     const tags = screen.getByPlaceholderText("tags");
+    const description = screen.getByPlaceholderText("community description");
     const save = screen.getByRole("button");
     fireEvent.change(name, {target: {value: "abc"}});
     fireEvent.change(url, {target: {value: "https://xyz"}});
     fireEvent.change(tags, {target: {value: "web3"}});
+    fireEvent.change(description, {target: {value: "blockchain is the future"}});
     fireEvent.click(save);
     expect(onSubmit).toBeCalled();
-    expect(onSubmit).toBeCalledWith({name: "abc", imageUrl: "https://xyz", tags: "web3"})
+    expect(onSubmit).toBeCalledWith({name: "abc", imageUrl: "https://xyz", tags: "web3", description:"blockchain is the future" })
   });
 });
