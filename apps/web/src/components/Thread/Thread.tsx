@@ -35,7 +35,7 @@ export const Thread = ({thread}: ThreadProps) => {
           <div className="text-[36px] font-medium text-gray-700">
             {thread?.title}
           </div>
-          <div className="text-md mt-4">
+          <div className="text-md mt-3 text-gray-500">
             {thread?.body}
           </div>
         </FlexColumn>

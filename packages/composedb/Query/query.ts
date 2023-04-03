@@ -609,12 +609,12 @@ export const composeQueryHandler = () => {
       });
       return response.communityIndex;
     },
-    fetchCommentsByThreadId: async (threadId: string, last: number, before?: string): Promise<PageResponse<Comment>> => {
+    fetchCommentsByThreadId: async (threadId: string, first: number, after?: string): Promise<PageResponse<Comment>> => {
       const query = gql`
-      query CommentsByThread($id: ID!, $last: Int!, $before: String!) {
+      query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
         node(id: $id) {
           ... on Thread {
-            comments(last: $last, before: $before) {
+            comments(first: $first, after: $after) {
                 pageInfo {
                 hasNextPage
                 hasPreviousPage
@@ -650,8 +650,8 @@ export const composeQueryHandler = () => {
     `;
       const response = await client.request(query, {
         id: threadId,
-        last: last,
-        before: before || "",
+        first: first,
+        after: after || "",
       });
       return response?.node?.comments;
     },

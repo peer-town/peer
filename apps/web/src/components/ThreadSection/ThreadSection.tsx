@@ -4,7 +4,6 @@ import {Thread} from "../Thread";
 import {Comment} from "../Comment";
 import {useRef, useState} from "react";
 import {useAppSelector} from "../../store";
-import {reverse} from "lodash";
 import {toast} from "react-toastify";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
@@ -31,7 +30,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const createComment = trpc.comment.createComment.useMutation();
   const comments = trpc.comment.fetchCommentsByThreadId.useQuery({
-    threadId, last: 20, before: undefined
+    threadId, first: 20, after: undefined
   });
   if (currentThread.isLoading) {
     return <Loader />;
@@ -60,7 +59,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     if (isRight(result)) {
       setComment("");
       toast.success("Comment posted successfully!");
-      await currentThread.refetch();
+      await comments.refetch();
     } else {
       toast.error("Failed to post message. Try again in a while!");
     }
