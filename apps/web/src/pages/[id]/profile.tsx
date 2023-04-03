@@ -6,7 +6,7 @@ import { Layout } from "../../components/Layout";
 import { Back } from "../../components/Button/Back/Back";
 import { useEffect, useState } from "react";
 import { Tab } from "@headlessui/react";
-import ThreadCard from "../../components/ThreadCard";
+import { ThreadCard } from "../../components/ThreadCard";
 import * as utils from "../../utils";
 import { FlexColumn, FlexRow } from "../../components/Flex";
 import { trpc } from "../../utils/trpc";

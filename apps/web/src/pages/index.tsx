@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
 import { toast } from "react-toastify";
-import ThreadCard from "../components/ThreadCard";
+import { ThreadCard } from "../components/ThreadCard";
 import { useAccount } from "wagmi";
 import { trpc } from "../utils/trpc";
 import { Modal } from "../components/Modal";
