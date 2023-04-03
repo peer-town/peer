@@ -46,6 +46,8 @@ const mockFetchCommentsByThreadId = {
 };
 
 const mutationMock = jest.fn().mockResolvedValue(mockCreateComment);
+const dispatchMock = jest.fn();
+const showUserProfileMock = jest.fn();
 
 jest.mock('../../utils/trpc', () => ({
   trpc: {
@@ -68,6 +70,12 @@ jest.mock('../../utils/trpc', () => ({
 jest.mock('../../store', () => ({
   useAppSelector: () => {
     return { id: "sample-id", didSession: "sample-session" };
+  },
+  useAppDispatch: () => {
+    return dispatchMock;
+  },
+  showUserProfile: () => {
+    return showUserProfileMock;
   },
   store: {
     getState: jest.fn(),
