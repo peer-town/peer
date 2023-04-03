@@ -11,121 +11,121 @@ import { isRight } from "../../utils/fp";
 import { constants } from "../../config";
 
 const Layout = (props) => {
-  const dispatch = useAppDispatch();
-  const communityId = useAppSelector(
-    (state) => state.community.selectedCommunity
-  );
-  const didSession = useAppSelector((state) => state.user.didSession);
-  const userId = useAppSelector((state) => state.user.id);
+  // const dispatch = useAppDispatch();
+  // const communityId = useAppSelector(
+  //   (state) => state.community.selectedCommunity
+  // );
+  // const didSession = useAppSelector((state) => state.user.didSession);
+  // const userId = useAppSelector((state) => state.user.id);
 
-  const communities = trpc.public.fetchAllCommunities.useQuery();
-  const createCommunity = trpc.community.createCommunity.useMutation();
+  // const communities = trpc.public.fetchAllCommunities.useQuery();
+  // const createCommunity = trpc.community.createCommunity.useMutation();
 
-  const [clicked, setClicked] = useState<boolean>(false);
-  const [communityOnboarding, setCommunityOnboarding] =
-    useState<boolean>(false);
-  const [socialInterfaces, setSocialInterfaces] = useState(false);
+  // const [clicked, setClicked] = useState<boolean>(false);
+  // const [communityOnboarding, setCommunityOnboarding] =
+  //   useState<boolean>(false);
+  // const [socialInterfaces, setSocialInterfaces] = useState(false);
 
-  const handleOnCommunityClick = (communityDetails: {
-    selectedCommunity: string;
-    communityName: string;
-    communityAvatar: string;
-  }) => {
-    dispatch(selectCommunity(communityDetails));
-  };
+  // const handleOnCommunityClick = (communityDetails: {
+  //   selectedCommunity: string;
+  //   communityName: string;
+  //   communityAvatar: string;
+  // }) => {
+  //   dispatch(selectCommunity(communityDetails));
+  // };
 
-  const handleSubmit = async ({ name, imageUrl }) => {
-    const createCommunityResp = await createCommunity.mutateAsync({
-      session: didSession,
-      communityName: name,
-      socialPlatform: {
-        platformId: constants.PLATFORM_DEVNODE_ID,
-        platform: constants.PLATFORM_DEVNODE_NAME,
-        communityName: name,
-        userId: userId,
-        communityAvatar: imageUrl,
-      },
-    });
-    if (isRight(createCommunityResp)) {
-      const communityDetails = {
-        selectedCommunity: get(
-          createCommunityResp.value,
-          "createCommunity.document.id"
-        ),
-        communityName: get(
-          createCommunityResp.value,
-          "createCommunity.document.communityName"
-        ),
-        communityAvatar: get(
-          createCommunityResp.value,
-          "createSocialPlatform.document.communityAvatar"
-        ),
-      };
-      dispatch(selectCommunity(communityDetails));
-      communities.refetch();
-      setCommunityOnboarding(false);
-      setSocialInterfaces(true);
-    }
-  };
+  // const handleSubmit = async ({ name, imageUrl }) => {
+  //   const createCommunityResp = await createCommunity.mutateAsync({
+  //     session: didSession,
+  //     communityName: name,
+  //     socialPlatform: {
+  //       platformId: constants.PLATFORM_DEVNODE_ID,
+  //       platform: constants.PLATFORM_DEVNODE_NAME,
+  //       communityName: name,
+  //       userId: userId,
+  //       communityAvatar: imageUrl,
+  //     },
+  //   });
+  //   if (isRight(createCommunityResp)) {
+  //     const communityDetails = {
+  //       selectedCommunity: get(
+  //         createCommunityResp.value,
+  //         "createCommunity.document.id"
+  //       ),
+  //       communityName: get(
+  //         createCommunityResp.value,
+  //         "createCommunity.document.communityName"
+  //       ),
+  //       communityAvatar: get(
+  //         createCommunityResp.value,
+  //         "createSocialPlatform.document.communityAvatar"
+  //       ),
+  //     };
+  //     dispatch(selectCommunity(communityDetails));
+  //     communities.refetch();
+  //     setCommunityOnboarding(false);
+  //     setSocialInterfaces(true);
+  //   }
+  // };
 
-  const handleCreateCommunity = () => {
-    if (!userId || !didSession) {
-      toast.error("Please re-connect with your wallet!");
-      return;
-    }
-    setCommunityOnboarding(true);
-    setClicked(true);
-  };
+  // const handleCreateCommunity = () => {
+  //   if (!userId || !didSession) {
+  //     toast.error("Please re-connect with your wallet!");
+  //     return;
+  //   }
+  //   setCommunityOnboarding(true);
+  //   setClicked(true);
+  // };
 
-  const getCommunityList = () => {
-    if (isNil(communities.data) || isEmpty(communities.data)) {
-      return <></>;
-    }
+  // const getCommunityList = () => {
+  //   if (isNil(communities.data) || isEmpty(communities.data)) {
+  //     return <></>;
+  //   }
 
-    if (isEmpty(communityId) && has(communities, "data[0].node.id")) {
-      const communityDetails = {
-        selectedCommunity: get(communities, "data[0].node.id"),
-        communityName: get(communities, "data[0].node.communityName"),
-        communityAvatar: get(
-          communities,
-          "data[0].node.socialPlatforms.edges[0].node.communityAvatar"
-        ),
-      };
-      handleOnCommunityClick(communityDetails);
-    }
+  //   if (isEmpty(communityId) && has(communities, "data[0].node.id")) {
+  //     const communityDetails = {
+  //       selectedCommunity: get(communities, "data[0].node.id"),
+  //       communityName: get(communities, "data[0].node.communityName"),
+  //       communityAvatar: get(
+  //         communities,
+  //         "data[0].node.socialPlatforms.edges[0].node.communityAvatar"
+  //       ),
+  //     };
+  //     handleOnCommunityClick(communityDetails);
+  //   }
 
-    return communities.data.map((community, index) => {
-      if (!community.node) return null;
+  //   return communities.data.map((community, index) => {
+  //     if (!community.node) return null;
 
-      const communityDetails = {
-        selectedCommunity: community.node.id,
-        communityName: community.node.communityName,
-        communityAvatar: get(
-          community,
-          "node.socialPlatforms.edges[0].node.communityAvatar"
-        ),
-      };
-      const name = community.node.communityName;
-      const image =
-        get(community, "node.socialPlatforms.edges[0].node.communityAvatar") ||
-        "https://placekitten.com/200/200";
-      const selected = community.node.id == communityId;
-      return (
-        <CommunityAvatar
-          classes={""}
-          key={index}
-          name={name}
-          image={image}
-          selected={selected}
-          onClick={() => handleOnCommunityClick(communityDetails)}
-        />
-      );
-    });
-  };
+  //     const communityDetails = {
+  //       selectedCommunity: community.node.id,
+  //       communityName: community.node.communityName,
+  //       communityAvatar: get(
+  //         community,
+  //         "node.socialPlatforms.edges[0].node.communityAvatar"
+  //       ),
+  //     };
+  //     const name = community.node.communityName;
+  //     const image =
+  //       get(community, "node.socialPlatforms.edges[0].node.communityAvatar") ||
+  //       "https://placekitten.com/200/200";
+  //     const selected = community.node.id == communityId;
+  //     return (
+  //       <CommunityAvatar
+  //         classes={""}
+  //         key={index}
+  //         name={name}
+  //         image={image}
+  //         selected={selected}
+  //         onClick={() => handleOnCommunityClick(communityDetails)}
+  //       />
+  //     );
+  //   });
+  // };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <NavBar />
+    <div className="flex min-h-screen flex-col w-full box-border">
+      {/* <NavBar />
       <div className="flex flex-row">
         <div className="flex h-screen flex-col gap-7 border-r py-10 sm:hidden md:flex ">
           <CommunityAvatar
@@ -160,7 +160,7 @@ const Layout = (props) => {
           open={socialInterfaces}
           onClose={() => setSocialInterfaces(false)}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
