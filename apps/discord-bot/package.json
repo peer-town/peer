@@ -20,7 +20,8 @@
     "dev": "tsup && node dist/index.js",
     "dev:bot": "tsup && node dist/index.js",
     "test:bot": "mocha tests/**/*.spec.ts tests/**/**/*.spec.ts -- --silent",
-    "test:bot-coverage": "c8 --reporter=html --reporter=text mocha tests/**/*.spec.ts tests/unit/**/*.spec.ts"
+    "test:bot-coverage": "c8 --reporter=html --reporter=text mocha tests/**/*.spec.ts tests/unit/**/*.spec.ts",
+    "test": "c8 --reporter=html --reporter=text mocha tests/**/*.spec.ts tests/unit/**/*.spec.ts"
   },
   "dependencies": {
     "@composedb/client": "^0.4.3",

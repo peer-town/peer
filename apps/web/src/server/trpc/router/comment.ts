@@ -1,6 +1,6 @@
 import {publicProcedure, router} from "../trpc";
 import {z} from "zod";
-import {composeMutationHandler, definition} from "@devnode/composedb";
+import {definition, composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
@@ -11,6 +11,7 @@ export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
   definition,
 });
+const queryHandler = composeQueryHandler();
 
 const createCommentSchema = z.object({
   session: z.string(),
@@ -45,6 +46,17 @@ export const commentRouter = router({
       } catch (e) {
         return left(e);
       }
+    }),
+
+  fetchCommentsByThreadId: publicProcedure
+    .input(z.object({
+      threadId: z.string(),
+      last: z.number().min(1).max(100),
+      before: z.string().nullish(),
+    }))
+    .query(async ({input}) => {
+      const {threadId, last, before} = input;
+      return await queryHandler.fetchCommentsByThreadId(threadId, last, before);
     }),
 });
 

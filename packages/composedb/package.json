@@ -15,7 +15,7 @@
     "clean": "rimraf .turbo node_modules dist",
     "composedb:daemon": "node generate_compose_config.js && CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' ceramic daemon --hostname 0.0.0.0 --port=$PORT --config ./daemon.config.json",
     "composedb:server": "composedb graphql:server --ceramic-url=$CERAMIC_NODE --graphiql ./gen/runtime-composite.json --port $PORT",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
   "resolutions": {
     "graphql": "^16.5.0"

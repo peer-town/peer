@@ -45,6 +45,7 @@ export type Community = {
     id: string;
   };
 };
+
 export type Comments = {
   edges: {
     node: [
@@ -94,10 +95,48 @@ export type Thread = {
   comments: Comments;
   };
 
+export interface SocialPlatform {
+  id: string;
+  platform: string;
+  platformId: string;
+  communityName: string;
+  communityAvatar: string;
+}
+
+export interface Comment {
+  id: string;
+  text: string;
+  userId: string;
+  threadId: string;
+  createdAt: string;
+  createdFrom: string;
+  user: User;
+  author: {
+    id: string;
+  };
+}
+
 export interface Node<T> {
   node: T;
 }
 
 export interface Edges<T> {
   edges: Node<T>[]
+}
+
+export interface PageResponse<T> {
+  pageInfo: PageInfo;
+  edges: Node<T>[];
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string;
+  endCursor: string;
+}
+
+export interface Communities {
+  pageInfo: PageInfo;
+  edges: Node<Community>[];
 }
