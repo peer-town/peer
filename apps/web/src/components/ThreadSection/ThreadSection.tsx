@@ -8,6 +8,7 @@ import {reverse} from "lodash";
 import {toast} from "react-toastify";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
+import {Loader} from "../Loader";
 
 const SendIcon = () => {
   return (
@@ -33,7 +34,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     threadId, last: 20, before: undefined
   });
   if (currentThread.isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const handleOnCommentSubmit = async () => {
@@ -67,10 +68,10 @@ export const ThreadSection = (props: ThreadSectionProps) => {
 
   return (
     <div className="flex flex-col h-screen p-4">
-      <div className="overflow-y-scroll py-4 scrollbar-hide">
+      <div className="overflow-y-scroll h-screen py-4 scrollbar-hide">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px]">
-          {comments.data && reverse([...comments.data.edges]).map((item) => (
+          {comments.data && comments.data.edges.map((item) => (
             <Comment key={item.node.id} comment={item.node}/>
           ))}
         </div>
