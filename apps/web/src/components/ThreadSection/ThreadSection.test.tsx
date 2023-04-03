@@ -9,7 +9,6 @@ const mockCreateComment = right({ data: { message: 'Comment posted successfully'
 const mockThreadDetails = {
   isLoading: false,
   isError: false,
-  refetch: jest.fn(),
   data: {
     node: {
       id: 'thread id',
@@ -27,6 +26,7 @@ const mockThreadDetails = {
 const mockFetchCommentsByThreadId = {
   isLoading: false,
   isError: false,
+  refetch: jest.fn(),
   data: {
     edges: [
       {
