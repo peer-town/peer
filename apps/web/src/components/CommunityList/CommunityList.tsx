@@ -7,81 +7,83 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { isRight } from "../../utils/fp";
 import { constants } from "../../config";
+import Link from "next/link";
 
 const CommunityList = () => {
-  // const [clicked, setClicked] = useState<boolean>(false);
-  // const dispatch = useAppDispatch();
-  // const communityId = useAppSelector(
-  //   (state) => state.community.selectedCommunity
-  // );
-  // const didSession = useAppSelector((state) => state.user.didSession);
-  // const userId = useAppSelector((state) => state.user.id);
+  const [clicked, setClicked] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const communityId = useAppSelector(
+    (state) => state.community.selectedCommunity
+  );
+  const didSession = useAppSelector((state) => state.user.didSession);
+  const userId = useAppSelector((state) => state.user.id);
 
-  // //fetch user joined communities
-  // let communities :any;
+  //fetch user joined communities
+  const communities = trpc.user.getUserCommunities.useQuery({
+    streamId: userId,
+    first: 10,
+  });
+  console.log("joinedcommunities", communities);
+  const handleOnCommunityClick = (communityDetails: {
+    selectedCommunity: string;
+    communityName: string;
+    communityAvatar: string;
+    description: string;
+  }) => {
+    dispatch(selectCommunity(communityDetails));
+  };
 
-  // const handleOnCommunityClick = (communityDetails: {
-  //   selectedCommunity: string;
-  //   communityName: string;
-  //   communityAvatar: string;
-  // }) => {
-  //   dispatch(selectCommunity(communityDetails));
-  // };
+  const getCommunityList = () => {
+    if (isNil(communities.data) || isEmpty(communities.data)) {
+      return <></>;
+    }
 
+    return communities.data.edges.map((community, index) => {
+      if (!community.node) return null;
 
-  // const getCommunityList = () => {
-  //   if (isNil(communities.data) || isEmpty(communities.data)) {
-  //     return <></>;
-  //   }
-
-  //   if (isEmpty(communityId) && has(communities, "data[0].node.id")) {
-  //     const communityDetails = {
-  //       selectedCommunity: get(communities, "data[0].node.id"),
-  //       communityName: get(communities, "data[0].node.communityName"),
-  //       communityAvatar: get(
-  //         communities,
-  //         "data[0].node.socialPlatforms.edges[0].node.communityAvatar"
-  //       ),
-  //     };
-  //     handleOnCommunityClick(communityDetails);
-  //   }
-
-  //   return communities.data.map((community, index) => {
-  //     if (!community.node) return null;
-
-  //     const communityDetails = {
-  //       selectedCommunity: community.node.id,
-  //       communityName: community.node.communityName,
-  //       communityAvatar: get(
-  //         community,
-  //         "node.socialPlatforms.edges[0].node.communityAvatar"
-  //       ),
-  //     };
-  //     const name = community.node.communityName;
-  //     const image =
-  //       get(community, "node.socialPlatforms.edges[0].node.communityAvatar") ||
-  //       "https://placekitten.com/200/200";
-  //     const selected = community.node.id == communityId;
-  //     return (
-  //       <CommunityAvatar
-  //         classes={""}
-  //         key={index}
-  //         name={name}
-  //         image={image}
-  //         selected={selected}
-  //         onClick={() => handleOnCommunityClick(communityDetails)}
-  //       />
-  //     );
-  //   });
-  // };
+      const communityDetails = {
+        selectedCommunity: community.node?.community?.id,
+        communityName: community.node?.community?.communityName,
+        communityAvatar: get(
+          community,
+          "node.community.socialPlatforms.edges[0].node.communityAvatar"
+        ),
+        description: community.node?.community?.description,
+      };
+      const name = community.node?.community?.communityName;
+      const image =
+        get(
+          community,
+          "node.community.socialPlatforms.edges[0].node.communityAvatar"
+        ) || "https://placekitten.com/200/200";
+      const selected = community.node?.community?.id == communityId;
+      return (
+        <Link
+        className={'w-full'}
+          key={index}
+          href={{
+            pathname: "/community",
+            query: { communityId: community.node?.community?.id },
+          }}
+        >
+          <CommunityAvatar
+            classes={utils.classNames(
+              "bg-slate-100	w-full rounded-full hover:rounded-xl hover:bg-slate-100 px-auto"
+            )}
+            key={index}
+            name={name}
+            image={image}
+            selected={selected}
+            onClick={() => handleOnCommunityClick(communityDetails)}
+          />
+        </Link>
+      );
+    });
+  };
 
   return (
-    <div className="box-border flex min-h-screen w-full flex-col">
-      {/* <div className="flex flex-row">
-        <div className="flex h-screen flex-col gap-7 border-r py-10 sm:hidden md:flex ">
-          {getCommunityList()}
-        </div>
-      </div> */}
+    <div className={"flex w-full flex-col items-center gap-[15px]"}>
+      {getCommunityList()}
     </div>
   );
 };
