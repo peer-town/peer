@@ -209,7 +209,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
               createdFrom
               createdAt
               socialCommentIds {
-                threadId
+                commentId
                 platformName
               }
             }
