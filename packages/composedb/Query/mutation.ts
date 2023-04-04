@@ -1,18 +1,20 @@
 import { ComposeClient } from "@composedb/client";
 import {
   CommentInput,
+  CommunityDetails,
   SocialPlatformInput,
   ThreadInput,
+  UserCommunityRelation,
   UserPlatformDetails,
 } from "./type";
 
-import {composeQueryHandler} from "./query";
-import {gql} from "graphql-request";
+import { composeQueryHandler } from "./query";
+import { gql } from "graphql-request";
 
-export const composeMutationHandler = async (compose:ComposeClient) => {
-
+export const composeMutationHandler = async (compose: ComposeClient) => {
   return {
-    createCommunity: function (communityName: string) {
+    createCommunity: function (communityDetails: CommunityDetails) {
+      const { communityName, description } = communityDetails;
       return compose.executeQuery<{
         createCommunity: { document: { id: string } };
       }>(
@@ -21,6 +23,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
               document {
                 id
                 communityName
+                description
                 author{
                   id
                 }
@@ -32,6 +35,7 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
           input: {
             content: {
               communityName: communityName,
+              description: description,
               createdAt: new Date().toISOString(),
             },
           },
@@ -87,6 +91,30 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
         }
       );
     },
+    createUserCommunityRelation: function (
+      userCommunityRelation: UserCommunityRelation
+    ) {
+      const { userId, communityId } = userCommunityRelation;
+      return compose.executeQuery<{
+        createUserCommunity: { document: { id: string } };
+      }>(
+        `mutation CreateUserCommunity($input: CreateUserCommunityInput!) {
+            createUserCommunity(input:$input){
+              document{
+                id
+              }
+            }
+          }`,
+        {
+          input: {
+            content: {
+              userId: userId,
+              communityId: communityId,
+            },
+          },
+        }
+      );
+    },
     createUser: function (
       userPlatformDetails: UserPlatformDetails,
       walletAddress: string
@@ -121,8 +149,15 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       );
     },
     createThread: function (threadInput: ThreadInput) {
-      const { communityId, userId, title, body, createdFrom, createdAt, threadId } =
-        threadInput;
+      const {
+        communityId,
+        userId,
+        title,
+        body,
+        createdFrom,
+        createdAt,
+        threadId,
+      } = threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
       }>(
@@ -191,12 +226,16 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
       userPlatformDetails: UserPlatformDetails,
       walletAddress: string
     ) {
-
-      const userExists = await composeQueryHandler().fetchUserDetails(walletAddress);
-      if(!userExists){
-        return ;
+      const userExists = await composeQueryHandler().fetchUserDetails(
+        walletAddress
+      );
+      if (!userExists) {
+        return;
       }
-      const userPlatforms = [...userExists.node.userPlatforms, userPlatformDetails]
+      const userPlatforms = [
+        ...userExists.node.userPlatforms,
+        userPlatformDetails,
+      ];
       const userId = userExists.node.id;
       return compose.executeQuery<{
         updateUser: { document: { id: string } };
@@ -227,22 +266,25 @@ export const composeMutationHandler = async (compose:ComposeClient) => {
         }
       );
     },
-    updateThreadWithSocialThreadId: async function (streamId: string, threadId: string) {
+    updateThreadWithSocialThreadId: async function (
+      streamId: string,
+      threadId: string
+    ) {
       const query = gql`
-      mutation UpdateThread($input: UpdateThreadInput!) {
-        updateThread(input: $input) {
-          document {
-            id
-            threadId
+        mutation UpdateThread($input: UpdateThreadInput!) {
+          updateThread(input: $input) {
+            document {
+              id
+              threadId
+            }
           }
         }
-      }
       `;
       return await compose.executeQuery(query, {
         input: {
           id: streamId,
           content: { threadId },
-        }
+        },
       });
     },
   };

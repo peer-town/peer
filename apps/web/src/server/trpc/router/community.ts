@@ -10,6 +10,7 @@ import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
 import { left, right } from "../../../utils/fp";
 import { DIDSession } from "did-session";
+import { omit } from "lodash";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -34,9 +35,16 @@ const socialPlatformInputSchema = z.object({
 const createCommunitySchema = z.object({
   session: z.string(),
   communityName: z.string(),
+  description: z.string(),
   socialPlatform: socialPlatformSchema.omit({
     communityId: true,
   }),
+});
+
+const UserCommunityRelationSchema = z.object({
+  session: z.string(),
+  userId: z.string(),
+  communityId: z.string(),
 });
 
 const getHandler = async (didSession: string) => {
@@ -51,7 +59,10 @@ export const communityRouter = router({
     .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
-        const response = await handler.createCommunity(input.communityName);
+        const response = await handler.createCommunity({
+          communityName: input.communityName,
+          description: input.description,
+        });
         if (response.errors && response.errors.length > 0) {
           return left(response.errors);
         }
@@ -61,10 +72,16 @@ export const communityRouter = router({
           communityId,
         } as SocialPlatformInput;
         const socialPlatformResp = await handler.createSocialPlatform(platform);
-
-        return socialPlatformResp.errors && socialPlatformResp.errors.length > 0
-          ? left(socialPlatformResp.errors)
-          : right({ ...response.data, ...socialPlatformResp.data });
+        if (socialPlatformResp.errors && socialPlatformResp.errors.length > 0) {
+          return left(socialPlatformResp.errors);
+        }
+        const payload = { userId: platform.userId, communityId: communityId };
+        console.log("payload",payload);
+        const userCommunityRelationResp =
+          await handler.createUserCommunityRelation(payload);
+        return userCommunityRelationResp.errors && userCommunityRelationResp.errors.length > 0
+          ? left(userCommunityRelationResp.errors)
+          : right({ ...response.data, ...socialPlatformResp.data, ...userCommunityRelationResp.data });
       } catch (e) {
         return left(e);
       }
@@ -81,6 +98,23 @@ export const communityRouter = router({
         return socialPlatformResp.errors && socialPlatformResp.errors.length > 0
           ? left(socialPlatformResp.errors)
           : right(socialPlatformResp.data);
+      } catch (e) {
+        return left(e);
+      }
+    }),
+  createUserCommunityRealtion: publicProcedure
+    .input(UserCommunityRelationSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const handler = await getHandler(input.session);
+        const payload = omit(input, "session");
+        const relationResp = await handler.createUserCommunityRelation(
+          payload as any
+        );
+
+        return relationResp.errors && relationResp.errors.length > 0
+          ? left(relationResp.errors)
+          : right(relationResp.data);
       } catch (e) {
         return left(e);
       }

@@ -5,12 +5,14 @@ export interface CommunityState {
   selectedCommunity: string;
   communityName: string;
   communityAvatar: string;
+  description: string;
 }
 
 const initialState: CommunityState = {
   selectedCommunity: "",
   communityName:"",
   communityAvatar: "",
+  description: "",
 };
 
 export const communitySlice = createSlice({
@@ -21,6 +23,7 @@ export const communitySlice = createSlice({
       state.selectedCommunity = action.payload?.selectedCommunity;
       state.communityName = action.payload?.communityName;
       state.communityAvatar = action.payload?.communityAvatar;
+      state.description = action.payload?.description;
     },
   },
 });
