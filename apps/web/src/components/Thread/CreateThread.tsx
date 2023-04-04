@@ -1,7 +1,7 @@
 import {useState} from "react";
 import Question from "../Modal/Question/Question";
 import * as utils from "../../utils";
-import {has, isEmpty} from "lodash";
+import {get, has, isEmpty} from "lodash";
 import {toast} from "react-toastify";
 import {trpc} from "../../utils/trpc";
 import {constants} from "../../config";
@@ -9,8 +9,10 @@ import {isRight} from "../../utils/fp";
 import {CreateThreadProps} from "./type";
 import {useAppSelector} from "../../store";
 import {PrimaryButton} from "../Button";
+import {useRouter} from "next/router";
 
 const CreateThread = (props: CreateThreadProps) => {
+  const router = useRouter();
   const [question, setQuestion] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
@@ -77,7 +79,13 @@ const CreateThread = (props: CreateThreadProps) => {
       setQuestion("");
       setDescription("");
       toast.success("Thread created successfully!");
-      props.onComplete();
+
+      const threadId = get(result, "value.createThread.createThread.document.id");
+      await router.push({
+        pathname: "/community",
+        query: {communityId, threadId},
+      });
+      props.onClose();
     } else {
       toast.error("Failed to create thread. Try again in a while!");
     }

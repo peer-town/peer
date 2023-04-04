@@ -10,6 +10,7 @@ import { config } from "../../../config";
 import {isRight, left, right} from "../../../utils/fp";
 import {get, has, omit} from "lodash";
 import { DIDSession } from "did-session";
+import {SocialThreadId} from "../../types";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -44,8 +45,8 @@ export const threadRouter = router({
           const threadId = get(response.data, "createThread.document.id");
           const apiResponse = await handleWebToAggregator(threadId);
           const data = await apiResponse.json();
-          if (has(data, "data.threadId")) {
-            const updated = await updateThread(handler, threadId, data.data.threadId);
+          if (has(data, "data[0]")) {
+            const updated = await updateThread(handler, threadId, data.data[0]);
             if (isRight(updated)) {
               return right({createThread: response.data, updateThread: updated.value});
             } else {
@@ -63,12 +64,9 @@ export const threadRouter = router({
     }),
 });
 
-const updateThread = async (handler, streamId, threadId) => {
+const updateThread = async (handler, streamId, social: SocialThreadId) => {
   try {
-    const response = await handler.updateThreadWithSocialThreadId(
-      streamId,
-      threadId
-    );
+    const response = await handler.updateThreadWithSocialThreadId(streamId, social);
     return response.errors && response.errors.length > 0
       ? left(response.errors)
       : right(response.data);

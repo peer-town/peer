@@ -56,3 +56,8 @@ export interface Thread {
   community: Community;
   comments: Comments;
 }
+
+export interface SocialThreadId {
+  platformName: string;
+  threadId: string;
+}

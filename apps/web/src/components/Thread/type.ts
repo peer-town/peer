@@ -20,5 +20,4 @@ export interface CreateThreadProps {
         communityName: string;
         communityId: string;
     },
-    onComplete():void,
 }

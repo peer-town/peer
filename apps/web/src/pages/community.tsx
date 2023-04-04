@@ -85,7 +85,6 @@ const CommunityPage = () => {
         open={questionModal}
         onClose={() => setQuestionModal(false)}
         community={{communityName, communityId}}
-        onComplete={() => {}}
       />
     </div>
   );

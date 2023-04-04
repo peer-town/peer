@@ -370,6 +370,19 @@ export const composeQueryHandler = () => {
               author {
                 id
               }
+              community {
+                socialPlatforms(first: 5) {
+                  edges {
+                    node {
+                      platform
+                      platformId
+                      communityName
+                      communityAvatar
+                      communityId
+                    }
+                  }
+                }
+              }
               user {
                 id
                 walletAddress
