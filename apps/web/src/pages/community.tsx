@@ -7,16 +7,17 @@ import { ThreadCard } from "../components/ThreadCard";
 import { ThreadSection } from "../components/ThreadSection";
 import { trpc } from "../utils/trpc";
 import { Search } from "../components/Search";
-import {CreateThread} from "../components/Thread";
-import {FlexRow} from "../components/Flex";
+import { CreateThread } from "../components/Thread";
+import { FlexRow } from "../components/Flex";
+import { selectCommunity, useAppDispatch } from "../store";
 
 const AddIcon = () => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" >
-      <path d="M457.308 845.999V598.692H210.001v-45.384h247.307V306.001h45.384v247.307h247.307v45.384H502.692v247.307h-45.384Z"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960">
+      <path d="M457.308 845.999V598.692H210.001v-45.384h247.307V306.001h45.384v247.307h247.307v45.384H502.692v247.307h-45.384Z" />
     </svg>
   );
-}
+};
 
 const CommunityPage = () => {
   const router = useRouter();
@@ -24,12 +25,26 @@ const CommunityPage = () => {
   const threadId = router.query.threadId as string;
   const [currentThread, setCurrentThread] = useState<string>(threadId);
   const [questionModal, setQuestionModal] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
-  const community = trpc.community.fetchCommunityUsingStreamId.useQuery({streamId: communityId});
+  const community = trpc.community.fetchCommunityUsingStreamId.useQuery({
+    streamId: communityId,
+  });
   const communityName = get(community, "data.value.node.communityName");
   const threads = trpc.public.fetchAllCommunityThreads.useQuery({
     communityId,
   });
+  //clean up function is getting called even when the component is mounted
+  //until i find any solution, below is the quick fix.
+  let mounted = false;
+  useEffect(() => {
+    return () => {
+      if(mounted){
+        dispatch(selectCommunity(null));
+      }
+      mounted = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (threadId) setCurrentThread(threadId);
@@ -46,20 +61,22 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="flex flex-row max-h-screen overflow-y-hidden">
-      <div className="w-[30%] mx-4 hidden md:block">
-        {communityName && <p className="text-4xl font-medium my-4">{communityName}</p>}
+    <div className="flex max-h-screen flex-row overflow-y-hidden">
+      <div className="mx-4 hidden w-[30%] md:block">
+        {communityName && (
+          <p className="my-4 text-4xl font-medium">{communityName}</p>
+        )}
         <FlexRow classes="gap-2">
-          <Search onQuery={() => {}}/>
+          <Search onQuery={() => {}} />
           <button
             title="ask a question"
-            className="rounded-xl h-[50px] min-w-[50px] border bg-white p-2 hover:border-gray-500"
+            className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
             onClick={() => setQuestionModal(true)}
           >
             <AddIcon />
           </button>
         </FlexRow>
-        <div className="scrollbar-hide flex h-screen flex-col mt-4 space-y-4 overflow-y-scroll pt-4">
+        <div className="scrollbar-hide mt-4 flex h-screen flex-col space-y-4 overflow-y-scroll pt-4">
           {threads.data &&
             threads.data.edges.map((thread) => (
               <Link
@@ -84,7 +101,7 @@ const CommunityPage = () => {
         title={"Ask Question"}
         open={questionModal}
         onClose={() => setQuestionModal(false)}
-        community={{communityName, communityId}}
+        community={{ communityName, communityId }}
       />
     </div>
   );
