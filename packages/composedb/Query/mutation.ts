@@ -2,7 +2,9 @@ import { ComposeClient } from "@composedb/client";
 import {
   CommentInput,
   CommunityDetails,
-  SocialPlatformInput, SocialThreadId,
+  SocialCommentId,
+  SocialPlatformInput,
+  SocialThreadId,
   ThreadInput,
   UserCommunityRelation,
   UserPlatformDetails,
@@ -295,6 +297,32 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
           id: streamId,
           content: {
             socialThreadIds: socialThread
+          },
+        },
+      });
+    },
+    updateCommentWithSocialCommentId: async function (
+      streamId: string,
+      socialCommentId: SocialCommentId,
+    ) {
+      const query = gql`
+       mutation UpdateComment($input: UpdateCommentInput!) {
+        updateComment(input: $input) {
+          document {
+            id
+            socialCommentIds {
+              commentId
+              platformName
+            }
+          }
+        }
+      }
+      `;
+      return await compose.executeQuery(query, {
+        input: {
+          id: streamId,
+          content: {
+            socialCommentIds: socialCommentId
           },
         },
       });

@@ -121,6 +121,11 @@ export interface SocialThreadId {
   threadId: string;
 }
 
+export interface SocialCommentId {
+  platformName: string;
+  commentId: string;
+}
+
 export interface UserFeedResponse {
   community: {
     threads: Edges<Thread>;
