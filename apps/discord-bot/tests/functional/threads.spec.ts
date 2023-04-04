@@ -28,4 +28,9 @@ describe("thread api", () => {
     const another = await chai.request(server).post(url).set(header).send({threadId: 123});
     expect(another.status).to.eql(400);
   });
+
+  it("should respond with 200 on thread creation", async () => {
+    const another = await chai.request(server).post(url).set(header).send({threadId: "123"});
+    expect(another.status).to.eql(200);
+  });
 });
