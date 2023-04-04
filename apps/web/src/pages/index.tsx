@@ -29,7 +29,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="container mx-auto">
-      <h1 className="m-4 text-4xl font-medium">discover</h1>
+      <h1 className="p-4 text-4xl font-medium">discover</h1>
       <div className="mx-4 max-w-[682px]">
         <Search label={"Search by name or tags"} onQuery={() => {}} />
       </div>
