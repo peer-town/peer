@@ -7,7 +7,7 @@ import { fetchUserDetails, useAppDispatch, useAppSelector } from "../../store";
 import { isRight } from "../../utils/fp";
 import { trpc, trpcProxy } from "../../utils/trpc";
 import * as utils from "../../utils";
-import { ConnectWalletButton } from "../Button";
+import { ConnectWalletButton } from "../Button/ConnectWallet";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { toast } from "react-toastify";
 
@@ -67,7 +67,7 @@ const UserOnboard = () => {
         else{
           setSocialInterfaces(false);
         }
-      } 
+      }
     };
     checkDiscordUser();
   }, [userPlatforms]);
