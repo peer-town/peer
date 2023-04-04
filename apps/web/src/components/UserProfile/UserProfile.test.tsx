@@ -1,5 +1,7 @@
 import { UserProfile } from './UserProfile';
 import {renderWithTrpc} from "../../../test/trpcWrapper";
+import {Provider} from "react-redux";
+import {store} from "../../store";
 
 const mockUser = {
   isLoading: false,
@@ -53,13 +55,17 @@ jest.mock('../../utils/trpc', () => ({
 }));
 
 describe('UserProfile', () => {
+  const renderComponent = (ui) => {
+    return renderWithTrpc(<Provider store={store}>{ui}</Provider>);
+  }
+
   it("should render the component with no issues", () => {
-    const result = renderWithTrpc(<UserProfile userStreamId={"sample-user-id"} />);
+    const result = renderComponent(<UserProfile userStreamId={"sample-user-id"} />);
     expect(result.container).toBeInTheDocument();
   });
 
   it("renders the user profile", async () => {
-    const { findByText } = renderWithTrpc(<UserProfile userStreamId="12345" />);
+    const { findByText } = renderComponent(<UserProfile userStreamId="12345" />);
     expect(await findByText('username')).toBeInTheDocument();
     expect(await findByText('community name')).toBeInTheDocument();
   });

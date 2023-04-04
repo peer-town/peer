@@ -51,12 +51,12 @@ export const commentRouter = router({
   fetchCommentsByThreadId: publicProcedure
     .input(z.object({
       threadId: z.string(),
-      last: z.number().min(1).max(100),
-      before: z.string().nullish(),
+      first: z.number().min(1).max(100),
+      after: z.string().nullish(),
     }))
     .query(async ({input}) => {
-      const {threadId, last, before} = input;
-      return await queryHandler.fetchCommentsByThreadId(threadId, last, before);
+      const {threadId, first, after} = input;
+      return await queryHandler.fetchCommentsByThreadId(threadId, first, after);
     }),
 });
 

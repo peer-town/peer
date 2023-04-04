@@ -4,10 +4,10 @@ import {Thread} from "../Thread";
 import {Comment} from "../Comment";
 import {useRef, useState} from "react";
 import {useAppSelector} from "../../store";
-import {reverse} from "lodash";
 import {toast} from "react-toastify";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
+import {Loader} from "../Loader";
 
 const SendIcon = () => {
   return (
@@ -30,10 +30,10 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const createComment = trpc.comment.createComment.useMutation();
   const comments = trpc.comment.fetchCommentsByThreadId.useQuery({
-    threadId, last: 20, before: undefined
+    threadId, first: 20, after: undefined
   });
   if (currentThread.isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   const handleOnCommentSubmit = async () => {
@@ -59,7 +59,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     if (isRight(result)) {
       setComment("");
       toast.success("Comment posted successfully!");
-      await currentThread.refetch();
+      await comments.refetch();
     } else {
       toast.error("Failed to post message. Try again in a while!");
     }
@@ -67,10 +67,10 @@ export const ThreadSection = (props: ThreadSectionProps) => {
 
   return (
     <div className="flex flex-col h-screen p-4">
-      <div className="overflow-y-scroll py-4 scrollbar-hide">
+      <div className="overflow-y-scroll h-screen py-4 scrollbar-hide">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px]">
-          {comments.data && reverse([...comments.data.edges]).map((item) => (
+          {comments.data && comments.data.edges.map((item) => (
             <Comment key={item.node.id} comment={item.node}/>
           ))}
         </div>

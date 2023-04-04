@@ -23,10 +23,6 @@ const ThreadInformation = (props: { comments }) => {
                 return (
                   <AvatarCard
                     key={index}
-                    href={{
-                      pathname: address ? `/[id]/profile` : `/`,
-                      query: {id: address},
-                    }}
                     image={image}
                     imageSize={28}
                     name={name}

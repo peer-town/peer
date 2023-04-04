@@ -8,6 +8,25 @@ import {constants} from "../../config";
 import {getDiscordAuthUrl} from "../../utils";
 import Image from "next/image";
 import {SecondaryButton} from "../Button/SecondaryButton";
+import {Loader} from "../Loader";
+import {clearUserProfile, useAppDispatch} from "../../store";
+
+const CloseIcon = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+      className="h-6 w-6 text-gray-500 hover:text-black">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  );
+}
 
 export const UserProfile = (props: UserProfileProps) => {
   const [profile, setProfile] = useState<any>();
@@ -18,6 +37,7 @@ export const UserProfile = (props: UserProfileProps) => {
     {tag: "polygon", points: 13},
   ];
 
+  const dispatch = useAppDispatch();
   const user = trpc.user.getUserByStreamId.useQuery({streamId: props.userStreamId});
   const communities = trpc.user.getUserCommunities.useQuery({streamId: props.userStreamId});
 
@@ -34,8 +54,8 @@ export const UserProfile = (props: UserProfileProps) => {
     }
   }, [user]);
 
-  if (!profile) {
-    return <p>Loading...</p>;
+  if (!profile || user.isLoading) {
+    return <Loader/>;
   }
 
   const connectDiscord = () => {
@@ -45,9 +65,15 @@ export const UserProfile = (props: UserProfileProps) => {
   return (
     <div className="w-full max-w-sm h-screen scrollbar-hide overflow-y-scroll">
       {/* user profile */}
+      <button
+        className="p-4"
+        onClick={() => dispatch(clearUserProfile())}
+      >
+        <CloseIcon />
+      </button>
       <div className="flex flex-col items-center my-12">
         <Image
-          className={"rounded-2xl"}
+          className={"rounded-2xl border"}
           src={profile.platformAvatar}
           alt={`profile ${profile.platformUsername}`}
           width={126}

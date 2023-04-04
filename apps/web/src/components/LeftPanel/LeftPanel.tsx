@@ -39,7 +39,9 @@ const LeftPanel = (props: LeftPanelProp) => {
           name={"Your Feed"}
           image={"/feed.png"}
           selected={false}
-          onClick={() => {}}
+          onClick={() => {
+            router.push("/feed");
+          }}
         />
       </div>
       <div  className={` relative z-0 w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}>
