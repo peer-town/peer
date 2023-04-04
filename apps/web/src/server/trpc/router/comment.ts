@@ -4,7 +4,7 @@ import {definition, composeMutationHandler, composeQueryHandler } from "@devnode
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
-import {omit, get} from "lodash";
+import {has, omit, get} from "lodash";
 import {DIDSession} from "did-session";
 import {SocialCommentId} from "../../types";
 
