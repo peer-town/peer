@@ -50,7 +50,9 @@ export const userRouter = router({
     .input(z.object({ streamId: z.string() }))
     .query(async ({ input }) => {
       try {
-        const response = await composeQueryHandler().fetchUserByStreamId(input.streamId);
+        const response = await composeQueryHandler().fetchUserByStreamId(
+          input.streamId
+        );
         return response && response.node ? right(response.node) : right({});
       } catch (e) {
         return left(e);
@@ -100,27 +102,43 @@ export const userRouter = router({
             input.address,
             input.platform
           );
-        return platformDiscord
-          ? right(platformDiscord)
-          : right({});
+        return platformDiscord ? right(platformDiscord) : right({});
       } catch (e) {
         return left(e);
       }
     }),
 
   getUserCommunities: publicProcedure
-    .input(z.object({ streamId: z.string() }))
+    .input(
+      z.object({
+        streamId: z.string(),
+        first: z.number().min(1).max(100),
+        after: z.string().nullish(),
+      })
+    )
     .query(async ({ input }) => {
-        return await composeQueryHandler().fetchUserCommunities(input.streamId);
+      const { streamId, first, after } = input;
+      return await composeQueryHandler().fetchUserCommunities(
+        streamId,
+        first,
+        after
+      );
     }),
 
   getUserFeed: publicProcedure
-    .input(z.object({
-      userStreamId: z.string(),
-      communityCount: z.number().nullish(),
-      threadCount: z.number().nullish(),
-    })).query(async ({input}) => {
-      const {userStreamId, communityCount, threadCount} = input;
-      return await composeQueryHandler().fetchFeedThreads(userStreamId, communityCount, threadCount);
+    .input(
+      z.object({
+        userStreamId: z.string(),
+        communityCount: z.number().nullish(),
+        threadCount: z.number().nullish(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { userStreamId, communityCount, threadCount } = input;
+      return await composeQueryHandler().fetchFeedThreads(
+        userStreamId,
+        communityCount,
+        threadCount
+      );
     }),
 });

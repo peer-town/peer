@@ -120,7 +120,7 @@ const Layout = (props) => {
     const response = await createSocialPlatform.mutateAsync({
       session: didSession,
       socialPlatform: {
-        platformId: details.id,
+        platformId: details.communityStreamId,
         platform: constants.PLATFORM_DISCORD_NAME,
         communityName: details.name,
         userId: communityAndUserDetails.user.id,
@@ -173,7 +173,7 @@ const Layout = (props) => {
       dispatch(selectCommunity(communityDetails));
       communities.refetch();
       
-      await updateCommunityDetailsWithDiscord({...communityDiscordDetails, id:communityDetails.selectedCommunity});
+      await updateCommunityDetailsWithDiscord({...communityDiscordDetails, communityStreamId:communityDetails.selectedCommunity});
     }
   };
 
