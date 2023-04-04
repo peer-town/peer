@@ -16,9 +16,9 @@ export interface CreateThreadProps {
     title:string,
     open:boolean,
     onClose():void
-    did:string,
-    user:CompleteUserState,
-    community:CommunityState,
-    didSession:string,
-    refetch():void,
+    community: {
+        communityName: string;
+        communityId: string;
+    },
+    onComplete():void,
 }

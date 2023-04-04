@@ -1,13 +1,14 @@
 import {useState} from "react";
-import {SecondaryButton} from "../Button/SecondaryButton";
 import Question from "../Modal/Question/Question";
 import * as utils from "../../utils";
 import {has, isEmpty} from "lodash";
 import {toast} from "react-toastify";
 import {trpc} from "../../utils/trpc";
-import {config, constants} from "../../config";
+import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
 import {CreateThreadProps} from "./type";
+import {useAppSelector} from "../../store";
+import {PrimaryButton} from "../Button";
 
 const CreateThread = (props: CreateThreadProps) => {
   const [question, setQuestion] = useState<string>("");
@@ -16,10 +17,8 @@ const CreateThread = (props: CreateThreadProps) => {
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
-  const {user, community, did, didSession, refetch} = props;
-  const userName = user.userPlatforms && user.userPlatforms[0].platformUsername;
-  const communityName = community.communityName;
-  const communityId = community.selectedCommunity;
+  const user = useAppSelector((state) => state.user);
+  const {communityId, communityName} = props.community;
 
   const createThread = trpc.thread.createThread.useMutation();
 
@@ -53,7 +52,7 @@ const CreateThread = (props: CreateThreadProps) => {
       return;
     }
 
-    if (!has(user, "id") || !didSession) {
+    if (!has(user, "id") || !has(user, "didSession")) {
       toast.error("Please re-connect with your wallet!");
       return;
     }
@@ -64,24 +63,21 @@ const CreateThread = (props: CreateThreadProps) => {
     }
 
     setCreatingThread(true);
-
     const result = await createThread
       .mutateAsync({
-        session: didSession,
+        session: user.didSession,
         communityId: communityId,
         userId: user.id,
-        threadId: "null", //social id
         title: question,
         body: description,
         createdFrom: constants.CREATED_FROM_DEVNODE,
         createdAt: new Date().toISOString(),
-      })
-
+      });
     if (isRight(result)) {
       setQuestion("");
       setDescription("");
       toast.success("Thread created successfully!");
-      refetch();
+      props.onComplete();
     } else {
       toast.error("Failed to create thread. Try again in a while!");
     }
@@ -116,35 +112,14 @@ const CreateThread = (props: CreateThreadProps) => {
         />
         <div
           className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
-          <div className="flex w-full flex-row items-center justify-center ">
-            <div className="w-1/4 whitespace-normal break-all p-2 font-bold">
-              User name
+            <div className="w-full whitespace-normal break-all p-2">
+              Posting on <span className="font-bold">{communityName}</span>
             </div>
-            <div className="w-3/4 whitespace-normal break-all p-2 text-gray-700">
-              {userName}{" "}
-            </div>
-          </div>
-          <div className="flex w-full flex-row items-center justify-center">
-            <div className="w-1/4 whitespace-normal break-all p-2 font-bold">
-              Community name{" "}
-            </div>
-            <div className="w-3/4 whitespace-normal break-all p-2 text-gray-700">
-              {communityName}
-            </div>
-          </div>
-          <div className="flex w-full flex-row items-center justify-center">
-            <div className="w-1/4 whitespace-normal break-all p-2 font-bold">
-              Posting as{" "}
-            </div>
-            <div className="w-3/4 whitespace-normal break-all p-2 text-gray-700">
-              {did}
-            </div>
-          </div>
         </div>
-        <SecondaryButton
-          classes={"m-auto mt-4 w-full justify-center"}
+        <PrimaryButton
+          classes={"w-full mt-4"}
           loading={creatingThread}
-          title={creatingThread ? "Creating..." : "Create Thread"}
+          title={creatingThread ? "Posting..." : "Post Thread"}
           onClick={handleSubmit}
         />
       </div>

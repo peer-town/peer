@@ -40,8 +40,6 @@ const Home: NextPage = () => {
             return (
               page &&
               page.edges.map((community, index) => {
-                const about =
-                  " this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting";
                 return (
                   <Link
                     key={index}
@@ -53,7 +51,7 @@ const Home: NextPage = () => {
                     <CommunityCard
                       key={index}
                       communityName={community.node.communityName}
-                      about={about}
+                      about={community.node.description}
                       communityAvatar={
                         community.node.socialPlatforms.edges[0].node
                           .communityAvatar
