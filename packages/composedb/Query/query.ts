@@ -1,5 +1,14 @@
-import {gql, GraphQLClient} from "graphql-request";
-import {Comment, Communities, Community, Node, PageResponse, Thread, User, UserFeedResponse} from "./type";
+import { gql, GraphQLClient } from "graphql-request";
+import {
+  Comment,
+  Communities,
+  Community,
+  Node,
+  PageResponse,
+  Thread,
+  User,
+  UserFeedResponse,
+} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -380,7 +389,7 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, {id: threadId});
+      return await client.request(query, { id: threadId });
     },
     fetchCommentDetails: async function (commentId: string) {
       const query = gql`
@@ -450,7 +459,7 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, {id: commentId});
+      return await client.request(query, { id: commentId });
     },
     fetchCommunityDetails: async function (communityId: string) {
       const query = gql`
@@ -505,7 +514,7 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, {id: communityId});
+      return await client.request(query, { id: communityId });
     },
     fetchSocialPlatform: async function (platformId: string) {
       const allSocialPlatforms = await this.fetchAllSocialPlatforms();
@@ -573,72 +582,81 @@ export const composeQueryHandler = () => {
         );
       });
     },
-    fetchCommunities: async (first: number, after?: string): Promise<Communities> => {
+    fetchCommunities: async (
+      first: number,
+      after?: string
+    ): Promise<Communities> => {
       const query = gql`
-      query($first: Int!, $after: String!) {
-        communityIndex(first: $first, after: $after) {
-          pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              communityName
-              createdAt
-              socialPlatforms(first: 5) {
-                edges {
-                  node {
-                    id
-                    platform
-                    platformId
-                    communityName
-                    communityAvatar
+        query ($first: Int!, $after: String!) {
+          communityIndex(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            edges {
+              node {
+                id
+                communityName
+                createdAt
+                socialPlatforms(first: 5) {
+                  edges {
+                    node {
+                      id
+                      platform
+                      platformId
+                      communityName
+                      communityAvatar
+                    }
                   }
                 }
               }
             }
           }
         }
-      }`;
+      `;
       const response = await client.request(query, {
         first: first,
         after: after || "",
       });
       return response.communityIndex;
     },
-    fetchCommentsByThreadId: async (threadId: string, first: number, after?: string): Promise<PageResponse<Comment>> => {
+    fetchCommentsByThreadId: async (
+      threadId: string,
+      first: number,
+      after?: string
+    ): Promise<PageResponse<Comment>> => {
       const query = gql`
-      query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
-        node(id: $id) {
-          ... on Thread {
-            comments(first: $first, after: $after) {
+        query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
+          node(id: $id) {
+            ... on Thread {
+              comments(first: $first, after: $after) {
                 pageInfo {
-                hasNextPage
-                hasPreviousPage
-                startCursor
-                endCursor
-              }
-              edges {
-                node {
-                  id
-                  text
-                  userId
-                  threadId
-                  createdAt
-                  user {
+                  hasNextPage
+                  hasPreviousPage
+                  startCursor
+                  endCursor
+                }
+                edges {
+                  node {
                     id
-                    walletAddress
-                    author {
+                    text
+                    userId
+                    threadId
+                    createdAt
+                    user {
                       id
-                    }
-                    userPlatforms {
-                      platformId
-                      platformName
-                      platformAvatar
-                      platformUsername
+                      walletAddress
+                      author {
+                        id
+                      }
+                      userPlatforms {
+                        platformId
+                        platformName
+                        platformAvatar
+                        platformUsername
+                      }
                     }
                   }
                 }
@@ -646,8 +664,7 @@ export const composeQueryHandler = () => {
             }
           }
         }
-      }
-    `;
+      `;
       const response = await client.request(query, {
         id: threadId,
         first: first,
@@ -657,51 +674,58 @@ export const composeQueryHandler = () => {
     },
     fetchUserByStreamId: async (id: string): Promise<Node<User>> => {
       const query = gql`
-      query UserByStream($id: ID!) {
-        node(id: $id) {
-          ... on User {
-            id
-            createdAt
-            walletAddress
-            userPlatforms {
-              platformId
-              platformName
-              platformAvatar
-              platformUsername
-            }
-            author {
+        query UserByStream($id: ID!) {
+          node(id: $id) {
+            ... on User {
               id
+              createdAt
+              walletAddress
+              userPlatforms {
+                platformId
+                platformName
+                platformAvatar
+                platformUsername
+              }
+              author {
+                id
+              }
             }
           }
         }
-      }`;
+      `;
       return await client.request(query, { id });
     },
     // todo: update to new query
-    fetchUserCommunities: async(id: string, first?: number, after?: string): Promise<Communities> => {
+    fetchUserCommunities: async (
+      id: string,
+      first?: number,
+      after?: string
+    ): Promise<Communities> => {
       const query = gql`
-      query UserCommunities($id: ID!, $first: Int!, $after: String!) {
-        node(id: $id) {
-          ...on User {
-            author {
-              communityList(first: $first, after: $after) {
-                pageInfo {
-                  startCursor
-                  endCursor
-                  hasNextPage
-                  hasPreviousPage
-                }
-                edges {
-                  node {
-                    id
-                    communityName
-                    socialPlatforms (first:10) {
-                      edges {
-                        node {
-                          platform
-                          platformId
-                          communityName
-                          communityAvatar
+        query UserCommunities($id: ID!, $first: Int!, $after: String!) {
+          node(id: $id) {
+            ... on User {
+              author {
+                userCommunityList(first: $first, after: $after) {
+                  pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                    hasPreviousPage
+                  }
+                  edges {
+                    node {
+                      id
+                      communityName
+                      description
+                      socialPlatforms(first: 10) {
+                        edges {
+                          node {
+                            platform
+                            platformId
+                            communityName
+                            communityAvatar
+                          }
                         }
                       }
                     }
@@ -711,16 +735,19 @@ export const composeQueryHandler = () => {
             }
           }
         }
-      }
       `;
       const response = await client.request(query, {
         id: id,
         first: first || 20,
         after: after || "",
       });
-      return response?.node?.author?.communityList;
+      return response?.node?.author?.userCommunityList;
     },
-    fetchFeedThreads: async(userStreamId: string, communityCount?: number, threadCount?: number): Promise<PageResponse<UserFeedResponse>> => {
+    fetchFeedThreads: async (
+      userStreamId: string,
+      communityCount?: number,
+      threadCount?: number
+    ): Promise<PageResponse<UserFeedResponse>> => {
       const query = `
       query ($id: ID!, $communityCount: Int!, $threadCount: Int!) {
         node(id: $id) {
@@ -774,4 +801,3 @@ export const composeQueryHandler = () => {
     },
   };
 };
-
