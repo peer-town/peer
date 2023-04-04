@@ -1,21 +1,19 @@
 import chai, {expect} from "../setup";
 import {initServer} from "../../src/core";
-import {Express} from "express";
+import * as sinon from "sinon";
 import {fakeComposeClient, fakeComposeQueryClient, fakeDiscordClient} from "../mock/fakes";
 import {config} from "../../src/config";
 
 describe("thread api", () => {
-  let server: Express;
   const url = "/api/web-thread";
   const header = {'x-api-key': config.server.apiKey};
-
-  before(() => {
-    server = initServer({
-      discord: fakeDiscordClient,
-      compose: fakeComposeClient,
-      composeQuery: fakeComposeQueryClient,
-    });
+  const server = initServer({
+    discord: fakeDiscordClient,
+    compose: fakeComposeClient,
+    composeQuery: fakeComposeQueryClient,
   });
+
+  beforeEach(() => sinon.restore());
 
   it("should authenticate the api call", async () => {
     const res = await chai.request(server).post(url);

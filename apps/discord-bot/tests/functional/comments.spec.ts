@@ -2,7 +2,6 @@ import chai, {expect} from "../setup";
 import {initServer} from "../../src/core";
 import {config, constants} from "../../src/config";
 import * as sinon from "sinon";
-import {beforeEach} from "node:test";
 import {fakeComposeClient, fakeComposeQueryClient, fakeDiscordClient, sendStub} from "../mock/fakes";
 
 describe("comment api", () => {
