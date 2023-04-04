@@ -22,10 +22,14 @@ export const publicRouter = router({
     }),
 
   fetchAllCommunityThreads: publicProcedure
-    .input(z.object({communityId: z.string()}))
+    .input(z.object({
+      communityId: z.string(),
+      first: z.number().nullish(),
+      after: z.string().nullish(),
+    }))
     .query(async ({input}) => {
-      if (!input.communityId) return [];
-      return await queryHandler.fetchAllCommunityThreads(input.communityId);
+      const {first, after, communityId} = input;
+      return await queryHandler.fetchAllCommunityThreads(communityId, first, after);
     }),
 
   fetchThreadDetails: publicProcedure

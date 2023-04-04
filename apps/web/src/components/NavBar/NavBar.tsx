@@ -6,13 +6,14 @@ import { trpc, trpcProxy } from "../../utils/trpc";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { ConnectWalletButton, PrimaryButton } from "../Button";
+import { PrimaryButton } from "../Button";
 import * as utils from "../../utils";
 import { isRight } from "../../utils/fp";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import { has, get, isEmpty, isNil } from "lodash";
 import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
+import {ConnectWalletButton} from "../Button/ConnectWallet";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 

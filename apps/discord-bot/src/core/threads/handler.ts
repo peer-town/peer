@@ -16,7 +16,11 @@ export const postThread = async (clients: Clients, req: Request, res: Response) 
 
     if (communityHasSocial(socials, constants.PLATFORM_DISCORD_NAME)) {
       const threadId = await postThreadToDiscord(clients, thread);
-      return Resp.okD(res, {threadId}, "Created thread on socials");
+      const response = [{
+          platformName: constants.PLATFORM_DISCORD_NAME,
+          threadId: threadId,
+      }];
+      return Resp.okD(res, response, "Created thread on socials");
     } else {
       return Resp.notOk(res, "No discord for this community, bailing out!");
     }

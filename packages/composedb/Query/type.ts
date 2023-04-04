@@ -19,7 +19,6 @@ export type ThreadInput = {
   body: string;
   createdFrom: string;
   createdAt: string;
-  threadId: string;
 };
 export type CommentInput = {
   threadId: string;
@@ -115,6 +114,11 @@ export interface Comment {
   author: {
     id: string;
   };
+}
+
+export interface SocialThreadId {
+  platformName: string;
+  threadId: string;
 }
 
 export interface UserFeedResponse {

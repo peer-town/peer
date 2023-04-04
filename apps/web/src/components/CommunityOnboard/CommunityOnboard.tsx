@@ -120,11 +120,11 @@ const Layout = (props) => {
     const response = await createSocialPlatform.mutateAsync({
       session: didSession,
       socialPlatform: {
-        platformId: details.communityStreamId,
+        platformId: details.id,
         platform: constants.PLATFORM_DISCORD_NAME,
         communityName: details.name,
         userId: communityAndUserDetails.user.id,
-        communityId: details.id,
+        communityId: details.communityStreamId,
         communityAvatar: details.icon,
       },
     });
@@ -133,7 +133,7 @@ const Layout = (props) => {
       toast.success("Updated community with discord info!");
     }
     else{
-      toast.success("could not create social platform");
+      toast.error("Could not create social platform");
     }
     setCommunityOnboarding(false);
   };
@@ -172,7 +172,7 @@ const Layout = (props) => {
       };
       dispatch(selectCommunity(communityDetails));
       communities.refetch();
-      
+
       await updateCommunityDetailsWithDiscord({...communityDiscordDetails, communityStreamId:communityDetails.selectedCommunity});
     }
   };
