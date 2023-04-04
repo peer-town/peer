@@ -1,4 +1,4 @@
-import {ReactElement} from "react";
+import { ReactElement } from "react";
 
 interface WebOnBoardData {
   name: string;
@@ -6,6 +6,7 @@ interface WebOnBoardData {
 }
 
 interface CommunityOnBoardData extends WebOnBoardData {
+  description: string;
   tags: string;
 }
 
@@ -16,8 +17,8 @@ export interface ModalProps {
   children?: ReactElement;
 }
 
-export interface InterfaceModelProps extends ModalProps{
-  type: "user" | "community"
+export interface InterfaceModelProps extends ModalProps {
+  type: "user" | "community";
 }
 export interface BaseModalProps extends ModalProps {
   title: string;
@@ -32,4 +33,3 @@ export interface WebOnBoardProps extends ModalProps {
 export interface CommunityOnBoardProps extends ModalProps {
   onSubmit(data: CommunityOnBoardData): void;
 }
-

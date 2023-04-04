@@ -43,10 +43,13 @@ const Home: NextPage = () => {
                 const about =
                   " this is huge text and cannot fit in a regular div and looks not so awesome event with text overflow flags its disgusting";
                 return (
-                  <Link key={index} href={{
-                    pathname: "/community",
-                    query: { communityId: community.node.id },
-                  }}>
+                  <Link
+                    key={index}
+                    href={{
+                      pathname: "/community",
+                      query: { communityId: community.node.id },
+                    }}
+                  >
                     <CommunityCard
                       key={index}
                       communityName={community.node.communityName}

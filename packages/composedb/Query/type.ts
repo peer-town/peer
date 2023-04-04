@@ -147,3 +147,13 @@ export interface Communities {
   pageInfo: PageInfo;
   edges: Node<Community>[];
 }
+
+export interface CommunityDetails {
+  communityName: string;
+  description: string;
+}
+
+export interface UserCommunityRelation {
+  userId: string;
+  communityId: string;
+}
