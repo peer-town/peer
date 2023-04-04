@@ -715,16 +715,18 @@ export const composeQueryHandler = () => {
                   }
                   edges {
                     node {
-                      id
-                      communityName
-                      description
-                      socialPlatforms(first: 10) {
-                        edges {
-                          node {
-                            platform
-                            platformId
-                            communityName
-                            communityAvatar
+                      community {
+                        id
+                        communityName
+                        description
+                        socialPlatforms(first: 10) {
+                          edges {
+                            node {
+                              platform
+                              platformId
+                              communityName
+                              communityAvatar
+                            }
                           }
                         }
                       }
