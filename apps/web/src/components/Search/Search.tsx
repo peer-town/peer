@@ -29,7 +29,7 @@ export const Search = (props: SearchProps) => {
           <input
             id="search"
             name="search"
-            className={`block h-[${props.barHeight || 50}px] w-full rounded-xl border bg-white py-2 pl-12 pr-3 text-sm placeholder-gray-500 hover:border-black focus:border-black focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black sm:text-sm`}
+            className={`block h-[${props.barHeight || 50}px] w-full rounded-xl border bg-white py-2 pl-12 pr-3 text-sm placeholder-gray-500 hover:border-gray-800 focus:border-gray-800 focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black sm:text-sm`}
             placeholder={props.label || "Search"}
             type="search"
             onChange={(e) => {

@@ -1,5 +1,5 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {Comment, Communities, Community, Node, PageResponse, Thread, User} from "./type";
+import {Comment, Communities, Community, Node, PageResponse, Thread, User, UserFeedResponse} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -609,12 +609,12 @@ export const composeQueryHandler = () => {
       });
       return response.communityIndex;
     },
-    fetchCommentsByThreadId: async (threadId: string, last: number, before?: string): Promise<PageResponse<Comment>> => {
+    fetchCommentsByThreadId: async (threadId: string, first: number, after?: string): Promise<PageResponse<Comment>> => {
       const query = gql`
-      query CommentsByThread($id: ID!, $last: Int!, $before: String!) {
+      query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
         node(id: $id) {
           ... on Thread {
-            comments(last: $last, before: $before) {
+            comments(first: $first, after: $after) {
                 pageInfo {
                 hasNextPage
                 hasPreviousPage
@@ -650,8 +650,8 @@ export const composeQueryHandler = () => {
     `;
       const response = await client.request(query, {
         id: threadId,
-        last: last,
-        before: before || "",
+        first: first,
+        after: after || "",
       });
       return response?.node?.comments;
     },
@@ -719,6 +719,58 @@ export const composeQueryHandler = () => {
         after: after || "",
       });
       return response?.node?.author?.communityList;
+    },
+    fetchFeedThreads: async(userStreamId: string, communityCount?: number, threadCount?: number): Promise<PageResponse<UserFeedResponse>> => {
+      const query = `
+      query ($id: ID!, $communityCount: Int!, $threadCount: Int!) {
+        node(id: $id) {
+          ... on User {
+          communities(first: $communityCount) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            edges {
+              node {
+                community {
+                  threads(first: $threadCount) {
+                    edges {
+                      node {
+                        id
+                        title
+                        body
+                        userId
+                        createdAt
+                        communityId
+                        user {
+                          id
+                          walletAddress
+                          userPlatforms {
+                            platformId
+                            platformName
+                            platformAvatar
+                            platformUsername
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+      `;
+      const response = await client.request(query, {
+        id: userStreamId,
+        communityCount: communityCount || 10,
+        threadCount: threadCount || 10,
+      });
+      return response?.node?.communities;
     },
   };
 };

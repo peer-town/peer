@@ -20,8 +20,5 @@ const config = {
       },
     ],
   },
-  experimental: {
-    esmExternals: 'loose' // second add this experimental flag to the config
-  }
 };
 export default config;
