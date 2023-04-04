@@ -161,3 +161,6 @@ export interface UserCommunityRelation {
   userId: string;
   communityId: string;
 }
+export interface UserCommunities {
+  edges: Node<Community>[];
+}

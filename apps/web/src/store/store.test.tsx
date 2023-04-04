@@ -1,20 +1,29 @@
-import communityReducer, {communitySlice, selectCommunity} from "./features/community";
-import {loadFromLocalStorage, saveToLocalStorage} from "./storage";
-import {store} from "./store";
-import {useAppDispatch, useAppSelector} from "./hooks";
-import {useEffect} from "react";
-import {fireEvent, screen, render} from "@testing-library/react";
-import {Provider} from "react-redux";
+import communityReducer, {
+  communitySlice,
+  selectCommunity,
+} from "./features/community";
+import { loadFromLocalStorage, saveToLocalStorage } from "./storage";
+import { store } from "./store";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { useEffect } from "react";
+import { fireEvent, screen, render } from "@testing-library/react";
+import { Provider } from "react-redux";
 
-const SampleComponent = (props: { onChange(value): void, value: string }) => {
-  const communityId = useAppSelector(state => state.community.selectedCommunity);
+const SampleComponent = (props: { onChange(value): void; value: string }) => {
+  const communityId = useAppSelector(
+    (state) => state.community.selectedCommunity
+  );
   const dispatch = useAppDispatch();
   useEffect(() => props.onChange(communityId), [props, communityId]);
-  const handleClick = () => dispatch(selectCommunity({
-    selectedCommunity: props.value,
-    communityAvatar: "",
-    communityName: "",
-  }));
+  const handleClick = () =>
+    dispatch(
+      selectCommunity({
+        selectedCommunity: props.value,
+        communityAvatar: "",
+        communityName: "",
+        description: "",
+      })
+    );
   return <button onClick={handleClick}>Click me</button>;
 };
 
@@ -23,13 +32,14 @@ describe("redux.community", () => {
   const value = "sample";
   const renderComponent = (component) => {
     render(<Provider store={store}>{component}</Provider>);
-  }
+  };
 
   it("should return initial state", () => {
     const state = {
       selectedCommunity: "new",
       communityAvatar: "",
       communityName: "",
+      description: "",
     };
     const result = communityReducer(undefined, selectCommunity(state));
     expect(result).toEqual(state);
@@ -68,7 +78,7 @@ describe("redux.storage", () => {
   });
 
   it("should handle when window is not available", () => {
-    Object.defineProperty(global, 'window',{});
+    Object.defineProperty(global, "window", {});
     saveToLocalStorage("test");
     expect(loadFromLocalStorage()).toEqual(undefined);
   });
