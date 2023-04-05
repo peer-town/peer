@@ -77,5 +77,6 @@ export const postComment = async (client: Client, payload: PostCommentToSocialPa
     throw new Error("unknown server or thread!");
   }
 
-  return await thread.send(buildMessage({...payload, body: payload.text}));
+  const message = await thread.send(buildMessage({...payload, body: payload.text}));
+  return message.id;
 };

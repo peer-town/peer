@@ -431,7 +431,10 @@ export const composeQueryHandler = () => {
                 id
                 title
                 userId
-                threadId
+                socialThreadIds {
+                  platformName
+                  threadId
+                }
                 createdAt
                 community {
                   socialPlatforms(first: 10) {
@@ -447,20 +450,6 @@ export const composeQueryHandler = () => {
                 createdFrom
                 author {
                   id
-                }
-                user {
-                  id
-                  walletAddress
-                  author {
-                    id
-                  }
-                  userPlatforms {
-                    platformId
-                    platformName
-                    platformAvatar
-                    platformUsername
-                  }
-                  createdAt
                 }
               }
               author {

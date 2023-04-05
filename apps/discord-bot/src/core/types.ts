@@ -37,7 +37,7 @@ export interface Thread {
   title: string;
   body: string;
   userId: string;
-  threadId: string;
+  socialThreadIds: SocialThreadId[];
   createdAt: string;
   community: Community;
   communityId: string;
@@ -89,4 +89,9 @@ export interface PostThreadToSocialPayload {
   userProfileLink: string;
   threadStreamId: string;
   serverId: string;
+}
+
+export interface SocialThreadId {
+  platformName: string;
+  threadId: string;
 }
