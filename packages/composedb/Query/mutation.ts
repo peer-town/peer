@@ -2,7 +2,9 @@ import { ComposeClient } from "@composedb/client";
 import {
   CommentInput,
   CommunityDetails,
-  SocialPlatformInput, SocialThreadId,
+  SocialCommentId,
+  SocialPlatformInput,
+  SocialThreadId,
   ThreadInput,
   UserCommunityRelation,
   UserPlatformDetails,
@@ -156,6 +158,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
         body,
         createdFrom,
         createdAt,
+        socialThreadIds,
       } = threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
@@ -184,7 +187,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
               userId: userId, //streamId of User
               title: title,
               body: body,
-              socialThreadIds: [],
+              socialThreadIds: socialThreadIds || [],
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
             },
@@ -193,7 +196,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
       );
     },
     createComment: function (commentInput: CommentInput) {
-      const { threadId, userId, comment, createdFrom, createdAt } =
+      const { threadId, userId, comment, createdFrom, createdAt, socialCommentIds } =
         commentInput;
 
       return compose.executeQuery<{
@@ -223,7 +226,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
               text: comment, //comment text
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
-              socialCommentIds: [],
+              socialCommentIds: socialCommentIds || [],
             },
           },
         }
@@ -295,6 +298,32 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
           id: streamId,
           content: {
             socialThreadIds: socialThread
+          },
+        },
+      });
+    },
+    updateCommentWithSocialCommentId: async function (
+      streamId: string,
+      socialCommentId: SocialCommentId,
+    ) {
+      const query = gql`
+       mutation UpdateComment($input: UpdateCommentInput!) {
+        updateComment(input: $input) {
+          document {
+            id
+            socialCommentIds {
+              commentId
+              platformName
+            }
+          }
+        }
+      }
+      `;
+      return await compose.executeQuery(query, {
+        input: {
+          id: streamId,
+          content: {
+            socialCommentIds: socialCommentId
           },
         },
       });

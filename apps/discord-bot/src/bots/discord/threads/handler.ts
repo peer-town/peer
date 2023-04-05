@@ -2,17 +2,16 @@ import {AnyThreadChannel, ChannelType, TextChannel} from "discord.js";
 import {Clients, Node, PostThreadToSocialPayload, User} from "../../../core/types";
 import {config, constants, getBotDid} from "../../../config";
 import {buildMessage, buildThread} from "../utils";
-import {composeMutationHandler, composeQueryHandler} from "@devnode/composedb";
+import {composeMutationHandler} from "@devnode/composedb";
 import {logger} from "../../../core/utils/logger";
-import {ComposeClient} from "@composedb/client";
 
-export const handleNewThread = async (compose: ComposeClient, thread: AnyThreadChannel<boolean>) => {
+export const handleNewThread = async (clients: Clients, thread: AnyThreadChannel<boolean>) => {
   const threadOwner = await thread.fetchOwner();
   if (!threadOwner || !threadOwner.user || threadOwner.user.bot) return; //We ignore bots
   if (thread.type !== ChannelType.PublicThread) return;//We only care about public threads
   if (thread.parent?.name !== config.discord.channel) return;//We only care about threads in our channel
 
-  const queryHandler = composeQueryHandler();
+  const queryHandler = clients.composeQuery();
   const user: Node<User> = await queryHandler.fetchUserByPlatformDetails(constants.PLATFORM_DISCORD_NAME, threadOwner.user.id);
   if (!user) {
     await thread.delete().catch((e) => logger.error('discord', {e}));
@@ -20,8 +19,8 @@ export const handleNewThread = async (compose: ComposeClient, thread: AnyThreadC
     return;
   }
 
-  compose.setDID(await getBotDid());
-  const mutation = await composeMutationHandler(compose);
+  clients.compose.setDID(await getBotDid());
+  const mutation = await composeMutationHandler(clients.compose);
   const community = await queryHandler.fetchCommunityUsingPlatformId(thread.guildId);
   if (!community) {
     await thread.delete().catch((e) => logger.error('discord', {e}));
@@ -29,17 +28,19 @@ export const handleNewThread = async (compose: ComposeClient, thread: AnyThreadC
     return;
   }
 
-  const threadPayload = {
+  const result = await mutation.createThread({
     communityId: community.node.id,
     userId: user.node.id,
-    threadId: thread.id,
+    socialThreadIds: [{
+      threadId: thread.id,
+      platformName: constants.PLATFORM_DISCORD_NAME,
+    }],
     title: thread.name,
     body: thread.lastMessage?.content || "  ",
     createdFrom: constants.PLATFORM_DISCORD_NAME,
     createdAt: thread.createdAt?.toISOString() || new Date().toISOString(),
-  }
+  });
 
-  const result = await mutation.createThread(threadPayload);
   if(result.errors && result.errors.length > 0) {
     logger.error('discord', {e: result.errors});
     await thread.delete().catch((e) => logger.error('discord', {e}));

@@ -19,6 +19,7 @@ export type ThreadInput = {
   body: string;
   createdFrom: string;
   createdAt: string;
+  socialThreadIds?: SocialThreadId[];
 };
 export type CommentInput = {
   threadId: string;
@@ -26,6 +27,7 @@ export type CommentInput = {
   comment: string;
   createdFrom: string;
   createdAt: string;
+  socialCommentIds?: SocialCommentId[];
 };
 export type User = {
   id: string;
@@ -83,7 +85,7 @@ export type Thread = {
   title: string;
   body: string;
   userId: string;
-  threadId: string;
+  socialThreadIds: SocialThreadId[];
   createdAt: string;
   communityId: string;
   createdFrom: string;
@@ -119,6 +121,11 @@ export interface Comment {
 export interface SocialThreadId {
   platformName: string;
   threadId: string;
+}
+
+export interface SocialCommentId {
+  platformName: string;
+  commentId: string;
 }
 
 export interface UserFeedResponse {

@@ -1,11 +1,10 @@
-name: devnode dev
+name: devnode
 
 on:
   push:
     branches: [ dev ]
   pull_request:
     branches: [ dev ]
-    types: [review_requested, ready_for_review]
 
 jobs:
   build-and-test:
