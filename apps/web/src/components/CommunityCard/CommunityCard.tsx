@@ -11,10 +11,10 @@ export const CommunityCard = (props: CommunityCardProps) => {
       className="flex flex-col-reverse md:flex-row min-h-[246px] border hover:drop-shadow-xl rounded-2xl bg-white">
       <div className={"flex flex-col grow"}>
         <div className="flex flex-col justify-start px-6 py-7">
-          <h2 className="mb-2 text-2xl font-medium">
+          <h2 className="mb-2 text-2xl font-medium line-clamp-1 break-all">
             {props.communityName}
           </h2>
-          <p className="mb-4 text-gray-500 overflow-hidden max-h-[50px]">
+          <p className="mb-4 text-gray-500 overflow-hidden max-h-[50px] break-all line-clamp-3">
             {props.about}
           </p>
           <FlexRow classes={"gap-2 flex-wrap"}>
@@ -35,7 +35,7 @@ export const CommunityCard = (props: CommunityCardProps) => {
         </div>
       </div>
       <Image
-        className="rounded-tr-2xl w-[100%] md:w-[229px] border-l rounded-b-2xl object-cover"
+        className="rounded-tr-2xl w-[100%] max-h-[246px] md:w-[229px] border-l rounded-b-2xl object-cover"
         src={props.communityAvatar}
         width={229}
         height={0}
