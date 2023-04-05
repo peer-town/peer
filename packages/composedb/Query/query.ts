@@ -7,6 +7,7 @@ import {
   PageResponse,
   Thread,
   User,
+  UserCommunities,
   UserFeedResponse,
 } from "./type";
 
@@ -510,7 +511,11 @@ export const composeQueryHandler = () => {
         (thread: any) => thread.node.user.walletAddress === walletAddress
       );
     },
-    fetchAllCommunityThreads: async (communityId: string, first?: number, after?: string): Promise<PageResponse<Thread>> => {
+    fetchAllCommunityThreads: async (
+      communityId: string,
+      first?: number,
+      after?: string
+    ): Promise<PageResponse<Thread>> => {
       const query = `
       query CommunityThreads($id: ID!, $first: Int!, $after: String!) {
         node(id: $id) {
@@ -576,44 +581,45 @@ export const composeQueryHandler = () => {
       after?: string
     ): Promise<Communities> => {
       const query = gql`
-      query($first: Int!, $after: String!) {
-        communityIndex(first: $first, after: $after) {
-          pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
-          }
-          edges {
-            node {
-              id
-              communityName
-              description
-              tags(first: 10) {
-                edges {
-                  node {
-                    tag {
-                      tag
+        query ($first: Int!, $after: String!) {
+          communityIndex(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            edges {
+              node {
+                id
+                communityName
+                description
+                tags(first: 10) {
+                  edges {
+                    node {
+                      tag {
+                        tag
+                      }
                     }
                   }
                 }
-              }
-              createdAt
-              socialPlatforms(first: 5) {
-                edges {
-                  node {
-                    id
-                    platform
-                    platformId
-                    communityName
-                    communityAvatar
+                createdAt
+                socialPlatforms(first: 5) {
+                  edges {
+                    node {
+                      id
+                      platform
+                      platformId
+                      communityName
+                      communityAvatar
+                    }
                   }
                 }
               }
             }
           }
         }
-      }`;
+      `;
       const response = await client.request(query, {
         first: first,
         after: after || "",
@@ -697,7 +703,7 @@ export const composeQueryHandler = () => {
       id: string,
       first?: number,
       after?: string
-    ): Promise<Communities> => {
+    ): Promise<UserCommunities> => {
       const query = gql`
         query UserCommunities($id: ID!, $first: Int!, $after: String!) {
           node(id: $id) {

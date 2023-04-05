@@ -121,10 +121,10 @@ export const UserProfile = (props: UserProfileProps) => {
           {communities.data && communities.data.edges.map((community) => {
             return (
               <AvatarCard
-                key={community.node.id}
-                image={get(community, "node.socialPlatforms.edges[0].node.communityAvatar")}
+                key={community.node.community.id}
+                image={get(community, "node.community.socialPlatforms.edges[0].node.communityAvatar")}
                 imageSize={44}
-                name={get(community, "node.socialPlatforms.edges[0].node.communityName")}
+                name={get(community, "node.community.socialPlatforms.edges[0].node.communityName")}
               />
             )
           })}
