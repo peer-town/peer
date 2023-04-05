@@ -154,7 +154,10 @@ export const composeQueryHandler = () => {
                 title
                 body
                 userId
-                threadId
+                socialThreadIds {
+                  platformName
+                  threadId
+                }
                 createdAt
                 communityId
                 createdFrom
@@ -181,60 +184,6 @@ export const composeQueryHandler = () => {
                   communityName
                   author {
                     id
-                  }
-                }
-                comments(first: 100) {
-                  edges {
-                    node {
-                      id
-                      text
-                      userId
-                      threadId
-                      createdAt
-                      createdFrom
-                      user {
-                        id
-                        walletAddress
-                        author {
-                          id
-                        }
-                        userPlatforms {
-                          platformId
-                          platformName
-                          platformAvatar
-                          platformUsername
-                        }
-                        createdAt
-                      }
-                      thread {
-                        id
-                        title
-                        userId
-                        createdAt
-                        communityId
-                        createdFrom
-                        author {
-                          id
-                        }
-                        user {
-                          id
-                          walletAddress
-                          author {
-                            id
-                          }
-                          userPlatforms {
-                            platformId
-                            platformName
-                            platformAvatar
-                            platformUsername
-                          }
-                          createdAt
-                        }
-                      }
-                      author {
-                        id
-                      }
-                    }
                   }
                 }
               }
@@ -607,9 +556,11 @@ export const composeQueryHandler = () => {
     },
     fetchThreadBySocialThreadId: async function (threadId: string) {
       const allThreads = await this.fetchAllThreads();
-      return allThreads.find(
-        (thread: Node<Thread>) => thread.node.threadId === threadId
-      );
+      return allThreads.find((thread: Node<Thread>) => {
+        return thread.node.socialThreadIds.some(
+          (socialThread) => socialThread.threadId === threadId
+        );
+      });
     },
     fetchCommunityUsingPlatformId: async function (platformId: string) {
       const allCommunities: Node<Community>[] =
