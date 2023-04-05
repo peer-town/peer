@@ -1,7 +1,7 @@
-import { UserProfile } from './UserProfile';
-import {renderWithTrpc} from "../../../test/trpcWrapper";
-import {Provider} from "react-redux";
-import {store} from "../../store";
+import { UserProfile } from "./UserProfile";
+import { renderWithTrpc } from "../../../test/trpcWrapper";
+import { Provider } from "react-redux";
+import { store } from "../../store";
 
 const mockUser = {
   isLoading: false,
@@ -10,9 +10,9 @@ const mockUser = {
     value: {
       userPlatforms: [
         {
-          platformName: 'platform name',
-          platformUsername: 'username',
-          platformAvatar: 'https://some-url.com',
+          platformName: "platform name",
+          platformUsername: "username",
+          platformAvatar: "https://some-url.com",
         },
       ],
     },
@@ -25,23 +25,25 @@ const mockCommunities = {
     edges: [
       {
         node: {
-          id: 'community id',
-          socialPlatforms: {
-            edges: [
-              {
-                node: {
-                  communityAvatar: 'https://some-url.com',
-                  communityName: 'community name',
+          community: {
+            id: "community id",
+            socialPlatforms: {
+              edges: [
+                {
+                  node: {
+                    communityAvatar: "https://some-url.com",
+                    communityName: "community name",
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
         },
       },
     ],
   },
 };
-jest.mock('../../utils/trpc', () => ({
+jest.mock("../../utils/trpc", () => ({
   trpc: {
     user: {
       getUserByStreamId: {
@@ -54,19 +56,23 @@ jest.mock('../../utils/trpc', () => ({
   },
 }));
 
-describe('UserProfile', () => {
+describe("UserProfile", () => {
   const renderComponent = (ui) => {
     return renderWithTrpc(<Provider store={store}>{ui}</Provider>);
-  }
+  };
 
   it("should render the component with no issues", () => {
-    const result = renderComponent(<UserProfile userStreamId={"sample-user-id"} />);
+    const result = renderComponent(
+      <UserProfile userStreamId={"sample-user-id"} />
+    );
     expect(result.container).toBeInTheDocument();
   });
 
   it("renders the user profile", async () => {
-    const { findByText } = renderComponent(<UserProfile userStreamId="12345" />);
-    expect(await findByText('username')).toBeInTheDocument();
-    expect(await findByText('community name')).toBeInTheDocument();
+    const { findByText } = renderComponent(
+      <UserProfile userStreamId="12345" />
+    );
+    expect(await findByText("username")).toBeInTheDocument();
+    expect(await findByText("community name")).toBeInTheDocument();
   });
 });
