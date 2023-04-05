@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import { get, isEmpty } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { CreateThread } from "../components/Thread";
 import { FlexRow } from "../components/Flex";
 import { selectCommunity, useAppDispatch } from "../store";
 import { JoinCommunity } from "../components/JoinCommunity";
+import { NoData } from "../components/NoData";
 
 const AddIcon = () => {
   return (
@@ -27,7 +28,6 @@ const CommunityPage = () => {
   const [currentThread, setCurrentThread] = useState<string>(threadId);
   const [questionModal, setQuestionModal] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-
   const community = trpc.community.fetchCommunityUsingStreamId.useQuery({
     streamId: communityId,
   });
@@ -40,7 +40,7 @@ const CommunityPage = () => {
   let mounted = false;
   useEffect(() => {
     return () => {
-      if(mounted){
+      if (mounted) {
         dispatch(selectCommunity(null));
       }
       mounted = true;
@@ -54,6 +54,8 @@ const CommunityPage = () => {
   useEffect(() => {
     if (!threadId && threads.data && threads.data.edges[0]) {
       setCurrentThread(threads.data.edges[0].node.id);
+    } else if (!threadId) {
+      setCurrentThread(undefined);
     }
   }, [threadId, threads.data]);
 
@@ -62,51 +64,64 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="flex max-h-full h-full flex-col overflow-y-hidden">
-      <JoinCommunity/>
-    <div className="flex h-full flex-row overflow-y-hidden">
-      <div className="mx-4 hidden w-[30%] md:block">
-        {communityName && (
-          <p className="my-4 text-4xl font-medium">{communityName}</p>
-        )}
-        <FlexRow classes="gap-2">
-          <Search onQuery={() => {}} />
-          <button
-            title="ask a question"
-            className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
-            onClick={() => setQuestionModal(true)}
-          >
-            <AddIcon />
-          </button>
-        </FlexRow>
-        <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
-          {threads.data &&
-            threads.data.edges.map((thread) => (
-              <Link
-                key={thread.node.id}
-                href={{
-                  pathname: "/community",
-                  query: {
-                    communityId,
-                    threadId: thread.node.id,
-                  },
-                }}
-              >
-                <ThreadCard key={thread.node.id} thread={thread.node} />
-              </Link>
-            ))}
+    <div className="flex h-full max-h-full flex-col overflow-y-hidden">
+      <JoinCommunity />
+      <div className="flex h-full flex-row overflow-y-hidden">
+        <div className="mx-4 hidden w-[30%] md:block">
+          {communityName && (
+            <p className="my-4 text-4xl font-medium">{communityName}</p>
+          )}
+          <FlexRow classes="gap-2">
+            <Search onQuery={() => {}} />
+            <button
+              title="ask a question"
+              className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
+              onClick={() => setQuestionModal(true)}
+            >
+              <AddIcon />
+            </button>
+          </FlexRow>
+          <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
+            {threads.data &&
+              threads.data.edges.map((thread) => (
+                <Link
+                  key={thread.node.id}
+                  href={{
+                    pathname: "/community",
+                    query: {
+                      communityId,
+                      threadId: thread.node.id,
+                    },
+                  }}
+                >
+                  <ThreadCard key={thread.node.id} thread={thread.node} />
+                </Link>
+              ))}
+            {threads.data && isEmpty(threads.data.edges) && (
+              <NoData
+                title={"Community has no threads"}
+                description={"create new thread by clicking on add button"}
+              />
+            )}
+          </div>
         </div>
+        <div className="w-full border-l">
+          {currentThread ? (
+            <ThreadSection threadId={currentThread} />
+          ) : (
+            <NoData
+              title={"No thread selected"}
+              description={"select a thread from the thread lists"}
+            />
+          )}
+        </div>
+        <CreateThread
+          title={"Ask Question"}
+          open={questionModal}
+          onClose={() => setQuestionModal(false)}
+          community={{ communityName, communityId }}
+        />
       </div>
-      <div className="w-full border-l">
-        {currentThread && <ThreadSection threadId={currentThread} />}
-      </div>
-      <CreateThread
-        title={"Ask Question"}
-        open={questionModal}
-        onClose={() => setQuestionModal(false)}
-        community={{ communityName, communityId }}
-      />
-    </div>
     </div>
   );
 };
