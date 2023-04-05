@@ -158,6 +158,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
         body,
         createdFrom,
         createdAt,
+        socialThreadIds,
       } = threadInput;
       return compose.executeQuery<{
         createThread: { document: { id: string } };
@@ -186,7 +187,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
               userId: userId, //streamId of User
               title: title,
               body: body,
-              socialThreadIds: [],
+              socialThreadIds: socialThreadIds || [],
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
             },
@@ -195,7 +196,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
       );
     },
     createComment: function (commentInput: CommentInput) {
-      const { threadId, userId, comment, createdFrom, createdAt } =
+      const { threadId, userId, comment, createdFrom, createdAt, socialCommentIds } =
         commentInput;
 
       return compose.executeQuery<{
@@ -225,7 +226,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
               text: comment, //comment text
               createdFrom: createdFrom, //platform name
               createdAt: createdAt,
-              socialCommentIds: [],
+              socialCommentIds: socialCommentIds || [],
             },
           },
         }

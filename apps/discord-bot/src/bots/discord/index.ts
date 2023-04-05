@@ -9,7 +9,7 @@ export {commentHandler, threadHandler};
 export const attachListeners = (clients: Clients) => {
   const discord = clients.discord;
 
-  discord.on(Events.MessageCreate, (message) => commentHandler.handleNewComment(clients.compose, message));
-  discord.on(Events.ThreadCreate, (thread) => threadHandler.handleNewThread(clients.compose, thread));
+  discord.on(Events.MessageCreate, (message) => commentHandler.handleNewComment(clients, message));
+  discord.on(Events.ThreadCreate, (thread) => threadHandler.handleNewThread(clients, thread));
   discord.on(Events.GuildCreate, channelHandler.handleServerJoin);
 };
