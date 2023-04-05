@@ -162,5 +162,10 @@ export interface UserCommunityRelation {
   communityId: string;
 }
 export interface UserCommunities {
-  edges: Node<Community>[];
+  edges: Node<{community:CommunityExt}>[];
+}
+
+export interface CommunityExt extends Community{
+  description: string,
+  communityName: string
 }
