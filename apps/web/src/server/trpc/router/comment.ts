@@ -4,8 +4,9 @@ import {definition, composeMutationHandler, composeQueryHandler } from "@devnode
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
-import {omit, get} from "lodash";
+import {has, omit, get} from "lodash";
 import {DIDSession} from "did-session";
+import {SocialCommentId} from "../../types";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -38,7 +39,15 @@ export const commentRouter = router({
         const response = await handler.createComment(payload as any);
         if(response.data) {
           const commentId = get(response.data, "createComment.document.id");
-          handleWebToAggregator(commentId);
+          handleWebToAggregator(commentId)
+            .then((res) => res.json())
+            .then((data) => {
+              if (has(data, "data[0]")) {
+                updateComment(handler, commentId, data.data[0])
+                  .then(console.log)
+                  .catch(console.log);
+              }
+            });
         }
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
@@ -60,9 +69,20 @@ export const commentRouter = router({
     }),
 });
 
+const updateComment = async (handler, streamId, social: SocialCommentId) => {
+  try {
+    const response = await handler.updateCommentWithSocialCommentId(streamId, social);
+    return response.errors && response.errors.length > 0
+      ? left(response.errors)
+      : right(response.data);
+  } catch (e) {
+    return left(e);
+  }
+}
+
 const handleWebToAggregator = async (commentId: string) => {
   const endpoint = `${config.aggregator.endpoint}/web-comment`;
-  await fetch(endpoint, {
+  return await fetch(endpoint, {
       body: JSON.stringify({
         commentId: commentId,
       }),

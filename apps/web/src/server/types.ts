@@ -61,3 +61,8 @@ export interface SocialThreadId {
   platformName: string;
   threadId: string;
 }
+
+export interface SocialCommentId {
+  platformName: string;
+  commentId: string;
+}
