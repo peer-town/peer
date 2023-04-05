@@ -69,9 +69,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           theme="light"
         />
         <Provider store={store}>
-          <div className={"w-screen h-auto box-border"}>
+          <div className={"w-screen h-screen box-border"}>
             <LeftPanel style={'w-[75px]'}/>
-            <div className={"max-w-full h-auto ml-[75px] box-border"} >
+            <div className={"max-w-full h-full ml-[75px] box-border"} >
               <Component {...pageProps} />
               <UserProfileWrapper />
             </div>

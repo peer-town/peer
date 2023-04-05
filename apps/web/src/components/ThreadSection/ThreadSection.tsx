@@ -66,8 +66,8 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   return (
-    <div className="flex flex-col h-screen p-4">
-      <div className="overflow-y-scroll h-screen py-4 scrollbar-hide">
+    <div className="flex flex-col h-full p-4">
+      <div className="overflow-y-scroll h-full py-4 scrollbar-hide">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px]">
           {comments.data && comments.data.edges.map((item) => (

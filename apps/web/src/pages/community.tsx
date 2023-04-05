@@ -10,6 +10,7 @@ import { Search } from "../components/Search";
 import { CreateThread } from "../components/Thread";
 import { FlexRow } from "../components/Flex";
 import { selectCommunity, useAppDispatch } from "../store";
+import { JoinCommunity } from "../components/JoinCommunity";
 
 const AddIcon = () => {
   return (
@@ -61,7 +62,9 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="flex max-h-screen flex-row overflow-y-hidden">
+    <div className="flex max-h-full h-full flex-col overflow-y-hidden">
+      <JoinCommunity/>
+    <div className="flex h-full flex-row overflow-y-hidden">
       <div className="mx-4 hidden w-[30%] md:block">
         {communityName && (
           <p className="my-4 text-4xl font-medium">{communityName}</p>
@@ -76,7 +79,7 @@ const CommunityPage = () => {
             <AddIcon />
           </button>
         </FlexRow>
-        <div className="scrollbar-hide mt-4 flex h-screen flex-col space-y-4 overflow-y-scroll pt-4">
+        <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
           {threads.data &&
             threads.data.edges.map((thread) => (
               <Link
@@ -103,6 +106,7 @@ const CommunityPage = () => {
         onClose={() => setQuestionModal(false)}
         community={{ communityName, communityId }}
       />
+    </div>
     </div>
   );
 };
