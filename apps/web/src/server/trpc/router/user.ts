@@ -141,4 +141,19 @@ export const userRouter = router({
         threadCount
       );
     }),
+
+  checkCommunityUser: publicProcedure
+    .input(
+      z.object({
+        userAuthor: z.string(),
+        communityStreamId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { communityStreamId, userAuthor } = input;
+      return await composeQueryHandler().checkCommunityUser(
+        communityStreamId,
+        userAuthor
+      );
+    }),
 });

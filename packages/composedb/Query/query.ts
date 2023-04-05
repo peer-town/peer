@@ -804,5 +804,39 @@ export const composeQueryHandler = () => {
       });
       return response?.node?.communities;
     },
+    checkCommunityUser: async (
+      communityStreamId: string,
+      userAuthorId: string
+    ) => {
+      const query = `
+      query UserCommunities3($id: ID!,$author: ID!) {
+        node(id: $id) {
+          ... on Community {
+            id
+            users(first:10,account: $author) {
+              edges {
+                node {
+                  user {
+                    id
+                    walletAddress
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query, {
+        id: communityStreamId,
+        author: userAuthorId,
+      });
+      const isUSER = response?.node?.users?.edges
+      console.log("isUSER",isUSER)
+      if(isUSER && isUSER?.length>0){
+        return true;
+      }
+      return false;
+    },
   };
 };
