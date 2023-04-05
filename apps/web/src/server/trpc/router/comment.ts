@@ -45,9 +45,10 @@ export const commentRouter = router({
               if (has(data, "data[0]")) {
                 updateComment(handler, commentId, data.data[0])
                   .then(console.log)
-                  .catch(console.log);
+                  .catch(console.error);
               }
-            });
+            })
+            .catch(console.error);
         }
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
