@@ -21,10 +21,11 @@ const JoinCommunity = () => {
     userAuthor: data.userAuthor,
     communityStreamId: communityId,
   });
+
   const createUserCommunityRelation =
     trpc.community.createUserCommunityRealtion.useMutation();
 
-  const JoinCommunityHandler = async () => {
+  const joinCommunityHandler = async () => {
     if(isNil(data.session)){
       toast.error("Please re-connect with your wallet!");
     }
@@ -48,12 +49,12 @@ const JoinCommunity = () => {
   };
   return (
     <div>
-      {hasUser.data === false && (
+      {(hasUser.data === false) && (
         <SecondaryButton
           classes={"w-full border-0 rounded-none !bg-[#5865F2] justify-center !text-white"}
           loading={loading}
           title={loading ? "Joining..." : "Join Community"}
-          onClick={JoinCommunityHandler}
+          onClick={joinCommunityHandler}
         />
       )}
     </div>
