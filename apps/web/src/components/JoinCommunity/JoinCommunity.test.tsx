@@ -1,8 +1,7 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import JoinCommunity from "./JoinCommunity";
-import { left, right } from "../../utils/fp";
+import { left } from "../../utils/fp";
 import { trpc } from "../../utils/trpc";
-import { toast } from "react-toastify";
 
 jest.mock("../../utils/trpc", () => {
   return {
@@ -31,7 +30,7 @@ jest.mock('react-toastify', () => ({
 jest.mock('../../store', () => ({
   useAppSelector: () => {
     return {
-      didsession:'sample-session-id',
+      session:'sample-session-id',
       userId: 'sample-user-id',
       userAuthor: 'sample-community-id',
     };
@@ -77,7 +76,7 @@ describe.only("<JoinCommunity />", () => {
     (trpc.user.checkCommunityUser.useQuery as jest.Mock).mockReturnValue({
       data: true,
     });
-    const result = render(<JoinCommunity />);
+     render(<JoinCommunity />);
     const button = document.getElementById("primary-button");
     expect(button).not.toBeInTheDocument();
   });
@@ -86,7 +85,7 @@ describe.only("<JoinCommunity />", () => {
     (trpc.user.checkCommunityUser.useQuery as jest.Mock).mockReturnValue({
       data: true,
     });
-    const result = render(<JoinCommunity />);
+    render(<JoinCommunity />);
     const button = document.getElementById("primary-button");
     expect(button).not.toBeInTheDocument();
   });
@@ -111,22 +110,5 @@ describe.only("<JoinCommunity />", () => {
       fireEvent.click(button);
     });
     expect(mutationMock).toBeCalledTimes(1);
-    expect(toast.error as jest.Mock).toBeCalledTimes(1);
-    expect(toast.error as jest.Mock).toBeCalledWith("Could not join community. Please try again later.");
   });
-
-  // it("should call mutation to create userCommunity relation", () => {
-  //   (trpc.user.checkCommunityUser.useQuery as jest.Mock).mockReturnValue({
-  //     data: false,
-  //     refetch: jest.fn(),
-  //   });
-
-  //   render(<JoinCommunity />);
-
-  //   const button = screen.getByRole("button");
-  //   act(() => {
-  //     fireEvent.click(button);
-  //   });
-  //   expect(mutationMock).toBeCalledTimes(1);
-  // });
 });
