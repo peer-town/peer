@@ -160,7 +160,8 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
           />
           <div
               className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
-            <Dropdown selected={community.communityName} placeholder={"Select Community"}>
+            <Dropdown selected={community.communityName} disableDropdown={isEmpty(communities.data?.edges)}
+                      placeholder={isEmpty(communities.data?.edges) ? "Please join a Community" : "Select Community"}>
               {getCommunityList()}
             </Dropdown>
           </div>

@@ -1,8 +1,12 @@
 import {GlobalCreateThread} from "../Thread";
 import {useState} from "react";
+import {get, has, isNil} from "lodash";
+import {toast} from "react-toastify";
+import {useAppSelector} from "../../store";
 
 const GlobalAskQuestion = () => {
   const [questionModal, setQuestionModal] = useState<boolean>(false);
+  const user = useAppSelector((state) => state.user);
 
   const AskQuestion = () => {
     return (
@@ -14,12 +18,20 @@ const GlobalAskQuestion = () => {
     )
   }
 
+  const handleClick = () =>{
+    if (!has(user, "id") || isNil(get(user, "didSession"))) {
+      toast.error("Please re-connect with your wallet!");
+      return;
+    }
+    setQuestionModal(true)
+  }
+
   return (
       <div>
         <button
             title="ask a question"
             className="h-[50px] min-w-[50px] outline-none border-none"
-            onClick={() => setQuestionModal(true)}
+            onClick={handleClick}
         >
           <AskQuestion/>
         </button>
