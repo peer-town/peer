@@ -1,13 +1,13 @@
 type Community 
   @loadModel(
-     id: "kjzl6hvfrbw6c9qs7houn2f6yy7jsf1peksg5q0v28xzwkldorfcak6w6z1umj6"
+     id: "kjzl6hvfrbw6c6w86fbnft0c83g7hqscx6urkpz49bgv380hzudelk359m9q5vu"
     ) {
   id: ID!
 }
 
 type User 
   @loadModel(
-     id: "kjzl6hvfrbw6c9mr6z1obgw3qobf3k72mr1u3r8cljzlebzx149j9d3na70s1vb"
+     id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d"
     ) {
   id: ID!
 }
@@ -22,5 +22,5 @@ type SocialPlatform
     platform: String! @string(maxLength: 2000) 
     platformId: String! @string(maxLength: 2000) 
     communityName: String! @string(maxLength: 2000) 
-    communityAvatar: String! @string(maxLength: 2000) 
+    communityAvatar: String! @string(maxLength: 10000) 
 }

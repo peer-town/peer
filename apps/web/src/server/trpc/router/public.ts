@@ -1,6 +1,6 @@
 import {publicProcedure, router} from "../trpc";
 import {z} from "zod";
-import {composeQueryHandler} from "@devnode/composedb";
+import {composeQueryHandler } from "@devnode/composedb";
 
 const queryHandler = composeQueryHandler();
 
@@ -22,10 +22,14 @@ export const publicRouter = router({
     }),
 
   fetchAllCommunityThreads: publicProcedure
-    .input(z.object({communityId: z.string()}))
+    .input(z.object({
+      communityId: z.string(),
+      first: z.number().nullish(),
+      after: z.string().nullish(),
+    }))
     .query(async ({input}) => {
-      if (!input.communityId) return [];
-      return await queryHandler.fetchAllCommunityThreads(input.communityId);
+      const {first, after, communityId} = input;
+      return await queryHandler.fetchAllCommunityThreads(communityId, first, after);
     }),
 
   fetchThreadDetails: publicProcedure
@@ -35,10 +39,13 @@ export const publicRouter = router({
       return await queryHandler.fetchThreadDetails(input.threadId);
     }),
 
-  fetchCommunities: publicProcedure.query(async () => {
-    const allCommunities =
-      await queryHandler.fetchAllCommunitiesPlatformDetails("discord");
-    return allCommunities;
+  fetchCommunities: publicProcedure
+    .input(z.object({
+      first: z.number().min(1).max(100),
+      after: z.string().nullish(),
+    }))
+    .query(async ({input}) => {
+      return await queryHandler.fetchCommunities(input.first, input.after);
   }),
 
   fetchAllCommunities: publicProcedure.query(async () => {

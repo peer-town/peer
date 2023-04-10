@@ -1,5 +1,15 @@
-import { GraphQLClient, gql } from "graphql-request";
-import { Thread, Node, Edges, Community } from "./type";
+import { gql, GraphQLClient } from "graphql-request";
+import {
+  Comment,
+  Communities,
+  Community,
+  Node,
+  PageResponse,
+  Thread,
+  User,
+  UserCommunities,
+  UserFeedResponse,
+} from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
 
@@ -145,7 +155,10 @@ export const composeQueryHandler = () => {
                 title
                 body
                 userId
-                threadId
+                socialThreadIds {
+                  platformName
+                  threadId
+                }
                 createdAt
                 communityId
                 createdFrom
@@ -172,60 +185,6 @@ export const composeQueryHandler = () => {
                   communityName
                   author {
                     id
-                  }
-                }
-                comments(first: 100) {
-                  edges {
-                    node {
-                      id
-                      text
-                      userId
-                      threadId
-                      createdAt
-                      createdFrom
-                      user {
-                        id
-                        walletAddress
-                        author {
-                          id
-                        }
-                        userPlatforms {
-                          platformId
-                          platformName
-                          platformAvatar
-                          platformUsername
-                        }
-                        createdAt
-                      }
-                      thread {
-                        id
-                        title
-                        userId
-                        createdAt
-                        communityId
-                        createdFrom
-                        author {
-                          id
-                        }
-                        user {
-                          id
-                          walletAddress
-                          author {
-                            id
-                          }
-                          userPlatforms {
-                            platformId
-                            platformName
-                            platformAvatar
-                            platformUsername
-                          }
-                          createdAt
-                        }
-                      }
-                      author {
-                        id
-                      }
-                    }
                   }
                 }
               }
@@ -355,12 +314,24 @@ export const composeQueryHandler = () => {
               title
               body
               userId
-              threadId
               createdAt
               communityId
               createdFrom
               author {
                 id
+              }
+              community {
+                socialPlatforms(first: 5) {
+                  edges {
+                    node {
+                      platform
+                      platformId
+                      communityName
+                      communityAvatar
+                      communityId
+                    }
+                  }
+                }
               }
               user {
                 id
@@ -373,77 +344,6 @@ export const composeQueryHandler = () => {
                   platformName
                   platformAvatar
                   platformUsername
-                }
-                createdAt
-              }
-              community {
-                id
-                createdAt
-                communityName
-                socialPlatforms(first: 10) {
-                  edges {
-                    node {
-                      platformId
-                      platform
-                    }
-                  }
-                }
-                author {
-                  id
-                }
-              }
-              comments(first: 100) {
-                edges {
-                  node {
-                    id
-                    text
-                    userId
-                    threadId
-                    createdAt
-                    createdFrom
-                    user {
-                      id
-                      walletAddress
-                      author {
-                        id
-                      }
-                      userPlatforms {
-                        platformId
-                        platformName
-                        platformAvatar
-                        platformUsername
-                      }
-                      createdAt
-                    }
-                    thread {
-                      id
-                      title
-                      userId
-                      createdAt
-                      communityId
-                      createdFrom
-                      author {
-                        id
-                      }
-                      user {
-                        id
-                        walletAddress
-                        author {
-                          id
-                        }
-                        userPlatforms {
-                          platformId
-                          platformName
-                          platformAvatar
-                          platformUsername
-                        }
-                        createdAt
-                      }
-                    }
-                    author {
-                      id
-                    }
-                  }
                 }
               }
             }
@@ -481,7 +381,10 @@ export const composeQueryHandler = () => {
                 id
                 title
                 userId
-                threadId
+                socialThreadIds {
+                  platformName
+                  threadId
+                }
                 createdAt
                 community {
                   socialPlatforms(first: 10) {
@@ -497,20 +400,6 @@ export const composeQueryHandler = () => {
                 createdFrom
                 author {
                   id
-                }
-                user {
-                  id
-                  walletAddress
-                  author {
-                    id
-                  }
-                  userPlatforms {
-                    platformId
-                    platformName
-                    platformAvatar
-                    platformUsername
-                  }
-                  createdAt
                 }
               }
               author {
@@ -622,17 +511,61 @@ export const composeQueryHandler = () => {
         (thread: any) => thread.node.user.walletAddress === walletAddress
       );
     },
-    fetchAllCommunityThreads: async function (communityId: string) {
-      const allThreads = await this.fetchAllThreads();
-      return allThreads.filter(
-        (thread: any) => thread.node.communityId === communityId
-      );
+    fetchAllCommunityThreads: async (
+      communityId: string,
+      first?: number,
+      after?: string
+    ): Promise<PageResponse<Thread>> => {
+      const query = `
+      query CommunityThreads($id: ID!, $first: Int!, $after: String!) {
+        node(id: $id) {
+          ... on Community {
+            threads(first: $first, after: $after) {
+              pageInfo {
+                startCursor
+                endCursor
+                hasNextPage
+                hasPreviousPage
+              }
+              edges {
+                node {
+                  id
+                  title
+                  body
+                  userId
+                  createdAt
+                  communityId
+                  user {
+                    id
+                    walletAddress
+                    userPlatforms {
+                      platformId
+                      platformName
+                      platformAvatar
+                      platformUsername
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query, {
+        id: communityId,
+        first: first || 20,
+        after: after || "",
+      });
+      return response?.node?.threads;
     },
     fetchThreadBySocialThreadId: async function (threadId: string) {
       const allThreads = await this.fetchAllThreads();
-      return allThreads.find(
-        (thread: Node<Thread>) => thread.node.threadId === threadId
-      );
+      return allThreads.find((thread: Node<Thread>) => {
+        return thread.node.socialThreadIds.some(
+          (socialThread) => socialThread.threadId === threadId
+        );
+      });
     },
     fetchCommunityUsingPlatformId: async function (platformId: string) {
       const allCommunities: Node<Community>[] =
@@ -642,6 +575,268 @@ export const composeQueryHandler = () => {
           (platform: any) => platform.node?.platformId === platformId
         );
       });
+    },
+    fetchCommunities: async (
+      first: number,
+      after?: string
+    ): Promise<Communities> => {
+      const query = gql`
+        query ($first: Int!, $after: String!) {
+          communityIndex(first: $first, after: $after) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            edges {
+              node {
+                id
+                communityName
+                description
+                tags(first: 10) {
+                  edges {
+                    node {
+                      tag {
+                        tag
+                      }
+                    }
+                  }
+                }
+                createdAt
+                socialPlatforms(first: 5) {
+                  edges {
+                    node {
+                      id
+                      platform
+                      platformId
+                      communityName
+                      communityAvatar
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const response = await client.request(query, {
+        first: first,
+        after: after || "",
+      });
+      return response.communityIndex;
+    },
+    fetchCommentsByThreadId: async (
+      threadId: string,
+      first: number,
+      after?: string
+    ): Promise<PageResponse<Comment>> => {
+      const query = gql`
+        query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
+          node(id: $id) {
+            ... on Thread {
+              comments(first: $first, after: $after) {
+                pageInfo {
+                  hasNextPage
+                  hasPreviousPage
+                  startCursor
+                  endCursor
+                }
+                edges {
+                  node {
+                    id
+                    text
+                    userId
+                    threadId
+                    createdAt
+                    user {
+                      id
+                      walletAddress
+                      author {
+                        id
+                      }
+                      userPlatforms {
+                        platformId
+                        platformName
+                        platformAvatar
+                        platformUsername
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const response = await client.request(query, {
+        id: threadId,
+        first: first,
+        after: after || "",
+      });
+      return response?.node?.comments;
+    },
+    fetchUserByStreamId: async (id: string): Promise<Node<User>> => {
+      const query = gql`
+        query UserByStream($id: ID!) {
+          node(id: $id) {
+            ... on User {
+              id
+              createdAt
+              walletAddress
+              userPlatforms {
+                platformId
+                platformName
+                platformAvatar
+                platformUsername
+              }
+              author {
+                id
+              }
+            }
+          }
+        }
+      `;
+      return await client.request(query, { id });
+    },
+    fetchUserCommunities: async (
+      id: string,
+      first?: number,
+      after?: string
+    ): Promise<UserCommunities> => {
+      const query = gql`
+        query UserCommunities($id: ID!, $first: Int!, $after: String!) {
+          node(id: $id) {
+            ... on User {
+              author {
+                userCommunityList(first: $first, after: $after) {
+                  pageInfo {
+                    startCursor
+                    endCursor
+                    hasNextPage
+                    hasPreviousPage
+                  }
+                  edges {
+                    node {
+                      community {
+                        id
+                        communityName
+                        description
+                        socialPlatforms(first: 10) {
+                          edges {
+                            node {
+                              platform
+                              platformId
+                              communityName
+                              communityAvatar
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `;
+      const response = await client.request(query, {
+        id: id,
+        first: first || 20,
+        after: after || "",
+      });
+      return response?.node?.author?.userCommunityList;
+    },
+    fetchFeedThreads: async (
+      userStreamId: string,
+      communityCount?: number,
+      threadCount?: number
+    ): Promise<PageResponse<UserFeedResponse>> => {
+      const query = `
+      query ($id: ID!, $communityCount: Int!, $threadCount: Int!) {
+        node(id: $id) {
+          ... on User {
+          communities(first: $communityCount) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            edges {
+              node {
+                community {
+                  threads(first: $threadCount) {
+                    edges {
+                      node {
+                        id
+                        title
+                        body
+                        userId
+                        createdAt
+                        communityId
+                        user {
+                          id
+                          walletAddress
+                          userPlatforms {
+                            platformId
+                            platformName
+                            platformAvatar
+                            platformUsername
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+      `;
+      const response = await client.request(query, {
+        id: userStreamId,
+        communityCount: communityCount || 10,
+        threadCount: threadCount || 10,
+      });
+      return response?.node?.communities;
+    },
+    checkCommunityUser: async (
+      communityStreamId: string,
+      userAuthorId: string
+    ) => {
+      const query = `
+      query UserCommunities3($id: ID!,$author: ID!) {
+        node(id: $id) {
+          ... on Community {
+            id
+            users(first:10,account: $author) {
+              edges {
+                node {
+                  user {
+                    id
+                    walletAddress
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query, {
+        id: communityStreamId,
+        author: userAuthorId,
+      });
+      const isUSER = response?.node?.users?.edges
+
+      if(isUSER && isUSER?.length>0){
+        return true;
+      }
+      return false;
     },
   };
 };

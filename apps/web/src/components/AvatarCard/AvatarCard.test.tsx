@@ -5,6 +5,7 @@ describe("<AvatarCard />", () => {
   const image = undefined;
   const imageSize = 12;
   const onAddressClick = jest.fn();
+  const onClick = jest.fn();
 
   it("should render the badge with no issues", () => {
     const result = render(<AvatarCard image={image} imageSize={imageSize} />);
@@ -12,7 +13,7 @@ describe("<AvatarCard />", () => {
   });
 
   it("should render optional name and address element", () => {
-    render(<AvatarCard image={image} href={"/"} imageSize={imageSize} name={"abc"} />);
+    render(<AvatarCard image={image} imageSize={imageSize} name={"abc"} />);
     expect(screen.getByText("abc")).toBeTruthy();
 
     render(<AvatarCard image={image} imageSize={imageSize} address={"xyz"} />);
@@ -35,5 +36,11 @@ describe("<AvatarCard />", () => {
     render(<AvatarCard image={image} imageSize={40} address={"0x900"} onAddressClick={onAddressClick} />);
     fireEvent.click(document.getElementById("badge"));
     expect(onAddressClick).toBeCalledWith("0x900");
+  });
+
+  it("should handle onclick action", () => {
+    render(<AvatarCard image={image} onClick={onClick} imageSize={imageSize} />);
+    fireEvent.click(document.getElementById("avatar-card"));
+    expect(onClick).toBeCalledTimes(1);
   });
 });

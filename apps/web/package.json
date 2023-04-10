@@ -10,6 +10,7 @@
     "clean": "rimraf .turbo node_modules dist .next",
     "start:web": "next start",
     "dev:web": "next dev",
+    "test": "jest --coverage",
     "test:web": "jest",
     "test:web-coverage": "jest --coverage"
   },
@@ -26,6 +27,7 @@
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "v2",
     "@reduxjs/toolkit": "^1.9.3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/react-query": "^4.20.4",
     "@trpc/client": "10.7.0",
     "@trpc/next": "10.7.0",

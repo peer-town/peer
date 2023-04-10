@@ -1,13 +1,13 @@
 type Platform{
   platformName: String! @string(maxLength: 2000)
   platformUsername: String! @string(maxLength: 2000) 
-  platformAvatar: String! @string(maxLength: 2000) 
+  platformAvatar: String! @string(maxLength: 10000) 
   platformId: String! @string(maxLength: 2000) 
 }
 
 type User @createModel(accountRelation: SINGLE, description: "DevNode User") {
   author: DID! @documentAccount
   walletAddress: String! @string(maxLength: 100)
-  userPlatforms: [Platform] @list(maxLength: 2)
+  userPlatforms: [Platform] @list(maxLength: 5)
   createdAt: DateTime! @string(maxLength: 100)
 }

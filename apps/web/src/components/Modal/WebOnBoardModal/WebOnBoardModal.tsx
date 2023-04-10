@@ -12,12 +12,13 @@ export const WebOnBoardModal = (props: WebOnBoardProps) => {
   }
 
   return (
-    <BaseModal open={props.open} title={"your details"} onClose={props.onClose}>
+    <BaseModal open={props.open} title={"your details"} onClose={()=>{}}>
       <form onSubmit={onSave}>
         <input
           className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
           placeholder="name"
           type="text"
+          maxLength={100}
           onChange={(e) => setName(e.target.value)}
           required={true}
         />

@@ -19,7 +19,7 @@ export type ThreadInput = {
   body: string;
   createdFrom: string;
   createdAt: string;
-  threadId: string;
+  socialThreadIds?: SocialThreadId[];
 };
 export type CommentInput = {
   threadId: string;
@@ -27,6 +27,7 @@ export type CommentInput = {
   comment: string;
   createdFrom: string;
   createdAt: string;
+  socialCommentIds?: SocialCommentId[];
 };
 export type User = {
   id: string;
@@ -45,6 +46,7 @@ export type Community = {
     id: string;
   };
 };
+
 export type Comments = {
   edges: {
     node: [
@@ -81,18 +83,56 @@ export type Comments = {
 export type Thread = {
   id: string;
   title: string;
+  body: string;
   userId: string;
-  threadId: string;
+  socialThreadIds: SocialThreadId[];
   createdAt: string;
   communityId: string;
   createdFrom: string;
   author: {
     id: string;
   };
-  User: User;
+  user: User;
   community: Community;
   comments: Comments;
   };
+
+export interface SocialPlatform {
+  id: string;
+  platform: string;
+  platformId: string;
+  communityName: string;
+  communityAvatar: string;
+}
+
+export interface Comment {
+  id: string;
+  text: string;
+  userId: string;
+  threadId: string;
+  createdAt: string;
+  createdFrom: string;
+  user: User;
+  author: {
+    id: string;
+  };
+}
+
+export interface SocialThreadId {
+  platformName: string;
+  threadId: string;
+}
+
+export interface SocialCommentId {
+  platformName: string;
+  commentId: string;
+}
+
+export interface UserFeedResponse {
+  community: {
+    threads: Edges<Thread>;
+  }
+}
 
 export interface Node<T> {
   node: T;
@@ -100,4 +140,39 @@ export interface Node<T> {
 
 export interface Edges<T> {
   edges: Node<T>[]
+}
+
+export interface PageResponse<T> {
+  pageInfo: PageInfo;
+  edges: Node<T>[];
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string;
+  endCursor: string;
+}
+
+export interface Communities {
+  pageInfo: PageInfo;
+  edges: Node<Community>[];
+}
+
+export interface CommunityDetails {
+  communityName: string;
+  description: string;
+}
+
+export interface UserCommunityRelation {
+  userId: string;
+  communityId: string;
+}
+export interface UserCommunities {
+  edges: Node<{community:CommunityExt}>[];
+}
+
+export interface CommunityExt extends Community{
+  description: string,
+  communityName: string
 }

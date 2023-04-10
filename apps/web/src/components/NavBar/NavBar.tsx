@@ -6,13 +6,14 @@ import { trpc, trpcProxy } from "../../utils/trpc";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { ConnectWalletButton, PrimaryButton } from "../Button";
+import { PrimaryButton } from "../Button";
 import * as utils from "../../utils";
 import { isRight } from "../../utils/fp";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { constants } from "../../config";
 import { has, get, isEmpty, isNil } from "lodash";
 import { useAppDispatch, useAppSelector, fetchUserDetails } from "../../store";
+import {ConnectWalletButton} from "../Button/ConnectWallet";
 
 const navigation = [{ name: "Ask a question", href: "#", current: true }];
 
@@ -228,7 +229,7 @@ const NavBar = (props) => {
       >
         {({ open }) => (
           <>
-            <div className="mx-auto h-[100px] max-w-7xl bg-white px-5 lg:px-0">
+            <div className="mx-auto h-[100px] max-w-7xl px-5 lg:px-0">
               <div className="flex h-full items-center justify-between gap-[34px] lg:gap-[50px]">
                 <div className="flex min-w-0 grow items-center gap-[30px] lg:max-w-[75%]">
                   <Link

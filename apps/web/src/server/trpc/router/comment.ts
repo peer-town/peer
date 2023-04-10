@@ -1,16 +1,18 @@
 import {publicProcedure, router} from "../trpc";
 import {z} from "zod";
-import {composeMutationHandler, definition} from "@devnode/composedb";
+import {definition, composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
-import {omit, get} from "lodash";
+import {has, omit, get} from "lodash";
 import {DIDSession} from "did-session";
+import {SocialCommentId} from "../../types";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
   definition,
 });
+const queryHandler = composeQueryHandler();
 
 const createCommentSchema = z.object({
   session: z.string(),
@@ -37,7 +39,16 @@ export const commentRouter = router({
         const response = await handler.createComment(payload as any);
         if(response.data) {
           const commentId = get(response.data, "createComment.document.id");
-          handleWebToAggregator(commentId);
+          handleWebToAggregator(commentId)
+            .then((res) => res.json())
+            .then((data) => {
+              if (has(data, "data[0]")) {
+                updateComment(handler, commentId, data.data[0])
+                  .then(console.log)
+                  .catch(console.error);
+              }
+            })
+            .catch(console.error);
         }
         return (response.errors && response.errors.length > 0)
           ? left(response.errors)
@@ -46,11 +57,33 @@ export const commentRouter = router({
         return left(e);
       }
     }),
+
+  fetchCommentsByThreadId: publicProcedure
+    .input(z.object({
+      threadId: z.string(),
+      first: z.number().min(1).max(100),
+      after: z.string().nullish(),
+    }))
+    .query(async ({input}) => {
+      const {threadId, first, after} = input;
+      return await queryHandler.fetchCommentsByThreadId(threadId, first, after);
+    }),
 });
+
+const updateComment = async (handler, streamId, social: SocialCommentId) => {
+  try {
+    const response = await handler.updateCommentWithSocialCommentId(streamId, social);
+    return response.errors && response.errors.length > 0
+      ? left(response.errors)
+      : right(response.data);
+  } catch (e) {
+    return left(e);
+  }
+}
 
 const handleWebToAggregator = async (commentId: string) => {
   const endpoint = `${config.aggregator.endpoint}/web-comment`;
-  await fetch(endpoint, {
+  return await fetch(endpoint, {
       body: JSON.stringify({
         commentId: commentId,
       }),

@@ -1,0 +1,4 @@
+type Tag @createModel(accountRelation: LIST, description: "Thread and Community tag") {
+    author: DID! @documentAccount
+    tag: String! @string(maxLength: 2000)
+}

@@ -3,4 +3,5 @@ type Community
   author: DID! @documentAccount
   createdAt: DateTime! @string(maxLength: 100)
   communityName: String! @string(maxLength: 2000)
+  description:  String! @string(maxLength: 15000)
 }

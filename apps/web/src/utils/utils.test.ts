@@ -55,3 +55,31 @@ describe("utils.fp", () => {
     expect(isRight(righty)).toBeTruthy();
   });
 });
+
+describe("utils.number", () => {
+  it("should convert valid numbers to formatted values", () => {
+    expect(utils.formatNumber(1)).toEqual("1");
+    expect(utils.formatNumber(10)).toEqual("10");
+    expect(utils.formatNumber(1000)).toEqual("1K");
+    expect(utils.formatNumber(1000000)).toEqual("1M");
+  });
+
+  it("should handler invalid values in format number", () => {
+    expect(utils.formatNumber('1' as any)).toEqual("1");
+    expect(utils.formatNumber('10' as any)).toEqual("10");
+    expect(utils.formatNumber(undefined)).toEqual("0");
+    expect(utils.formatNumber(null)).toEqual("0");
+  });
+
+  it("should handler number conversion", () => {
+    expect(utils.convertToNumber("1")).toEqual(1);
+    expect(utils.convertToNumber(1)).toEqual(1);
+    expect(utils.convertToNumber("21a")).toEqual(21);
+    expect(utils.convertToNumber(undefined)).toEqual(0);
+    expect(utils.convertToNumber(null)).toEqual(0);
+    expect(utils.convertToNumber('undefined')).toEqual(0);
+    expect(utils.convertToNumber('null')).toEqual(0);
+    expect(utils.convertToNumber(NaN)).toEqual(0);
+    expect(utils.convertToNumber('NaN')).toEqual(0);
+  });
+});

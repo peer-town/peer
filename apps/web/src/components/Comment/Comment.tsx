@@ -1,27 +1,48 @@
-import {FlexRow} from "../Flex";
-import {AvatarCard} from "../AvatarCard";
+import {FlexColumn, FlexRow} from "../Flex";
+import Image from "next/image";
+import {showUserProfile, useAppDispatch} from "../../store";
 
-export const Comment = ({ comment }) => {
+export const Comment = ({comment}) => {
+  const userId = comment?.user?.id;
   const user = comment?.user?.userPlatforms[0];
+  const dispatch = useAppDispatch();
 
   return (
-    <div className="space-y-[15px]">
-      <div className="flex items-center gap-[11px]">
-        <FlexRow classes={"mt-4"}>
-          <AvatarCard
-            name={user?.platformUsername}
-            image={user?.platformAvatar}
-            imageSize={28}
-            address={comment?.user.walletAddress}
-          />
-          <div className="text-sm ml-2 text-gray-400">
-            {new Date(comment?.createdAt).toLocaleString()}
+    <div className="flex flex-row space-x-4">
+      <div
+        className="min-w-fit cursor-pointer"
+        id="profile"
+        onClick={() => {
+          dispatch(showUserProfile({userProfileId: userId}));
+        }}
+      >
+        <Image
+          width={44}
+          height={44}
+          className="rounded-xl"
+          src={user?.platformAvatar || "https://placekitten.com/200/200"}
+          alt={`${user?.platformUsername} avatar`}
+        />
+      </div>
+      <FlexColumn>
+        <FlexRow classes="text-md text-gray-500 space-x-3">
+          <div>{user?.platformUsername}</div>
+          <div>&#8226;</div>
+          <div>
+            {new Date(comment?.createdAt).toLocaleDateString(
+              'en-gb',
+              {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }
+            )}
           </div>
         </FlexRow>
-      </div>
-      <div className="text-gray-500">
-        {comment?.text}
-      </div>
+        <div className="text-md mt-3">
+          {comment?.text}
+        </div>
+      </FlexColumn>
     </div>
   );
 };

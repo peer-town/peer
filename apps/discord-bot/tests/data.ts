@@ -32,7 +32,12 @@ export const sampleComment = {
       "id": "kjzl6kcym7w8y772zht4omem25y3plfp929wsgumb158oi8uca2fnlhcdri2jqx",
       "title": "Is storing secrets in redux store secure?",
       "userId": "k2t6wzhkhabz2wixqd45q1wxpoy9fg7wd2dbfp2vzgq0wd2dq9sh5fkzywjxye",
-      "threadId": "na",
+      "socialThreadIds": [
+        {
+          "platformName": "discord",
+          "threadId": "1092795497066020864"
+        }
+      ],
       "createdAt": "2023-03-15T09:22:45.468Z",
       "community": {
         "socialPlatforms": {
@@ -86,7 +91,12 @@ export const sampleThread = {
     "title": "Is storing secrets in redux store secure?",
     "body": "From the docs, I understand that Redux store variables in memory so it should be readable to the browser, but is it secure enough to store sensitive information?",
     "userId": "k2t6wzhkhabz2wixqd45q1wxpoy9fg7wd2dbfp2vzgq0wd2dq9sh5fkzywjxye",
-    "threadId": "na",
+    "socialThreadIds": [
+      {
+        "platformName": "discord",
+        "threadId": "1092795497066020864"
+      }
+    ],
     "createdAt": "2023-03-15T09:22:45.468Z",
     "communityId": "kjzl6kcym7w8y8dgfi093n3o6gby2gwq4fs3nltxjl8gutwvr2ol1sf9vpdmn09",
     "createdFrom": "devnode",

@@ -16,7 +16,7 @@ export const SecondaryButton = (props: ButtonProps) => {
     <button
       type="button"
       id="primary-button"
-      className={`cursor-pointer flex rounded-[10px] h-[48px] border border-black px-8 py-3 text-sm font-medium text-black hover:bg-gray-100 ${props.classes || ''}`}
+      className={`cursor-pointer flex rounded-[10px] h-[48px] border border-gray-500 px-8 py-3 text-sm font-medium text-black hover:bg-gray-100 ${props.classes || ''}`}
       disabled={props.disabled}
       onClick={props.onClick}
     >

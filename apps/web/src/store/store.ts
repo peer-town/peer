@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/user";
 import communityReducer from "./features/community";
+import profileReducer from "./features/profile";
 import { loadFromLocalStorage, saveToLocalStorage } from "./storage";
 
 export const store = configureStore({
   reducer: {
     community: communityReducer,
     user: userReducer,
+    profile: profileReducer,
   },
   preloadedState: loadFromLocalStorage(),
 });
