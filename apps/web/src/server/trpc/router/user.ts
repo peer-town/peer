@@ -112,7 +112,7 @@ export const userRouter = router({
     .input(
       z.object({
         streamId: z.string(),
-        first: z.number().min(1).max(100),
+        first: z.number().min(1).max(100).nullish(),
         after: z.string().nullish(),
       })
     )

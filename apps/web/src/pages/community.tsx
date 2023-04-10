@@ -66,8 +66,8 @@ const CommunityPage = () => {
   return (
     <div className="flex h-full max-h-full flex-col overflow-y-hidden">
       <JoinCommunity />
-      <div className="flex h-full flex-row overflow-y-hidden">
-        <div className="mx-4 hidden w-[30%] md:block">
+      <div className="flex h-full flex-row">
+        <div className="mx-4 flex flex-col h-full w-[30%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>
           )}
