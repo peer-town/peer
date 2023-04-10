@@ -91,17 +91,18 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
       return;
     }
 
-    if (!has(user, "id") || !has(user, "didSession")) {
+    if (!has(user, "id") || isNil(get(user, "didSession"))) {
       toast.error("Please re-connect with your wallet!");
+      setCreatingThread(false);
       return;
     }
 
     if (!community.communityId) {
       toast.error("Please select community");
+      setCreatingThread(false);
       return;
     }
 
-    setCreatingThread(true);
     const result = await createThread
         .mutateAsync({
           session: user.didSession,
