@@ -42,7 +42,7 @@ const FeedPage = () => {
       <div className="w-[30%] mx-4 hidden md:block">
         <p className="text-4xl font-medium my-4">your feed</p>
         <Search onQuery={() => {}}/>
-        <div className="scrollbar-hide flex h-screen flex-col mt-4 space-y-4 overflow-y-scroll pt-4">
+        <div className="scrollbar-hide flex h-[80%] flex-col mt-4 space-y-4 overflow-y-scroll pt-4">
           {threads && threads.map((thread) => (
               <Link
                 key={thread.node.id}
