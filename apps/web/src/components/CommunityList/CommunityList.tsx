@@ -1,21 +1,15 @@
 import { CommunityAvatar } from "../CommunityAvatar";
 import { trpc } from "../../utils/trpc";
 import * as utils from "../../utils";
-import { has, get, isNil, isEmpty } from "lodash";
+import { get, isNil, isEmpty } from "lodash";
 import { selectCommunity, useAppDispatch, useAppSelector } from "../../store";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { isRight } from "../../utils/fp";
-import { constants } from "../../config";
 import Link from "next/link";
 
 const CommunityList = () => {
-  const [clicked, setClicked] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const communityId = useAppSelector(
     (state) => state.community.selectedCommunity
   );
-  const didSession = useAppSelector((state) => state.user.didSession);
   const userId = useAppSelector((state) => state.user.id);
 
   //fetch user joined communities

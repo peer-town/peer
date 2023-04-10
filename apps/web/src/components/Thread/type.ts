@@ -1,5 +1,4 @@
 import {Thread} from "../../server/types";
-import { CommunityState, CompleteUserState } from "../../store";
 
 export type Platform = {
     platformId : string,
@@ -20,4 +19,15 @@ export interface CreateThreadProps {
         communityName: string;
         communityId: string;
     },
+}
+
+export interface GlobalCreateThreadProps {
+    title:string,
+    open:boolean,
+    onClose():void
+}
+
+export interface SelectedCommunity {
+        communityName: string;
+        communityId: string;
 }

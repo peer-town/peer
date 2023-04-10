@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
 import { CommunityDiscordDetails } from "./types";
 
-const CommunityOnboard = (props) => {
+const CommunityOnboard = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { address } = useAccount();
@@ -80,13 +80,13 @@ const CommunityOnboard = (props) => {
       await updateUserProfileWithDiscord(data.profile);
     }
     const details = data.guild;
-    console.log("details",details);
+
     const communityDiscordData: CommunityDiscordDetails = {
       id : details.id,
       name : details.name,
       icon: details.icon
     }
-    console.log("details",details);
+
     setCommunityDiscordDetails(communityDiscordData);
     setSocialInterfaces(false);
     setCommunityOnboarding(true);
@@ -212,7 +212,10 @@ const CommunityOnboard = (props) => {
       <InterfacesModal
         type={"community"}
         open={socialInterfaces}
-        onClose={() => setSocialInterfaces(false)}
+        onClose={() => {
+          setSocialInterfaces(false);
+          setClicked(false);
+        }}
       />
     </>
   );

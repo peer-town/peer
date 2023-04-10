@@ -832,7 +832,7 @@ export const composeQueryHandler = () => {
         author: userAuthorId,
       });
       const isUSER = response?.node?.users?.edges
-      console.log("isUSER",isUSER)
+
       if(isUSER && isUSER?.length>0){
         return true;
       }

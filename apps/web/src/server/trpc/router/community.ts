@@ -76,7 +76,7 @@ export const communityRouter = router({
           return left(socialPlatformResp.errors);
         }
         const payload = { userId: platform.userId, communityId: communityId };
-        console.log("payload",payload);
+
         const userCommunityRelationResp =
           await handler.createUserCommunityRelation(payload);
         return userCommunityRelationResp.errors && userCommunityRelationResp.errors.length > 0
