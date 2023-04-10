@@ -53,7 +53,7 @@ const Home: NextPage = () => {
                       communityName={community.node.communityName}
                       about={community.node.description}
                       communityAvatar={
-                        community.node.socialPlatforms.edges[0].node
+                        community.node.socialPlatforms.edges[0]?.node
                           .communityAvatar
                       }
                       members={20}

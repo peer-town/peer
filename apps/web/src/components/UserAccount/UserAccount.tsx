@@ -1,5 +1,5 @@
 import {AvatarCard} from "../AvatarCard"
-import {showUserProfile, useAppSelector} from "../../store"
+import {showUserProfile, updateDid, updateDidSession, useAppSelector} from "../../store"
 import {get, isNil} from "lodash"
 import {useEffect, useState} from "react";
 import {useAppDispatch} from "../../store";
@@ -9,13 +9,15 @@ import {useDisconnect} from "wagmi";
 const UserAccount = (props) => {
   const user = useAppSelector((state) => state.user);
   const [isUser, setUser] = useState<boolean>(false);
-  const { disconnect } = useDisconnect();
+  const {disconnect} = useDisconnect();
   const dispatch = useAppDispatch();
 
-  const viewProfilehandler = () =>{
-      dispatch(showUserProfile({userProfileId: user.id}));
+  const viewProfilehandler = () => {
+    dispatch(showUserProfile({userProfileId: user.id}));
   }
-  const handleDisconnect = () =>{
+  const handleDisconnect = () => {
+    dispatch(updateDid(null));
+    dispatch(updateDidSession(null));
     disconnect();
   }
   useEffect((() => {

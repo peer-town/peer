@@ -1,7 +1,7 @@
 import {useState} from "react";
 import Question from "../Modal/Question/Question";
 import * as utils from "../../utils";
-import {get, has, isEmpty} from "lodash";
+import {get, has, isEmpty, isNil} from "lodash";
 import {toast} from "react-toastify";
 import {trpc} from "../../utils/trpc";
 import {constants} from "../../config";
@@ -54,17 +54,18 @@ const CreateThread = (props: CreateThreadProps) => {
       return;
     }
 
-    if (!has(user, "id") || !has(user, "didSession")) {
+    if (!has(user, "id") || isNil(get(user, "didSession"))) {
       toast.error("Please re-connect with your wallet!");
+      setCreatingThread(false);
       return;
     }
 
     if (!communityId) {
       toast.error("Please select community");
+      setCreatingThread(false);
       return;
     }
 
-    setCreatingThread(true);
     const result = await createThread
       .mutateAsync({
         session: user.didSession,

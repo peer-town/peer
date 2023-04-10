@@ -38,7 +38,7 @@ const FeedPage = () => {
   }
  
    return (
-    <div className="flex flex-row max-h-screen overflow-y-hidden">
+    <div className="flex flex-row max-h-screen h-full overflow-y-hidden">
       <div className="w-[30%] mx-4 flex flex-col">
         <p className="text-4xl font-medium my-4">your feed</p>
         <Search onQuery={() => {}}/>
