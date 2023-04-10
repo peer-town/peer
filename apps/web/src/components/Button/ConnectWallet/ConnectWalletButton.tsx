@@ -7,8 +7,8 @@ import { DIDSession } from "did-session";
 import { config } from "../../../config";
 import { toast } from "react-toastify";
 import { ConnectWalletProps } from "./types";
-import { useAppDispatch, updateDidSession, updateDid, useAppSelector } from "../../../store";
-import { isNil } from "lodash";
+import { useAppDispatch, updateDidSession, updateDid } from "../../../store";
+
 
 export const ConnectWalletButton = (props: ConnectWalletProps) => {
   const { open } = useWeb3Modal();
@@ -70,7 +70,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
     <button
       className={utils.classNames(
         "flex h-[74px] items-center justify-center w-full",
-        "bg-[#DDDDDD] focus:outline-none",
+        "bg-[#5865F2] focus:outline-none",
         "font-medium text-white "
       )}
       onClick={onClick}
