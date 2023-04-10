@@ -23,7 +23,7 @@ const CommunityList = () => {
     streamId: userId,
     first: 10,
   });
-  console.log("joinedcommunities", communities);
+
   const handleOnCommunityClick = (communityDetails: {
     selectedCommunity: string;
     communityName: string;
