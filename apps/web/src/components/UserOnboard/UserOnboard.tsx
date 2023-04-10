@@ -164,7 +164,7 @@ const UserOnboard = () => {
       <InterfacesModal
         type={"user"}
         open={socialInterfaces}
-        onClose={() => setSocialInterfaces(false)}
+        onClose={() => {}}
       />
     </div>
   );

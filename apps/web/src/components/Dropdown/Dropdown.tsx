@@ -6,7 +6,7 @@ const Dropdown = (props: DropDownProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const toggleDropdown = () => {
     // @ts-ignore
-    setOpen((prevState) => !prevState);
+    !props.disableDropdown && setOpen((prevState) => !prevState);
   }
 
   return (
