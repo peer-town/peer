@@ -1,0 +1,14 @@
+type Thread @loadModel(id: "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x") {
+  id: ID!
+}
+
+type Tag @loadModel(id: "kjzl6hvfrbw6c9mri41w31xgzu53xca1k1y0jg0lbolkujfa4t1ilvoo3nkvffr"){
+  id: ID!
+}
+
+type ThreadTag @createModel(accountRelation: LIST, description: "Tag and Thread Relation") {
+  threadId: StreamID! @documentReference(model: "Thread")
+  thread: Thread! @relationDocument(property: "threadId")
+  tagId: StreamID! @documentReference(model: "Tag")
+  tag: Tag! @relationDocument(property: "tagId")
+}
