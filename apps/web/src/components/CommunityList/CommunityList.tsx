@@ -38,32 +38,32 @@ const CommunityList = () => {
       return <></>;
     }
 
-    return communities.data.edges.map((community, index) => {
-      if (!community.node) return null;
+    return communities.data.edges.map((communityNode, index) => {
+      if (!communityNode.node) return null;
 
       const communityDetails = {
-        selectedCommunity: community.node?.community?.id,
-        communityName: community.node?.community?.communityName,
+        selectedCommunity: communityNode.node?.community?.id,
+        communityName: communityNode.node?.community?.communityName,
         communityAvatar: get(
-          community,
+          communityNode,
           "node.community.socialPlatforms.edges[0].node.communityAvatar"
         ),
-        description: community.node?.community?.description,
+        description: communityNode.node?.community?.description,
       };
-      const name = community.node?.community?.communityName;
+      const name = communityNode.node?.community?.communityName;
       const image =
         get(
-          community,
+          communityNode,
           "node.community.socialPlatforms.edges[0].node.communityAvatar"
         ) || "https://placekitten.com/200/200";
-      const selected = community.node?.community?.id == communityId;
+      const selected = communityNode.node?.community?.id == communityId;
       return (
         <Link
         className={'w-full'}
           key={index}
           href={{
             pathname: "/community",
-            query: { communityId: community.node?.community?.id },
+            query: { communityId: communityNode.node?.community?.id },
           }}
         >
           <CommunityAvatar

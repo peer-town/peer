@@ -10,28 +10,28 @@ import * as utils from "../../utils";
 import { ConnectWalletButton } from "../Button/ConnectWallet";
 import { InterfacesModal, WebOnBoardModal } from "../Modal";
 import { toast } from "react-toastify";
+import {UserAccount} from "../UserAccount";
 
 const UserOnboard = () => {
-  const { address, isConnected } = useAccount();
-  const [webOnboarding, setWebOnBoarding] = useState(false);
-  const [connected, setConected] = useState(false);
-  const [notAUser, setNotAUser] = useState(false);
-  const [notADiscordUser, setNotADiscordUser] = useState(false);
+  const { address } = useAccount();
+  const [webOnboard, setWebOnboard] = useState(false);
   const [socialInterfaces, setSocialInterfaces] = useState(false);
+  const [isUser,setUser] = useState<boolean>(false);
   const router = useRouter();
   const code = router.query.code as string;
 
   const dispatch = useAppDispatch();
   const didSession = useAppSelector((state) => state.user.didSession);
   const userPlatforms = useAppSelector((state) => state.user.userPlatforms);
+  const userId = useAppSelector((state) => state.user.id);
 
   const createUser = trpc.user.createUser.useMutation();
   const updateUser = trpc.user.updateUser.useMutation();
   const currentUser = trpc.user.getUser.useQuery({ address });
 
-  useEffect(() => {
-    setConected(isConnected);
-  }, [isConnected]);
+  useEffect((()=>{
+    setUser(isNil(userId))
+  }),[userId])
 
   useEffect(() => {
     dispatch(fetchUserDetails(address));
@@ -46,10 +46,10 @@ const UserOnboard = () => {
   useEffect(() => {
     const checkUser = () => {
       if (address && (isNil(userPlatforms) || isNil(userPlatforms[0].platformId))) {
-        setWebOnBoarding(true);
+        setWebOnboard(true);
       }
       else{
-        setWebOnBoarding(false);
+        setWebOnboard(false);
       }
     };
     checkUser();
@@ -115,7 +115,7 @@ const UserOnboard = () => {
   const handleOnUserConnected = async () => {
     const existingUser = await trpcProxy.user.getUser.query({ address });
     if (isRight(existingUser) && !existingUser.value.id) {
-      setWebOnBoarding(true);
+      setWebOnboard(true);
     } else {
       if (has(existingUser, "value.userPlatforms")) {
         const platforms = get(existingUser, "value.userPlatforms");
@@ -146,28 +146,20 @@ const UserOnboard = () => {
         if (has(response, "data.value.id")) {
           dispatch(fetchUserDetails(address));
         }
-        setWebOnBoarding(false);
+        setWebOnboard(false);
         setSocialInterfaces(true);
       });
     }
   };
 
-  const getUserAvatar = (user) => {
-    if (!user) {
-      return;
-    }
-    if (has(user, "data.value.userPlatforms[0].platformAvatar")) {
-      return get(user, "data.value.userPlatforms[0].platformAvatar");
-    }
-  };
-
   return (
-    <div>
-      <ConnectWalletButton onSessionCreated={handleOnUserConnected} />
+    <div className={"w-full"}>
+      {isUser && <ConnectWalletButton onSessionCreated={handleOnUserConnected} />}
+      <UserAccount/>
         <WebOnBoardModal
           onSubmit={handleWebOnboardSubmit}
-          open={webOnboarding}
-          onClose={() => setWebOnBoarding(false)}
+          open={webOnboard}
+          onClose={() => setWebOnboard(false)}
         />
       <InterfacesModal
         type={"user"}

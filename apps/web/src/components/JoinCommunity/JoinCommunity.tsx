@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../../store";
-import { trpc, trpcProxy } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
 import { SecondaryButton } from "../Button/SecondaryButton";
-import { has, isNil, omit } from "lodash";
+import { has, isNil } from "lodash";
 import { isRight } from "../../utils/fp";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
@@ -21,12 +21,14 @@ const JoinCommunity = () => {
     userAuthor: data.userAuthor,
     communityStreamId: communityId,
   });
+
   const createUserCommunityRelation =
     trpc.community.createUserCommunityRealtion.useMutation();
 
-  const JoinCommunityHandler = async () => {
+  const joinCommunityHandler = async () => {
     if(isNil(data.session)){
       toast.error("Please re-connect with your wallet!");
+      return;
     }
     setLoading(true);
     const response = await createUserCommunityRelation.mutateAsync({
@@ -48,12 +50,12 @@ const JoinCommunity = () => {
   };
   return (
     <div>
-      {hasUser.data === false && (
+      {(hasUser.data === false) && (
         <SecondaryButton
           classes={"w-full border-0 rounded-none !bg-[#5865F2] justify-center !text-white"}
           loading={loading}
           title={loading ? "Joining..." : "Join Community"}
-          onClick={JoinCommunityHandler}
+          onClick={joinCommunityHandler}
         />
       )}
     </div>

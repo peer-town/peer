@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
 import { CommunityDiscordDetails } from "./types";
 
-const Layout = (props) => {
+const CommunityOnboard = (props) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { address } = useAccount();
@@ -218,4 +218,4 @@ const Layout = (props) => {
   );
 };
 
-export default Layout;
+export default CommunityOnboard;
