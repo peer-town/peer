@@ -67,7 +67,7 @@ const CommunityPage = () => {
     <div className="flex h-full max-h-full flex-col overflow-y-hidden">
       <JoinCommunity />
       <div className="flex h-full flex-row">
-        <div className="mx-4 h-full w-[30%] md:block">
+        <div className="mx-4 flex flex-col h-full w-[30%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>
           )}
@@ -81,7 +81,7 @@ const CommunityPage = () => {
               <AddIcon />
             </button>
           </FlexRow>
-          <div className="scrollbar-hide mt-4 flex h-[80%] flex-col space-y-4 overflow-y-scroll pt-4">
+          <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
             {threads.data &&
               threads.data.edges.map((thread) => (
                 <Link
