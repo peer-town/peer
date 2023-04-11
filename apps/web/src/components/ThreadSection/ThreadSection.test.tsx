@@ -28,20 +28,22 @@ const mockFetchCommentsByThreadId = {
   isError: false,
   refetch: jest.fn(),
   data: {
-    edges: [
-      {
-        node: {
-          id: 'comment id',
-          content: 'Comment content',
-          createdAt: '2022-01-02T00:00:00.000Z',
-          createdBy: {
-            id: 'user id',
-            username: 'Username',
-            avatar: 'https://some-url.com/avatar.jpg',
+    pages: [{
+      edges: [
+        {
+          node: {
+            id: 'comment id',
+            content: 'Comment content',
+            createdAt: '2022-01-02T00:00:00.000Z',
+            createdBy: {
+              id: 'user id',
+              username: 'Username',
+              avatar: 'https://some-url.com/avatar.jpg',
+            },
           },
         },
-      },
-    ],
+      ],
+    }]
   },
 };
 
@@ -61,7 +63,7 @@ jest.mock('../../utils/trpc', () => ({
         useMutation: () => ({mutateAsync: mutationMock}),
       },
       fetchCommentsByThreadId: {
-        useQuery: () => mockFetchCommentsByThreadId,
+        useInfiniteQuery: () => mockFetchCommentsByThreadId,
       },
     },
   },

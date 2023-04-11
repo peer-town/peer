@@ -8,6 +8,7 @@ import {toast} from "react-toastify";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
 import {Loader} from "../Loader";
+import {LoadMore} from "../Button/LoadMore";
 
 const SendIcon = () => {
   return (
@@ -29,11 +30,22 @@ export const ThreadSection = (props: ThreadSectionProps) => {
 
   const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const createComment = trpc.comment.createComment.useMutation();
-  const comments = trpc.comment.fetchCommentsByThreadId.useQuery({
-    threadId, first: 20, after: undefined
-  });
+  // @ts-ignore
+  const {data, fetchNextPage, hasNextPage, isFetching, refetch} = trpc.comment.fetchCommentsByThreadId.useInfiniteQuery({
+      threadId: threadId,
+      first: 20,
+    },
+    {
+      getNextPageParam: (lastPage) => {
+        if (lastPage?.pageInfo.hasNextPage)
+          return lastPage?.pageInfo.endCursor;
+        return undefined;
+      },
+    }
+  );
+
   if (currentThread.isLoading) {
-    return <Loader />;
+    return <Loader/>;
   }
 
   const handleOnCommentSubmit = async () => {
@@ -59,7 +71,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     if (isRight(result)) {
       setComment("");
       toast.success("Comment posted successfully!");
-      await comments.refetch();
+      await refetch();
     } else {
       toast.error("Failed to post message. Try again in a while!");
     }
@@ -70,9 +82,17 @@ export const ThreadSection = (props: ThreadSectionProps) => {
       <div className="overflow-y-scroll h-full py-4 scrollbar-hide">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px]">
-          {comments.data && comments.data.edges.map((item) => (
-            <Comment key={item.node.id} comment={item.node}/>
+          {data?.pages?.map((page) => (
+            page?.edges.map((item) => (
+              <Comment key={item.node.id} comment={item.node}/>
+            ))
           ))}
+          <LoadMore
+            title={"Load more comments"}
+            isFetching={isFetching}
+            hasNextPage={hasNextPage}
+            next={fetchNextPage}
+          />
         </div>
       </div>
       <div className="flex flex-row py-2 px-4 bottom-8 rounded-xl border h-auto bg-white mt-4">
