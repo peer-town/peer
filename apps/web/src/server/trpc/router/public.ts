@@ -25,11 +25,11 @@ export const publicRouter = router({
     .input(z.object({
       communityId: z.string(),
       first: z.number().nullish(),
-      after: z.string().nullish(),
+      cursor: z.string().nullish(),
     }))
     .query(async ({input}) => {
-      const {first, after, communityId} = input;
-      return await queryHandler.fetchAllCommunityThreads(communityId, first, after);
+      const {first, cursor, communityId} = input;
+      return await queryHandler.fetchAllCommunityThreads(communityId, first, cursor);
     }),
 
   fetchThreadDetails: publicProcedure
@@ -42,10 +42,10 @@ export const publicRouter = router({
   fetchCommunities: publicProcedure
     .input(z.object({
       first: z.number().min(1).max(100),
-      after: z.string().nullish(),
+      cursor: z.string().nullish(),
     }))
     .query(async ({input}) => {
-      return await queryHandler.fetchCommunities(input.first, input.after);
+      return await queryHandler.fetchCommunities(input.first, input.cursor);
   }),
 
   fetchAllCommunities: publicProcedure.query(async () => {

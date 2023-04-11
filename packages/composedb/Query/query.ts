@@ -767,7 +767,7 @@ export const composeQueryHandler = () => {
             edges {
               node {
                 community {
-                  threads(first: $threadCount) {
+                  threads(last: $threadCount) {
                     edges {
                       node {
                         id

@@ -62,11 +62,11 @@ export const commentRouter = router({
     .input(z.object({
       threadId: z.string(),
       first: z.number().min(1).max(100),
-      after: z.string().nullish(),
+      cursor: z.string().nullish(),
     }))
     .query(async ({input}) => {
-      const {threadId, first, after} = input;
-      return await queryHandler.fetchCommentsByThreadId(threadId, first, after);
+      const {threadId, first, cursor} = input;
+      return await queryHandler.fetchCommentsByThreadId(threadId, first, cursor);
     }),
 });
 
