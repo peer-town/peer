@@ -1,14 +1,18 @@
 import {useState} from 'react'
 import {WebOnBoardProps} from "../types";
 import {BaseModal} from "../BaseModal/BaseModal";
+import {Spinner} from "../../Icons";
 
 export const WebOnBoardModal = (props: WebOnBoardProps) => {
   const [name, setName] = useState<string>();
   const [imageUrl, setImageUrl] = useState<string>();
+  const [submitting, setIsSubmitting] = useState<boolean>(false );
 
   const onSave = (event) => {
+    setIsSubmitting(true);
     event.preventDefault();
-    props.onSubmit({name, imageUrl});
+    props.onSubmit({name, imageUrl})
+      .finally(() => setIsSubmitting(false));
   }
 
   return (
@@ -31,9 +35,10 @@ export const WebOnBoardModal = (props: WebOnBoardProps) => {
         />
         <button
           type="submit"
-          className="inline-flex mt-24 h-12 w-full leading-8 justify-center rounded-md border border-transparent bg-[#3478F6] px-4 py-2 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none"
+          className="flex mt-24 h-12 w-full leading-8 justify-center items-center rounded-md border border-transparent bg-[#08010D] px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 focus:outline-none"
         >
-          Save
+          {submitting && <Spinner color={"text-white"} />}
+          {submitting ? "Saving..." : "Save"}
         </button>
       </form>
     </BaseModal>
