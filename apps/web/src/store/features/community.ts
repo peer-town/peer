@@ -6,13 +6,15 @@ export interface CommunityState {
   communityName: string;
   communityAvatar: string;
   description: string;
+  newlyCreatedCommunity?: string,
 }
 
 const initialState: CommunityState = {
   selectedCommunity: "",
-  communityName:"",
+  communityName: "",
   communityAvatar: "",
   description: "",
+  newlyCreatedCommunity: "",
 };
 
 export const communitySlice = createSlice({
@@ -25,8 +27,11 @@ export const communitySlice = createSlice({
       state.communityAvatar = action.payload?.communityAvatar;
       state.description = action.payload?.description;
     },
+    newlyCreatedCommunity: (state, action: PayloadAction<string>) => {
+      state.newlyCreatedCommunity = action.payload
+    }
   },
 });
 
-export const {selectCommunity} = communitySlice.actions;
+export const {selectCommunity, newlyCreatedCommunity} = communitySlice.actions;
 export default communitySlice.reducer;
