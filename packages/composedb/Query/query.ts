@@ -9,6 +9,7 @@ import {
   User,
   UserCommunities,
   UserFeedResponse,
+  Vote,
 } from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
@@ -662,6 +663,14 @@ export const composeQueryHandler = () => {
                         platformUsername
                       }
                     }
+                    votes(first: 100) {
+                      edges {
+                        node {
+                          id
+                          vote
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -840,3 +849,25 @@ export const composeQueryHandler = () => {
     },
   };
 };
+
+// TODO: use where clause when available
+export const getUserVoteOnComment = async (userId: string, commentId: string) => {
+  const query = gql`
+    {
+      voteIndex(first: 500) {
+        edges {
+          node {
+            id
+            userId
+            commentId
+            vote
+          }
+        }
+      }
+    }
+  `;
+  const response = await client.request(query);
+  return response.voteIndex.edges.find((vote: Node<Vote>) => (
+    vote.node.userId === userId && vote.node.commentId === commentId
+  ));
+}
