@@ -1,3 +1,4 @@
+import "../../../test/setup";
 import {ThreadSection} from "./ThreadSection";
 import {Provider} from "react-redux";
 import {store} from "../../store";

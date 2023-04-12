@@ -4,6 +4,7 @@ import {showUserProfile, useAppDispatch} from "../../store";
 import {DownVote, Spinner, UpVote} from "../Icons";
 import {useState} from "react";
 import * as utils from "../../utils";
+import {Markdown} from "../Markdown";
 
 interface CommentProps {
   comment: any;
@@ -64,7 +65,7 @@ export const Comment = (props: CommentProps) => {
           </div>
         </FlexRow>
         <div className="text-md">
-          {comment?.text}
+          <Markdown markdown={comment?.text} />
         </div>
         <FlexRow classes="space-x-2 text-sm text-gray-500">
           {isUpVoting ? <Spinner/> : <UpVote onClick={handleUpVote}/>}
