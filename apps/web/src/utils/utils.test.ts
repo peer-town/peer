@@ -83,3 +83,33 @@ describe("utils.number", () => {
     expect(utils.convertToNumber('NaN')).toEqual(0);
   });
 });
+
+describe("utils.data", () => {
+  it("should return 0 if data is undefined or null", () => {
+    expect(utils.getAbsVotes(undefined)).toEqual(0);
+    expect(utils.getAbsVotes(null)).toEqual(0);
+    expect(utils.getAbsVotes({edges: []})).toEqual(0);
+  });
+
+  it("should return positive for more upvotes and less downvotes", () => {
+    const data = {
+      edges: [
+        {node: {vote: true}},
+        {node: {vote: true}},
+        {node: {vote: false}},
+      ]
+    }
+    expect(utils.getAbsVotes(data as any)).toEqual(1);
+  });
+
+  it("should return negative for less upvotes and more downvotes", () => {
+    const data = {
+      edges: [
+        {node: {vote: true}},
+        {node: {vote: false}},
+        {node: {vote: false}},
+      ]
+    }
+    expect(utils.getAbsVotes(data as any)).toEqual(-1);
+  });
+});
