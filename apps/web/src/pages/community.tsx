@@ -9,7 +9,7 @@ import { trpc } from "../utils/trpc";
 import { Search } from "../components/Search";
 import { CreateThread } from "../components/Thread";
 import { FlexRow } from "../components/Flex";
-import { selectCommunity, useAppDispatch } from "../store";
+import {selectCommunity, useAppDispatch, useAppSelector} from "../store";
 import { JoinCommunity } from "../components/JoinCommunity";
 import { NoData } from "../components/NoData";
 
@@ -35,6 +35,7 @@ const CommunityPage = () => {
   const threads = trpc.public.fetchAllCommunityThreads.useQuery({
     communityId,
   });
+  const newlyCreatedThread = useAppSelector((state) => state.thread.newlyCreatedThread);
   //clean up function is getting called even when the component is mounted
   //until i find any solution, below is the quick fix.
   let mounted = false;
@@ -59,14 +60,21 @@ const CommunityPage = () => {
     }
   }, [threadId, threads.data]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await threads.refetch();
+    }
+    fetchData();
+  }, [newlyCreatedThread])
+
   if (threads.isLoading) {
     return <Loader />;
   }
 
   return (
-    <div className="flex h-full max-h-full flex-col overflow-y-hidden">
+    <div className="flex h-full max-h-full flex-col relative overflow-hidden">
       <JoinCommunity />
-      <div className="flex h-full flex-row">
+      <div className="flex max-h-full flex-row grow ">
         <div className="mx-4 flex flex-col h-full w-[30%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>

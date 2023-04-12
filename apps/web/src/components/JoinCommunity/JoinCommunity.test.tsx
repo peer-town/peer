@@ -35,6 +35,7 @@ jest.mock('../../store', () => ({
       userAuthor: 'sample-community-id',
     };
   },
+  useAppDispatch: jest.fn(),
   store: {
     getState: jest.fn(),
     subscribe: jest.fn(),

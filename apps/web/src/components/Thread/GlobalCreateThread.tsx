@@ -7,13 +7,15 @@ import {trpc} from "../../utils/trpc";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
 import {GlobalCreateThreadProps, SelectedCommunity} from "./type";
-import {useAppSelector} from "../../store";
+import {useAppDispatch, useAppSelector} from "../../store";
 import {PrimaryButton} from "../Button";
 import {useRouter} from "next/router";
 import Dropdown from "../Dropdown/Dropdown";
+import {newlyCreatedThread} from "../../store/features/thread";
 
 const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [question, setQuestion] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
@@ -119,6 +121,7 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
       toast.success("Thread created successfully!");
 
       const threadId = get(result, "value.createThread.createThread.document.id");
+      dispatch(newlyCreatedThread(threadId));
       await router.push({
         pathname: "/community",
         query: {communityId: community.communityId, threadId},

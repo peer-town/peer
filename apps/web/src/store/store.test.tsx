@@ -1,5 +1,4 @@
 import communityReducer, {
-  communitySlice,
   selectCommunity,
 } from "./features/community";
 import { loadFromLocalStorage, saveToLocalStorage } from "./storage";
@@ -22,6 +21,7 @@ const SampleComponent = (props: { onChange(value): void; value: string }) => {
         communityAvatar: "",
         communityName: "",
         description: "",
+        newlyCreatedCommunity: "",
       })
     );
   return <button onClick={handleClick}>Click me</button>;
@@ -40,6 +40,7 @@ describe("redux.community", () => {
       communityAvatar: "",
       communityName: "",
       description: "",
+      newlyCreatedCommunity: "",
     };
     const result = communityReducer(undefined, selectCommunity(state));
     expect(result).toEqual(state);
