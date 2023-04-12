@@ -113,15 +113,15 @@ export const userRouter = router({
       z.object({
         streamId: z.string(),
         first: z.number().min(1).max(100).nullish(),
-        after: z.string().nullish(),
+        cursor: z.string().nullish(),
       })
     )
     .query(async ({ input }) => {
-      const { streamId, first, after } = input;
+      const { streamId, first, cursor } = input;
       return await composeQueryHandler().fetchUserCommunities(
         streamId,
         first,
-        after
+        cursor
       );
     }),
 
