@@ -9,7 +9,7 @@ import { trpc } from "../utils/trpc";
 import { Search } from "../components/Search";
 import { CreateThread } from "../components/Thread";
 import { FlexRow } from "../components/Flex";
-import { selectCommunity, useAppDispatch } from "../store";
+import {selectCommunity, useAppDispatch, useAppSelector} from "../store";
 import { JoinCommunity } from "../components/JoinCommunity";
 import { NoData } from "../components/NoData";
 
@@ -35,6 +35,7 @@ const CommunityPage = () => {
   const threads = trpc.public.fetchAllCommunityThreads.useQuery({
     communityId,
   });
+  const newlyCreatedThread = useAppSelector((state) => state.thread.newlyCreatedThread);
   //clean up function is getting called even when the component is mounted
   //until i find any solution, below is the quick fix.
   let mounted = false;
@@ -58,6 +59,13 @@ const CommunityPage = () => {
       setCurrentThread(undefined);
     }
   }, [threadId, threads.data]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await threads.refetch();
+    }
+    fetchData();
+  }, [newlyCreatedThread])
 
   if (threads.isLoading) {
     return <Loader />;

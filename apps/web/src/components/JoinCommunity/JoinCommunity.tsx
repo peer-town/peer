@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useAppSelector } from "../../store";
+import { useState } from "react";
+import {newlyCreatedCommunity, useAppDispatch, useAppSelector} from "../../store";
 import { trpc } from "../../utils/trpc";
 import { SecondaryButton } from "../Button/SecondaryButton";
 import { has, isNil } from "lodash";
@@ -11,6 +11,7 @@ const JoinCommunity = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
   const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
   const data = useAppSelector((state) => ({
     session:state.user.didSession,
     userId: state.user.id,
@@ -40,13 +41,13 @@ const JoinCommunity = () => {
       isRight(response) &&
       has(response.value, "createUserCommunity.document.id")
     ) {
+      dispatch(newlyCreatedCommunity(communityId));
       toast.success("Joined Community");
     } else {
       toast.error("Could not join community. Please try again later.");
     }
     setLoading(false);
     await hasUser.refetch();
-   
   };
   return (
     <div>
