@@ -6,7 +6,7 @@ import {CommunityCard} from "../components/CommunityCard";
 import {LoadMore} from "../components/Button/LoadMore";
 import {useEffect} from "react";
 import {useAppSelector} from "../store";
-import {isNil} from "lodash";
+import {isEmpty, isNil} from "lodash";
 
 const Home: NextPage = () => {
   const newlyCreatedCommunity = useAppSelector((state) => state.community.newlyCreatedCommunity);
@@ -44,6 +44,7 @@ const Home: NextPage = () => {
           return (
             page?.edges?.map((community, index) => {
               if (isNil(community.node)) return <></>;
+              if (isEmpty(community.node?.socialPlatforms.edges)) return <></>;
               return (
                 <Link
                   key={index}
