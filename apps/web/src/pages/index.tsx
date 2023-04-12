@@ -4,10 +4,14 @@ import Link from "next/link";
 import {Search} from "../components/Search";
 import {CommunityCard} from "../components/CommunityCard";
 import {LoadMore} from "../components/Button/LoadMore";
+import {useEffect} from "react";
+import {useAppSelector} from "../store";
 
 const Home: NextPage = () => {
+  const newlyCreatedCommunity = useAppSelector((state) => state.community.newlyCreatedCommunity);
+
   // @ts-ignore
-  const {data, fetchNextPage, hasNextPage, isFetching} = trpc.public.fetchCommunities.useInfiniteQuery({
+  const {data, fetchNextPage, hasNextPage, refetch, isFetching} = trpc.public.fetchCommunities.useInfiniteQuery({
       first: 10,
     },
     {
@@ -18,6 +22,13 @@ const Home: NextPage = () => {
       },
     }
   );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await refetch();
+    }
+    fetchData();
+  }, [newlyCreatedCommunity])
 
   return (
     <div className="container mx-auto">

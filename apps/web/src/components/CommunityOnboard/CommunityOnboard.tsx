@@ -3,8 +3,7 @@ import { trpc } from "../../utils/trpc";
 import * as utils from "../../utils";
 import { get, has } from "lodash";
 import {
-  fetchUserDetails,
-  selectCommunity,
+  fetchUserDetails, newlyCreatedCommunity,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
@@ -41,7 +40,6 @@ const CommunityOnboard = () => {
     };
   });
 
-  const communities = trpc.public.fetchAllCommunities.useQuery();
   const createCommunity = trpc.community.createCommunity.useMutation();
   const createSocialPlatform =
     trpc.community.createSocialPlatform.useMutation();
@@ -170,8 +168,7 @@ const CommunityOnboard = () => {
           "createCommunity.document.descripton"
         ),
       };
-      dispatch(selectCommunity(communityDetails));
-      communities.refetch();
+      dispatch(newlyCreatedCommunity(communityDetails.selectedCommunity));
 
       await updateCommunityDetailsWithDiscord({...communityDiscordDetails, communityStreamId:communityDetails.selectedCommunity});
     }

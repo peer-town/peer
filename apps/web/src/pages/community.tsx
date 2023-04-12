@@ -9,7 +9,7 @@ import {trpc} from "../utils/trpc";
 import {Search} from "../components/Search";
 import {CreateThread} from "../components/Thread";
 import {FlexRow} from "../components/Flex";
-import {selectCommunity, useAppDispatch} from "../store";
+import {selectCommunity, useAppDispatch, useAppSelector} from "../store";
 import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
@@ -35,7 +35,7 @@ const CommunityPage = () => {
   });
   const communityName = get(community, "data.value.node.communityName");
   // @ts-ignore
-  const {data, isLoading, isFetching, fetchNextPage, hasNextPage} = trpc.public.fetchAllCommunityThreads.useInfiniteQuery({
+  const {data, isLoading, isFetching, refetch, fetchNextPage, hasNextPage} = trpc.public.fetchAllCommunityThreads.useInfiniteQuery({
       first: 20,
       communityId: communityId,
     },
@@ -47,7 +47,7 @@ const CommunityPage = () => {
       },
     }
   );
-
+  const newlyCreatedThread = useAppSelector((state) => state.thread.newlyCreatedThread);
   //clean up function is getting called even when the component is mounted
   //until i find any solution, below is the quick fix.
   let mounted = false;
@@ -72,14 +72,21 @@ const CommunityPage = () => {
     }
   }, [threadId, data?.pages]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      await refetch();
+    }
+    fetchData();
+  }, [newlyCreatedThread])
+
   if (isLoading) {
-    return <Loader/>;
+    return <Loader />;
   }
 
   return (
-    <div className="flex h-full max-h-full flex-col overflow-y-hidden">
+    <div className="flex h-full max-h-full flex-col relative overflow-hidden">
       <JoinCommunity />
-      <div className="flex h-full flex-row">
+      <div className="flex max-h-full flex-row grow ">
         <div className="mx-4 flex flex-col h-full w-[30%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>

@@ -1,14 +1,16 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {configureStore} from "@reduxjs/toolkit";
 import userReducer from "./features/user";
 import communityReducer from "./features/community";
 import profileReducer from "./features/profile";
-import { loadFromLocalStorage, saveToLocalStorage } from "./storage";
+import threadReducer from "./features/thread";
+import {loadFromLocalStorage, saveToLocalStorage} from "./storage";
 
 export const store = configureStore({
   reducer: {
     community: communityReducer,
     user: userReducer,
     profile: profileReducer,
+    thread: threadReducer,
   },
   preloadedState: loadFromLocalStorage(),
 });
