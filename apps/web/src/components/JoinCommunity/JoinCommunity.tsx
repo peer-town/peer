@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {newlyCreatedCommunity, useAppDispatch, useAppSelector} from "../../store";
 import { trpc } from "../../utils/trpc";
 import { SecondaryButton } from "../Button/SecondaryButton";
@@ -11,7 +11,7 @@ const JoinCommunity = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
   const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const data = useAppSelector((state) => ({
     session:state.user.didSession,
     userId: state.user.id,
