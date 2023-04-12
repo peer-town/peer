@@ -75,7 +75,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
           ))}
         </div>
       </div>
-      <div className="absolute bottom-0 pb-[20px] h-auto bg-white mt-4 w-[70%]">
+      <div className="absolute bottom-0 pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-[70%]">
       <div className="flex flex-row py-2 px-4 rounded-xl border h-auto items-center">
         <textarea
           id="chat"
