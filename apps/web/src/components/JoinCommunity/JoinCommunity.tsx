@@ -49,11 +49,12 @@ const JoinCommunity = () => {
     setLoading(false);
     await hasUser.refetch();
   };
+
   return (
     <div>
       {(hasUser.data === false) && (
         <SecondaryButton
-          classes={"w-full border-0 rounded-none !bg-[#5865F2] justify-center !text-white"}
+          classes={"w-full border-0 !rounded-none !bg-[#5865F2] justify-center !text-white"}
           loading={loading}
           title={loading ? "Joining..." : "Join Community"}
           onClick={joinCommunityHandler}

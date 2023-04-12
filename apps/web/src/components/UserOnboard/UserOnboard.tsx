@@ -39,7 +39,7 @@ const UserOnboard = () => {
 
   useEffect(() => {
    if (code) {
-      handleDiscordAuthCallback(code).catch(console.log);
+      handleDiscordAuthCallback(code).catch(() => toast.dismiss());
     }
   }, [code]);
 
@@ -84,6 +84,7 @@ const UserOnboard = () => {
     if (hasDiscord) {
       return;
     }
+    toast.loading("Creating you profile!");
     await updateUserProfileWithDiscord(profile);
   };
 
@@ -108,6 +109,7 @@ const UserOnboard = () => {
           dispatch(fetchUserDetails(address));
         }
       });
+      toast.dismiss();
       toast.success("Updated profile with discord info!");
     }
   };

@@ -27,9 +27,9 @@ export interface BaseModalProps extends ModalProps {
 }
 
 export interface WebOnBoardProps extends ModalProps {
-  onSubmit(data: WebOnBoardData): void;
+  onSubmit(data: WebOnBoardData): Promise<void>;
 }
 
 export interface CommunityOnBoardProps extends ModalProps {
-  onSubmit(data: CommunityOnBoardData): void;
+  onSubmit(data: CommunityOnBoardData): Promise<void>;
 }

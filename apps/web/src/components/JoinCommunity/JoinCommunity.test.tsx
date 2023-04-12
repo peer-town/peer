@@ -91,7 +91,7 @@ describe.only("<JoinCommunity />", () => {
     expect(button).not.toBeInTheDocument();
   });
 
-  it("should call mutation to create userCommunity relation", () => {
+  it("should call mutation to create userCommunity relation", async () => {
     (trpc.user.checkCommunityUser.useQuery as jest.Mock).mockReturnValue({
       data: false,
       refetch: jest.fn(),
@@ -107,7 +107,7 @@ describe.only("<JoinCommunity />", () => {
     render(<JoinCommunity />);
 
     const button = screen.getByRole("button");
-    act(() => {
+    await act(async () => {
       fireEvent.click(button);
     });
     expect(mutationMock).toBeCalledTimes(1);
