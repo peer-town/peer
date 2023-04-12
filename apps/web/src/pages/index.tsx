@@ -6,6 +6,7 @@ import {CommunityCard} from "../components/CommunityCard";
 import {LoadMore} from "../components/Button/LoadMore";
 import {useEffect} from "react";
 import {useAppSelector} from "../store";
+import {isNil} from "lodash";
 
 const Home: NextPage = () => {
   const newlyCreatedCommunity = useAppSelector((state) => state.community.newlyCreatedCommunity);
@@ -42,6 +43,7 @@ const Home: NextPage = () => {
         {data?.pages?.map((page) => {
           return (
             page?.edges?.map((community, index) => {
+              if (isNil(community.node)) return <></>;
               return (
                 <Link
                   key={index}
