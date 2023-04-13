@@ -35,6 +35,7 @@ apps/discord-bot/tsconfig.tsbuildinfo
 apps/indexer/tsconfig.tsbuildinfo
 prisma/dev.db
 .env
+.env.*
 
 packages/composedb/.ceramic
 .idea/
