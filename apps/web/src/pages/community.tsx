@@ -92,7 +92,9 @@ const CommunityPage = () => {
             <p className="my-4 text-4xl font-medium">{communityName}</p>
           )}
           <FlexRow classes="gap-2">
-            <Search onQuery={() => {}} />
+            <div className="grow">
+              <Search onQuery={() => {}} />
+            </div>
             <button
               title="ask a question"
               className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
