@@ -100,17 +100,28 @@ export const ThreadSection = (props: ThreadSectionProps) => {
         <textarea
           id="chat"
           ref={commentBoxRef}
+          spellCheck={true}
           rows={1}
-          className="block min-h-[50x] mx-4 p-2.5 w-full resize-none scrollbar-hide focus:outline-none"
+          className="block min-h-[20px] max-h-72 mx-4 w-full resize-none scrollbar-hide focus:outline-none"
           placeholder="Send message"
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          onKeyUp={(event: any) => {
-            const numberOfLineBreaks = (event.target.value.match(/\n/g) || []).length;
+          onChange={(e) => {
+            setComment(e.target.value);
+            const numberOfLineBreaks = (e.target.value.match(/\n/g) || []).length;
             // min-height + lines x line-height + padding + border
-            const newHeight = 25 + numberOfLineBreaks * 20 + 12 + 1;
+            const newHeight = 20 + numberOfLineBreaks * 20;
             if (commentBoxRef.current) {
               commentBoxRef.current.style.height = `${newHeight}px`;
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              handleOnCommentSubmit().finally(() => {
+                if (commentBoxRef.current) {
+                  // default height
+                  commentBoxRef.current.style.height = `20px`;
+                }
+              });
             }
           }}
         />
