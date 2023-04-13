@@ -84,10 +84,10 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="flex h-full max-h-full flex-col relative overflow-hidden">
+    <div className="flex h-screen flex-col overflow-y-hidden">
       <JoinCommunity />
-      <div className="flex max-h-full flex-row grow ">
-        <div className="mx-4 flex flex-col h-full w-[30%]">
+      <div className="flex flex-row grow overflow-y-auto">
+      <div className="mx-4 flex flex-col w-[40%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>
           )}
@@ -101,7 +101,7 @@ const CommunityPage = () => {
               <AddIcon />
             </button>
           </FlexRow>
-          <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
+          <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
             {data?.pages?.map((page) => (
                page?.edges?.map((thread) => (
                 <Link
