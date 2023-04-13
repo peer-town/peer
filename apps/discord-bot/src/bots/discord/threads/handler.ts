@@ -1,7 +1,7 @@
 import {AnyThreadChannel, ChannelType, TextChannel} from "discord.js";
 import {Clients, Node, PostThreadToSocialPayload, User} from "../../../core/types";
 import {config, constants, getBotDid} from "../../../config";
-import {buildMessage, buildThread} from "../utils";
+import {buildMessage, buildThread, logErrorToDev} from "../utils";
 import {composeMutationHandler} from "@devnode/composedb";
 import {logger} from "../../../core/utils/logger";
 
@@ -44,6 +44,8 @@ export const handleNewThread = async (clients: Clients, thread: AnyThreadChannel
   if(result.errors && result.errors.length > 0) {
     logger.error('discord', {e: result.errors});
     await thread.delete().catch((e) => logger.error('discord', {e}));
+    await thread.send(constants.replies.composeError);
+    logErrorToDev(clients.discord, result.errors);
   }
 };
 
