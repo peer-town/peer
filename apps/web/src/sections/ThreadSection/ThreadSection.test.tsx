@@ -65,6 +65,12 @@ jest.mock('../../utils/trpc', () => ({
       fetchCommentsByThreadId: {
         useInfiniteQuery: () => mockFetchCommentsByThreadId,
       },
+      upVoteComment: {
+        useMutation: () => ({mutateAsync: mutationMock}),
+      },
+      downVoteComment: {
+        useMutation: () => ({mutateAsync: mutationMock}),
+      }
     },
   },
 }));

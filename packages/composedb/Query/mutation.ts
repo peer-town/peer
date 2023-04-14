@@ -2,6 +2,7 @@ import {ComposeClient} from "@composedb/client";
 import {
   CommentInput,
   CommunityDetails,
+  CreateVoteInput,
   SocialCommentId,
   SocialPlatformInput,
   SocialThreadId,
@@ -372,3 +373,54 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
     },
   };
 };
+
+const createVoteComment = async (compose: ComposeClient, input: CreateVoteInput) => {
+  const query = gql`
+    mutation UpVoteComment($input: CreateVoteInput!) {
+      createVote(input: $input) {
+        document {
+          id
+          userId
+          commentId
+          vote
+        }
+      }
+    }
+  `;
+  return await compose.executeQuery(query, {
+    input: {
+      content: input,
+    }
+  });
+}
+
+export const updateVoteComment = async (compose: ComposeClient, voteId: string, vote: boolean) => {
+  const query = gql`
+    mutation UpdateVoteComment($input: UpdateVoteInput!) {
+      updateVote(input: $input) {
+        document {
+          id
+          vote
+        }
+      }
+    }
+  `;
+  return await compose.executeQuery(query, {
+    input: {
+      id: voteId,
+      content: {vote}
+    },
+  });
+}
+
+export const upVoteComment = async (compose: ComposeClient, commentId: string, userId: string) => {
+  return createVoteComment(compose, {
+    vote: true, commentId, userId,
+  });
+}
+
+export const downVoteComment = async (compose: ComposeClient, commentId: string, userId: string) => {
+  return createVoteComment(compose, {
+    vote: false, commentId, userId,
+  });
+}
