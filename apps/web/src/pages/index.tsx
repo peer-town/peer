@@ -45,6 +45,14 @@ const Home: NextPage = () => {
             page?.edges?.map((community, index) => {
               if (isNil(community.node)) return <></>;
               if (isEmpty(community.node?.socialPlatforms.edges)) return <></>;
+              let tags: any;
+              if (isEmpty(community.node?.tags.edges)) {
+                tags = ["no tags"]
+              }
+              else {
+                tags = community.node?.tags?.edges.map((tag) => tag?.node?.tag?.tag);
+              }
+
               return (
                 <Link
                   key={index}
@@ -63,15 +71,7 @@ const Home: NextPage = () => {
                     }
                     members={20}
                     questions={10}
-                    tags={[
-                      "solidity",
-                      "finance",
-                      "Next.js",
-                      "Another",
-                      "One",
-                      "More",
-                      "Two",
-                    ]}
+                    tags={tags}
                   />
                 </Link>
               );
