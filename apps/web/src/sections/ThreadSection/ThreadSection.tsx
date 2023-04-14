@@ -58,7 +58,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   const handleOnCommentSubmit = async () => {
-    if (comment.length === 0) {
+    if (comment.trim().length === 0) {
       toast.warn("Comment cannot be empty");
       return;
     }
