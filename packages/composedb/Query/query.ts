@@ -850,24 +850,32 @@ export const composeQueryHandler = () => {
   };
 };
 
-// TODO: use where clause when available
-export const getUserVoteOnComment = async (userId: string, commentId: string) => {
+export const getUserVoteOnComment = async (commentId: string, userAuthorId: string) => {
   const query = gql`
-    {
-      voteIndex(first: 500) {
-        edges {
-          node {
-            id
-            userId
-            commentId
-            vote
+  query voteOnComment($id: ID!, $author: ID!) {
+    node(id: $id) {
+      ... on Comment {
+        id
+        votes(first: 1, account: $author) {
+          edges {
+            node {
+              id
+              vote
+              user {
+                author {
+                  id
+                }
+              }
+            }
           }
         }
       }
     }
+  }
   `;
-  const response = await client.request(query);
-  return response.voteIndex.edges.find((vote: Node<Vote>) => (
-    vote.node.userId === userId && vote.node.commentId === commentId
-  ));
+  const response = await client.request(query, {
+    id: commentId,
+    author: userAuthorId,
+  });
+  return response.node.votes.edges[0];
 }

@@ -34,6 +34,7 @@ const voteCommentSchema = z.object({
   session: z.string(),
   commentId: z.string(),
   userId: z.string(),
+  userAuthorId: z.string(),
 });
 
 const getHandler = async (didSession: string) => {
@@ -92,10 +93,11 @@ export const commentRouter = router({
     .input(voteCommentSchema)
     .mutation(async ({input}) => {
       try {
-        const {session, userId, commentId} = input;
+        const {session, userId, userAuthorId, commentId} = input;
         const compose = await getCompose(session);
-        const existing = await getUserVoteOnComment(userId, commentId);
+        const existing = await getUserVoteOnComment(commentId, userAuthorId);
         if (!isNil(existing)) {
+          if (existing.node.vote) return right(existing); // its upvoted 
           const response = await updateVoteComment(compose, existing.node.id, true);
           return (response.errors && response.errors.length > 0)
             ? left(response.errors)
@@ -115,10 +117,11 @@ export const commentRouter = router({
     .input(voteCommentSchema)
     .mutation(async ({input}) => {
       try {
-        const {session, userId, commentId} = input;
+        const {session, userId, userAuthorId, commentId} = input;
         const compose = await getCompose(session);
-        const existing = await getUserVoteOnComment(userId, commentId);
+        const existing = await getUserVoteOnComment(commentId, userAuthorId);
         if (!isNil(existing)) {
+          if (!existing.node.vote) return right(existing); // its downvoted 
           const response = await updateVoteComment(compose, existing.node.id, false);
           return (response.errors && response.errors.length > 0)
             ? left(response.errors)

@@ -87,17 +87,17 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   const handleUpVote = async (commentId: string) => {
-    if (!has(user, "id") || isNil(get(user, "didSession"))) {
+    if (!has(user, "id") || isNil(get(user, "didSession")) || isNil(get(user, "author.id"))) {
       toast.error("Please re-connect with your wallet!");
       return;
     }
     const result = await upVoteComment.mutateAsync({
       session: get(user, "didSession"),
       userId: get(user, "id"),
+      userAuthorId: get(user, "author.id"),
       commentId: commentId,
     });
     if (isRight(result)) {
-      toast.success("Up vote added");
       await refetch();
     } else {
       toast.error("Up vote failed to add");
@@ -105,17 +105,17 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   const handleDownVote = async (commentId: string) => {
-    if (!has(user, "id") || isNil(get(user, "didSession"))) {
+    if (!has(user, "id") || isNil(get(user, "didSession")) || isNil(get(user, "author.id"))) {
       toast.error("Please re-connect with your wallet!");
       return;
     }
     const result = await downVoteComment.mutateAsync({
       session: get(user, "didSession"),
       userId: get(user, "id"),
+      userAuthorId: get(user, "author.id"),
       commentId: commentId,
     });
     if (isRight(result)) {
-      toast.success("Down vote added");
       await refetch();
     } else {
       toast.error("Down vote failed to add");
