@@ -2,6 +2,7 @@ import {ThreadProps} from "./type";
 import {FlexColumn, FlexRow} from "../Flex";
 import Image from "next/image";
 import {showUserProfile, useAppDispatch} from "../../store";
+import {Markdown} from "../Markdown";
 
 export const Thread = ({thread}: ThreadProps) => {
   const userId = thread?.user?.id;
@@ -44,7 +45,7 @@ export const Thread = ({thread}: ThreadProps) => {
             {thread?.title}
           </div>
           <div className="text-md mt-3 text-gray-500">
-            {thread?.body}
+            <Markdown markdown={thread?.body} />
           </div>
         </FlexColumn>
       </FlexColumn>

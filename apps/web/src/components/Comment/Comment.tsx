@@ -1,11 +1,36 @@
 import {FlexColumn, FlexRow} from "../Flex";
 import Image from "next/image";
 import {showUserProfile, useAppDispatch} from "../../store";
+import {DownVote, Spinner, UpVote} from "../Icons";
+import {useState} from "react";
+import * as utils from "../../utils";
+import {Markdown} from "../Markdown";
 
-export const Comment = ({comment}) => {
+interface CommentProps {
+  comment: any;
+  onUpVote(commentId: string): Promise<void>;
+  onDownVote(commentId: string): Promise<void>;
+}
+
+export const Comment = (props: CommentProps) => {
+  const {comment, onUpVote, onDownVote} = props;
   const userId = comment?.user?.id;
   const user = comment?.user?.userPlatforms[0];
+  const absVotes = utils.getAbsVotes(comment?.votes);
+
   const dispatch = useAppDispatch();
+  const [isUpVoting, setIsUpVoting] = useState(false);
+  const [isDownVoting, setIsDownVoting] = useState(false);
+
+  const handleUpVote = () => {
+    setIsUpVoting(true);
+    onUpVote(comment.id).finally(() => setIsUpVoting(false));
+  }
+
+  const handleDownVote = () => {
+    setIsDownVoting(true);
+    onDownVote(comment.id).finally(() => setIsDownVoting(false));
+  }
 
   return (
     <div className="flex flex-row space-x-4">
@@ -24,8 +49,8 @@ export const Comment = ({comment}) => {
           alt={`${user?.platformUsername} avatar`}
         />
       </div>
-      <FlexColumn>
-        <FlexRow classes="text-md text-gray-500 space-x-3">
+      <FlexColumn classes="space-y-3">
+        <FlexRow classes="text-md text-gray-500 space-x-2">
           <div>{user?.platformUsername}</div>
           <div>&#8226;</div>
           <div>
@@ -39,9 +64,14 @@ export const Comment = ({comment}) => {
             )}
           </div>
         </FlexRow>
-        <div className="text-md mt-3">
-          {comment?.text}
+        <div className="text-md">
+          <Markdown markdown={comment?.text} />
         </div>
+        <FlexRow classes="space-x-2 text-sm text-gray-500">
+          {isUpVoting ? <Spinner/> : <UpVote onClick={handleUpVote}/>}
+          <span>{utils.formatNumber(absVotes)}</span>
+          {isDownVoting ? <Spinner/> : <DownVote onClick={handleDownVote}/>}
+        </FlexRow>
       </FlexColumn>
     </div>
   );

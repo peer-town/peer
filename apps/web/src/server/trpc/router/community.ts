@@ -8,9 +8,9 @@ import {
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
-import { left, right } from "../../../utils/fp";
+import {isRight, left, right} from "../../../utils/fp";
 import { DIDSession } from "did-session";
-import { omit } from "lodash";
+import {isEmpty, isNil, omit} from "lodash";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -39,6 +39,10 @@ const createCommunitySchema = z.object({
   socialPlatform: socialPlatformSchema.omit({
     communityId: true,
   }),
+  tags:z.array(z.object({
+    id:z.string(),
+    tag:z.string()
+  }))
 });
 
 const UserCommunityRelationSchema = z.object({
@@ -59,6 +63,7 @@ export const communityRouter = router({
     .mutation(async ({ input }) => {
       try {
         const handler = await getHandler(input.session);
+        //create community
         const response = await handler.createCommunity({
           communityName: input.communityName,
           description: input.description,
@@ -67,6 +72,7 @@ export const communityRouter = router({
           return left(response.errors);
         }
         const communityId = response.data.createCommunity.document.id;
+        //add social platform
         const platform = {
           ...input.socialPlatform,
           communityId,
@@ -75,10 +81,30 @@ export const communityRouter = router({
         if (socialPlatformResp.errors && socialPlatformResp.errors.length > 0) {
           return left(socialPlatformResp.errors);
         }
+        //create userCommunity relation
         const payload = { userId: platform.userId, communityId: communityId };
-
         const userCommunityRelationResp =
           await handler.createUserCommunityRelation(payload);
+        if (userCommunityRelationResp.errors && userCommunityRelationResp.errors.length > 0) {
+          return left(userCommunityRelationResp.errors);
+        }
+        //add tags to community
+        const {tags} = input;
+        if(tags.length>0 && !isEmpty(tags) && !isNil(tags)){
+          const promises =  tags.map(async (tag)=>{
+            const tagId = tag.id ;
+           const  tagResponse = await handler.createCommunityTags(tagId as string, communityId as string);
+            if (tagResponse.errors && tagResponse.errors.length > 0) {
+              return left(tagResponse.errors);
+            }
+            return right(tagResponse.data)
+          })
+         const result = await Promise.all(promises);
+          const checkLeft = result.filter((data) => !isRight(data as any))
+          if(checkLeft.length>0){
+            return left({message: "error occurred ",error: result});
+          }
+        }
         return userCommunityRelationResp.errors && userCommunityRelationResp.errors.length > 0
           ? left(userCommunityRelationResp.errors)
           : right({ ...response.data, ...socialPlatformResp.data, ...userCommunityRelationResp.data });
@@ -133,4 +159,18 @@ export const communityRouter = router({
         return left(e);
       }
     }),
+  fetchCommunityTags: publicProcedure
+  .input(z.object({ streamId: z.string() }))
+  .query(async ({ input }) => {
+    try {
+      const response = await queryHandler.fetchCommunityTags(
+        input.streamId as string
+      );
+      return response.errors && response.errors.length > 0
+        ? left(response.errors)
+        : right(response);
+    } catch (e) {
+      return left(e);
+    }
+  }),
 });

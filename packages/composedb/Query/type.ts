@@ -176,3 +176,16 @@ export interface CommunityExt extends Community{
   description: string,
   communityName: string
 }
+
+export interface Vote {
+  id: string;
+  userId: string;
+  commentId: string;
+  vote: boolean;
+}
+
+export interface CreateVoteInput {
+  vote: boolean;
+  userId: string;
+  commentId: string;
+}
