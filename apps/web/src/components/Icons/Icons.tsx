@@ -26,7 +26,7 @@ export const UpVote = (props: SVGProps<any>) => {
       id="up-vote"
       width={18}
       height={18}
-      className="cursor-pointer hover:fill-[#ff225b]"
+      className="cursor-pointer hover:fill-accent"
       viewBox="0 0 24 24"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@ export const UpVoteFilled = (props: SVGProps<any>) => {
       id="up-vote-filled"
       width={18}
       height={18}
-      className="cursor-pointer fill-[#ff225b]"
+      className="cursor-pointer fill-accent"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
@@ -76,7 +76,7 @@ export const DownVoteFilled = (props: SVGProps<any>) => {
       id="down-vote-filled"
       width={18}
       height={18}
-      className="cursor-pointer rotate-180 fill-[#ff225b]"
+      className="cursor-pointer rotate-180 fill-accent"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
