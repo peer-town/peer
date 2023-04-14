@@ -1,4 +1,5 @@
 import {DIDSession} from "did-session";
+import {getBoolean} from "../core/utils/data";
 
 export const config = {
   server: {
@@ -14,6 +15,12 @@ export const config = {
     token: process.env.DISCORD_TOKEN || "",
     channel: process.env.DISCORD_SERVER_NAME || "devnode",
     channelCategory: process.env.DISCORD_CHANNEL_CATEGORY_NAME || "DEVNODE COMMS"
+  },
+  debug: {
+    devs: ["933958006218031114", "922429029544525866"],
+  },
+  features: {
+    devLogs: getBoolean(process.env.AGGREGATOR_FEAT_ENABLE_LOGS),
   },
   devnodeWebsite: process.env.DEVNODE_WEBSITE || "http://localhost:3000",
 };

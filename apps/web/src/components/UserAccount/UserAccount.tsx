@@ -29,16 +29,16 @@ const UserAccount = (props) => {
       >
         <Popover.Panel>
           <div
-              className={`w-[200px] absolute bottom-[100%] right-0 left-[20px] p-[12px] z-2 ${props.popoverClass || ""}`}>
-            <div className={"w-full flex flex-col bg-white border-1 border-gray text-center border rounded-2xl "}>
-              <div className="flex justify-between items-center m-[12px] text-gray-500 cursor-pointer"
+              className={`w-[200px] absolute bottom-[30%] right-0 left-[60px] px-[12px] z-[2] ${props.popoverClass || ""}`}>
+            <div className={"w-full flex flex-col bg-white border-1 shadow-xl border-gray text-center border rounded-2xl"}>
+              <div className="flex justify-between items-center m-[12px] text-gray-500 cursor-pointer hover:text-gray-700"
                    onClick={handleDisconnect}>
                 <span>Disconnect</span>
                 <div className="w-[15px]">
                   <img src={"/logout.svg"} alt="logout" width="100%" height="100%"/>
                 </div>
               </div>
-              <div className="flex justify-between items-center m-[12px] text-gray-500 cursor-pointer"
+              <div className="flex justify-between items-center m-[12px] text-gray-500 cursor-pointer hover:text-gray-700"
                    onClick={viewProfilehandler}>
                 <span>View Profile</span>
                 <div className="w-[15px]">

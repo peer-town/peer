@@ -123,7 +123,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   return (
-    <div className="flex flex-col h-full p-4 ">
+    <div className="flex flex-col h-full px-4">
       <div className="overflow-y-scroll h-full py-4 scrollbar-hide box-border ">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px] mb-[120px]">
@@ -145,8 +145,8 @@ export const ThreadSection = (props: ThreadSectionProps) => {
           />
         </div>
       </div>
-      <div className="absolute bottom-0 pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-[70%]">
-        <div className="flex flex-row py-2 px-4 rounded-xl bg-white border h-auto items-center">
+      <div className="relative pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-full">
+      <div className="flex flex-row py-2 px-4 rounded-xl bg-white border h-auto items-center">
         <textarea
           id="chat"
           ref={commentBoxRef}

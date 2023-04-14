@@ -38,11 +38,12 @@ const FeedPage = () => {
   }
 
    return (
-    <div className="flex flex-row max-h-screen h-full overflow-y-hidden relative">
-      <div className="w-[30%] mx-4 flex flex-col">
+    <div className="flex h-screen flex-col overflow-y-hidden">
+    <div className="flex flex-row grow overflow-y-auto">
+      <div className="mx-4 flex flex-col w-[40%]">
         <p className="text-4xl font-medium my-4">your feed</p>
         <Search onQuery={() => {}}/>
-        <div className="scrollbar-hide h-full flex flex-col mt-4 space-y-4 overflow-y-scroll pt-4">
+        <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
           {threads && threads.map((thread) => (
               <Link
                 key={thread.node.id}
@@ -73,6 +74,7 @@ const FeedPage = () => {
               description={"select a thread from the thread lists"}
             />
           )}
+      </div>
       </div>
     </div>
   );

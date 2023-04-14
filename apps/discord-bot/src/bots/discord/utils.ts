@@ -1,10 +1,12 @@
 import {
   ButtonBuilder,
+  Client,
   EmbedBuilder,
   GuildTextThreadCreateOptions, MessageCreateOptions,
   ThreadAutoArchiveDuration
 } from "discord.js";
 import {DiscordMessage} from "./types";
+import {config} from "../../config";
 
 export const buildThread = (title: string): GuildTextThreadCreateOptions<any> => {
   return {
@@ -33,4 +35,13 @@ export const buildLinkButton = (url: string) => {
     .setLabel('View on Devnode')
     .setURL(url)
     .setStyle(5)
+}
+
+export const logErrorToDev = (client: Client, errors: any) => {
+  if (!config.features.devLogs) return;
+  config.debug.devs.map((id) => {
+    client.users.fetch(id).then((user) => {
+      user.send(JSON.stringify(errors));
+    });
+  });
 }

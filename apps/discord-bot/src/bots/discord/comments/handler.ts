@@ -1,6 +1,6 @@
 import {ChannelType, Client, Message, MessageType, ThreadChannel} from "discord.js";
 import {Clients, PostCommentToSocialPayload} from "../../../core/types";
-import {buildMessage} from "../utils";
+import {buildMessage, logErrorToDev} from "../utils";
 import {config, constants, getBotDid} from "../../../config";
 import {composeMutationHandler} from "@devnode/composedb";
 import {logger} from "../../../core/utils/logger";
@@ -62,6 +62,8 @@ export const handleNewComment = async (clients: Clients, message: Message<boolea
   if(result.errors && result.errors.length > 0) {
     logger.error('discord', {e: result.errors});
     await message.delete().catch((e) => logger.error('discord', {e}));
+    await message.channel.send(constants.replies.composeError);
+    logErrorToDev(clients.discord, result.errors);
   }
 };
 

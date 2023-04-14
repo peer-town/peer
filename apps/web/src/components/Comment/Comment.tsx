@@ -1,6 +1,6 @@
 import {FlexColumn, FlexRow} from "../Flex";
-import Image from "next/image";
 import {showUserProfile, useAppDispatch} from "../../store";
+import {AvatarCard} from "../AvatarCard";
 import {DownVote, Spinner, UpVote} from "../Icons";
 import {useState} from "react";
 import * as utils from "../../utils";
@@ -41,12 +41,10 @@ export const Comment = (props: CommentProps) => {
           dispatch(showUserProfile({userProfileId: userId}));
         }}
       >
-        <Image
-          width={44}
-          height={44}
-          className="rounded-xl"
-          src={user?.platformAvatar || "https://placekitten.com/200/200"}
-          alt={`${user?.platformUsername} avatar`}
+        <AvatarCard
+          imageClasses="!rounded-xl"
+          imageSize={44}
+          image={user?.platformAvatar}
         />
       </div>
       <FlexColumn classes="space-y-3">

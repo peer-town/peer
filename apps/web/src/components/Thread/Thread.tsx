@@ -1,7 +1,7 @@
 import {ThreadProps} from "./type";
 import {FlexColumn, FlexRow} from "../Flex";
-import Image from "next/image";
 import {showUserProfile, useAppDispatch} from "../../store";
+import {AvatarCard} from "../AvatarCard";
 import {Markdown} from "../Markdown";
 
 export const Thread = ({thread}: ThreadProps) => {
@@ -17,12 +17,10 @@ export const Thread = ({thread}: ThreadProps) => {
         onClick={() => {
           dispatch(showUserProfile({userProfileId: userId}));
         }}>
-        <Image
-          width={44}
-          height={44}
-          className="rounded-xl"
-          src={user?.platformAvatar || "https://placekitten.com/200/200"}
-          alt={`${user?.platformUsername} avatar`}
+        <AvatarCard
+          imageClasses="!rounded-xl"
+          imageSize={44}
+          image={user?.platformAvatar}
         />
       </div>
       <FlexColumn>

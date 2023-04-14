@@ -4,6 +4,7 @@ export interface AvatarCardProps {
   name?: string;
   address?: string;
   classes?: string;
+  imageClasses?: string;
   onAddressClick?(address: string): void;
   onClick?(): void;
 }

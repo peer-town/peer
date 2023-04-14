@@ -42,7 +42,7 @@ const Home: NextPage = () => {
       <div className="m-4 mt-12 grid gap-8 md:grid-cols-1 lg:grid-cols-2">
         {data?.pages?.map((page) => {
           return (
-            page?.edges?.map((community, index) => {
+            page?.edges?.map((community) => {
               if (isNil(community.node)) return <></>;
               if (isEmpty(community.node?.socialPlatforms.edges)) return <></>;
               let tags: any;
@@ -55,14 +55,13 @@ const Home: NextPage = () => {
 
               return (
                 <Link
-                  key={index}
+                  key={community.node?.id}
                   href={{
                     pathname: "/community",
                     query: {communityId: community.node?.id},
                   }}
                 >
                   <CommunityCard
-                    key={index}
                     communityName={community.node?.communityName}
                     about={community.node?.description}
                     communityAvatar={
