@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Loader } from "../components/Loader";
 import { ThreadCard } from "../components/ThreadCard";
-import { ThreadSection } from "../components/ThreadSection";
+import { ThreadSection } from "../sections";
 import { trpc } from "../utils/trpc";
 import { Search } from "../components/Search";
 import {useAppSelector} from "../store";
@@ -20,7 +20,7 @@ const FeedPage = () => {
   const threads: any[] = feedData.data && flatten(feedData.data.edges.map((relation) => {
     return relation.node.community.threads.edges.map((thread) => thread);
   }));
- 
+
   useEffect(() => {
     if (threadId) setCurrentThread(threadId);
   }, [threadId]);
@@ -36,7 +36,7 @@ const FeedPage = () => {
   if (feedData.isLoading) {
     return <Loader />;
   }
- 
+
    return (
     <div className="flex h-screen flex-col overflow-y-hidden">
     <div className="flex flex-row grow overflow-y-auto">

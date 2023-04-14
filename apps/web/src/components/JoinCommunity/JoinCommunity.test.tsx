@@ -60,7 +60,7 @@ jest.mock('next/router', () => ({
   },
 }));
 
-describe.only("<JoinCommunity />", () => {
+describe("<JoinCommunity />", () => {
 
   beforeEach(()=>{
     jest.resetAllMocks()

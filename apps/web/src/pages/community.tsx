@@ -4,7 +4,7 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {Loader} from "../components/Loader";
 import {ThreadCard} from "../components/ThreadCard";
-import {ThreadSection} from "../components/ThreadSection";
+import {ThreadSection} from "../sections";
 import {trpc} from "../utils/trpc";
 import {Search} from "../components/Search";
 import {CreateThread} from "../components/Thread";

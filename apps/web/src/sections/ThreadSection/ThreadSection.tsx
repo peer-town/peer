@@ -1,14 +1,15 @@
 import {ThreadSectionProps} from "./types";
 import {trpc} from "../../utils/trpc";
-import {Thread} from "../Thread";
-import {Comment} from "../Comment";
+import {Thread} from "../../components/Thread";
+import {Comment} from "../../components/Comment";
 import {useRef, useState} from "react";
 import {useAppSelector} from "../../store";
 import {toast} from "react-toastify";
 import {constants} from "../../config";
 import {isRight} from "../../utils/fp";
-import {Loader} from "../Loader";
-import {LoadMore} from "../Button/LoadMore";
+import {Loader} from "../../components/Loader";
+import {LoadMore} from "../../components/Button/LoadMore";
+import {get, has, isNil} from "lodash";
 
 const SendIcon = () => {
   return (
@@ -30,8 +31,16 @@ export const ThreadSection = (props: ThreadSectionProps) => {
 
   const currentThread = trpc.public.fetchThreadDetails.useQuery({threadId});
   const createComment = trpc.comment.createComment.useMutation();
-  // @ts-ignore
-  const {data, fetchNextPage, hasNextPage, isFetching, refetch} = trpc.comment.fetchCommentsByThreadId.useInfiniteQuery({
+  const upVoteComment = trpc.comment.upVoteComment.useMutation();
+  const downVoteComment = trpc.comment.downVoteComment.useMutation();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    refetch
+    // @ts-ignore
+  } = trpc.comment.fetchCommentsByThreadId.useInfiniteQuery({
       threadId: threadId,
       first: 20,
     },
@@ -49,7 +58,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   const handleOnCommentSubmit = async () => {
-    if (comment.length === 0) {
+    if (comment.trim().length === 0) {
       toast.warn("Comment cannot be empty");
       return;
     }
@@ -77,6 +86,42 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     }
   }
 
+  const handleUpVote = async (commentId: string) => {
+    if (!has(user, "id") || isNil(get(user, "didSession")) || isNil(get(user, "author.id"))) {
+      toast.error("Please re-connect with your wallet!");
+      return;
+    }
+    const result = await upVoteComment.mutateAsync({
+      session: get(user, "didSession"),
+      userId: get(user, "id"),
+      userAuthorId: get(user, "author.id"),
+      commentId: commentId,
+    });
+    if (isRight(result)) {
+      await refetch();
+    } else {
+      toast.error("Up vote failed to add");
+    }
+  }
+
+  const handleDownVote = async (commentId: string) => {
+    if (!has(user, "id") || isNil(get(user, "didSession")) || isNil(get(user, "author.id"))) {
+      toast.error("Please re-connect with your wallet!");
+      return;
+    }
+    const result = await downVoteComment.mutateAsync({
+      session: get(user, "didSession"),
+      userId: get(user, "id"),
+      userAuthorId: get(user, "author.id"),
+      commentId: commentId,
+    });
+    if (isRight(result)) {
+      await refetch();
+    } else {
+      toast.error("Down vote failed to add");
+    }
+  }
+
   return (
     <div className="flex flex-col h-full px-4">
       <div className="overflow-y-scroll h-full py-4 scrollbar-hide box-border ">
@@ -84,7 +129,12 @@ export const ThreadSection = (props: ThreadSectionProps) => {
         <div className="mt-[40px] space-y-[40px] mb-[120px]">
           {data?.pages?.map((page) => (
             page?.edges.map((item) => (
-              <Comment key={item.node.id} comment={item.node}/>
+              <Comment
+                key={item.node.id}
+                comment={item.node}
+                onUpVote={handleUpVote}
+                onDownVote={handleDownVote}
+              />
             ))
           ))}
           <LoadMore
@@ -100,27 +150,38 @@ export const ThreadSection = (props: ThreadSectionProps) => {
         <textarea
           id="chat"
           ref={commentBoxRef}
+          spellCheck={true}
           rows={1}
-          className="block min-h-[50x] mx-4 p-2.5 w-full resize-none scrollbar-hide focus:outline-none"
+          className="block min-h-[20px] max-h-72 mx-4 w-full resize-none scrollbar-hide focus:outline-none"
           placeholder="Send message"
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          onKeyUp={(event: any) => {
-            const numberOfLineBreaks = (event.target.value.match(/\n/g) || []).length;
+          onChange={(e) => {
+            setComment(e.target.value);
+            const numberOfLineBreaks = (e.target.value.match(/\n/g) || []).length;
             // min-height + lines x line-height + padding + border
-            const newHeight = 25 + numberOfLineBreaks * 20 + 12 + 1;
+            const newHeight = 20 + numberOfLineBreaks * 20;
             if (commentBoxRef.current) {
               commentBoxRef.current.style.height = `${newHeight}px`;
             }
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              handleOnCommentSubmit().finally(() => {
+                if (commentBoxRef.current) {
+                  // default height
+                  commentBoxRef.current.style.height = `20px`;
+                }
+              });
+            }
+          }}
         />
-        <button
-          onClick={handleOnCommentSubmit}
-          disabled={isCommenting}
-          className="inline-flex h-max justify-center p-2 rounded-full cursor-pointer bg-gray-600 disabled:opacity-20">
-          <SendIcon/>
-        </button>
-      </div>
+          <button
+            onClick={handleOnCommentSubmit}
+            disabled={isCommenting}
+            className="inline-flex h-max justify-center p-2 rounded-full cursor-pointer bg-gray-600 disabled:opacity-20">
+            <SendIcon/>
+          </button>
+        </div>
       </div>
     </div>
   );
