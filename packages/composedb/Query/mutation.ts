@@ -1,4 +1,4 @@
-import { ComposeClient } from "@composedb/client";
+import {ComposeClient} from "@composedb/client";
 import {
   CommentInput,
   CommunityDetails,
@@ -10,13 +10,13 @@ import {
   UserPlatformDetails,
 } from "./type";
 
-import { composeQueryHandler } from "./query";
-import { gql } from "graphql-request";
+import {composeQueryHandler} from "./query";
+import {gql} from "graphql-request";
 
 export const composeMutationHandler = async (compose: ComposeClient) => {
   return {
     createCommunity: function (communityDetails: CommunityDetails) {
-      const { communityName, description } = communityDetails;
+      const {communityName, description} = communityDetails;
       return compose.executeQuery<{
         createCommunity: { document: { id: string } };
       }>(
@@ -96,7 +96,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
     createUserCommunityRelation: function (
       userCommunityRelation: UserCommunityRelation
     ) {
-      const { userId, communityId } = userCommunityRelation;
+      const {userId, communityId} = userCommunityRelation;
       return compose.executeQuery<{
         createUserCommunity: { document: { id: string } };
       }>(
@@ -196,7 +196,7 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
       );
     },
     createComment: function (commentInput: CommentInput) {
-      const { threadId, userId, comment, createdFrom, createdAt, socialCommentIds } =
+      const {threadId, userId, comment, createdFrom, createdAt, socialCommentIds} =
         commentInput;
 
       return compose.executeQuery<{
@@ -326,6 +326,48 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
             socialCommentIds: socialCommentId
           },
         },
+      });
+    },
+    createTag: async function (
+      tag: string
+    ) {
+      const query = gql`
+       mutation CreateTag($input: CreateTagInput!){
+        createTag(input: $input){
+          document{
+            id
+          }
+        }
+       }`;
+      return await compose.executeQuery(query, {
+        input: {
+          content: {
+            tag: tag
+          },
+        },
+      });
+    },
+    createCommunityTags: async function (
+      tagId: string,
+      communityId: string
+    ) {
+      const query = gql`
+       mutation CreateCommunityTag($input:CreateCommunityTagInput!){
+        createCommunityTag(input:$input){
+          document{
+            id
+            tagId
+            communityId
+          }
+        }
+      }`;
+      return await compose.executeQuery(query, {
+        input: {
+          content: {
+            tagId: tagId,
+            communityId: communityId,
+          }
+        }
       });
     },
   };
