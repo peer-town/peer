@@ -7,7 +7,7 @@ interface WebOnBoardData {
 
 interface CommunityOnBoardData extends WebOnBoardData {
   description: string;
-  tags: string;
+  tags: {id:string,tag:string}[];
 }
 
 export interface ModalProps {

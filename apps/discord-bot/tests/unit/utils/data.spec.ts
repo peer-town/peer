@@ -1,6 +1,6 @@
 import {SocialPlatform, Node, SocialThreadId} from "../../../src/core/types";
 import {expect} from "../../setup";
-import {communityHasSocial, getSocialCommunityId, getSocialThreadId} from "../../../src/core/utils/data";
+import {communityHasSocial, getSocialCommunityId, getSocialThreadId, getBoolean} from "../../../src/core/utils/data";
 
 describe('utils.data', () => {
   const socialPlatforms: Node<SocialPlatform>[] = [
@@ -52,5 +52,12 @@ describe('utils.data', () => {
       expect(getSocialThreadId(socialThreadIds, "discourse")).to.eq("456");
       expect(getSocialThreadId(socialThreadIds, "twitter")).to.eq("");
     });
+  });
+
+  describe('getBoolean', () => {
+    expect(getBoolean("true")).to.eq(true);
+    expect(getBoolean("false")).to.eq(false);
+    expect(getBoolean("lol")).to.eq(false);
+    expect(getBoolean(undefined)).to.eq(false);
   });
 });

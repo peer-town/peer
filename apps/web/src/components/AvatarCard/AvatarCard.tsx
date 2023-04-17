@@ -19,8 +19,9 @@ export const AvatarCard = (props: AvatarCardProps) => {
       <Image
         width={props.imageSize}
         height={props.imageSize}
-        className="rounded-full"
+        className={`rounded-full object-cover ${props.imageClasses || ""}`}
         src={props.image || "https://placekitten.com/200/200"}
+        style={{ width: props.imageSize, height: props.imageSize }}
         alt={`${props.name} avatar`}
       />
       {props.name && <div>{props.name} </div>}

@@ -42,19 +42,26 @@ const Home: NextPage = () => {
       <div className="m-4 mt-12 grid gap-8 md:grid-cols-1 lg:grid-cols-2">
         {data?.pages?.map((page) => {
           return (
-            page?.edges?.map((community, index) => {
+            page?.edges?.map((community) => {
               if (isNil(community.node)) return <></>;
               if (isEmpty(community.node?.socialPlatforms.edges)) return <></>;
+              let tags: any;
+              if (isEmpty(community.node?.tags.edges)) {
+                tags = ["no tags"]
+              }
+              else {
+                tags = community.node?.tags?.edges.map((tag) => tag?.node?.tag?.tag);
+              }
+
               return (
                 <Link
-                  key={index}
+                  key={community.node?.id}
                   href={{
                     pathname: "/community",
                     query: {communityId: community.node?.id},
                   }}
                 >
                   <CommunityCard
-                    key={index}
                     communityName={community.node?.communityName}
                     about={community.node?.description}
                     communityAvatar={
@@ -63,15 +70,7 @@ const Home: NextPage = () => {
                     }
                     members={20}
                     questions={10}
-                    tags={[
-                      "solidity",
-                      "finance",
-                      "Next.js",
-                      "Another",
-                      "One",
-                      "More",
-                      "Two",
-                    ]}
+                    tags={tags}
                   />
                 </Link>
               );

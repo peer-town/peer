@@ -136,7 +136,7 @@ const CommunityOnboard = () => {
     setCommunityOnboarding(false);
   };
 
-  const handleSubmit = async ({ name, imageUrl, description }) => {
+  const handleSubmit = async ({ name, imageUrl, description, tags }) => {
     const createCommunityResp = await createCommunity.mutateAsync({
       session: didSession,
       communityName: name,
@@ -148,6 +148,7 @@ const CommunityOnboard = () => {
         userId: userId,
         communityAvatar: imageUrl,
       },
+      tags: tags
     });
     if (isRight(createCommunityResp)) {
       const communityDetails = {

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Loader } from "../components/Loader";
 import { ThreadCard } from "../components/ThreadCard";
-import { ThreadSection } from "../components/ThreadSection";
+import { ThreadSection } from "../sections";
 import { trpc } from "../utils/trpc";
 import { Search } from "../components/Search";
 import {useAppSelector} from "../store";
@@ -20,7 +20,7 @@ const FeedPage = () => {
   const threads: any[] = feedData.data && flatten(feedData.data.edges.map((relation) => {
     return relation.node.community.threads.edges.map((thread) => thread);
   }));
- 
+
   useEffect(() => {
     if (threadId) setCurrentThread(threadId);
   }, [threadId]);
@@ -36,13 +36,14 @@ const FeedPage = () => {
   if (feedData.isLoading) {
     return <Loader />;
   }
- 
+
    return (
-    <div className="flex flex-row max-h-screen h-full overflow-y-hidden relative">
-      <div className="w-[30%] mx-4 flex flex-col">
+    <div className="flex h-screen flex-col overflow-y-hidden">
+    <div className="flex flex-row grow overflow-y-auto">
+      <div className="mx-4 flex flex-col w-[40%]">
         <p className="text-4xl font-medium my-4">your feed</p>
         <Search onQuery={() => {}}/>
-        <div className="scrollbar-hide h-full flex flex-col mt-4 space-y-4 overflow-y-scroll pt-4">
+        <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
           {threads && threads.map((thread) => (
               <Link
                 key={thread.node.id}
@@ -73,6 +74,7 @@ const FeedPage = () => {
               description={"select a thread from the thread lists"}
             />
           )}
+      </div>
       </div>
     </div>
   );
