@@ -11,16 +11,6 @@ import {Loader} from "../../components/Loader";
 import {LoadMore} from "../../components/Button/LoadMore";
 import {get, has, isNil} from "lodash";
 
-const SendIcon = () => {
-  return (
-    <svg aria-hidden="true" className="w-6 h-6 rotate-90" fill="white" viewBox="0 0 20 20"
-         xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-    </svg>
-  );
-}
-
 export const ThreadSection = (props: ThreadSectionProps) => {
   const threadId = props.threadId;
   const user = useAppSelector((state) => state.user);
@@ -57,13 +47,14 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     return <Loader/>;
   }
 
+  const setOrResetChatBoxHeight = (height: string = "20px") => {
+    if (commentBoxRef.current) {
+      commentBoxRef.current.style.height = height;
+    }
+  }
+
   const handleOnSend = () => {
-    handleOnCommentSubmit().finally(() => {
-      // setting default height for comment box
-      if (commentBoxRef.current) {
-        commentBoxRef.current.style.height = `20px`;
-      }
-    });
+    handleOnCommentSubmit().then(() => setOrResetChatBoxHeight());
   }
 
   const handleOnCommentSubmit = async () => {
@@ -81,7 +72,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
       session: user.didSession,
       threadId: threadId,
       userId: user.id,
-      comment: comment,
+      comment: comment.trim(),
       createdFrom: constants.CREATED_FROM_DEVNODE,
       createdAt: new Date().toISOString()
     }).finally(() => setIsCommenting(false));
@@ -156,23 +147,24 @@ export const ThreadSection = (props: ThreadSectionProps) => {
         </div>
       </div>
       <div className="relative pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-full">
-      <div className="flex flex-row py-2 px-4 rounded-xl bg-white border h-auto items-center">
+      <div className="flex flex-row p-2 rounded-xl bg-white border shadow-sm h-auto items-center">
         <textarea
           id="chat"
           ref={commentBoxRef}
           spellCheck={true}
           rows={1}
-          className="block min-h-[20px] max-h-72 mx-4 w-full resize-none scrollbar-hide focus:outline-none"
-          placeholder="Send message"
+          className="block min-h-[25px] resize-none max-h-48 mx-4 w-full scrollbar-hide focus:outline-none disabled:opacity-65"
+          placeholder="Send a message"
           value={comment}
+          disabled={isCommenting}
           onChange={(e) => {
-            setComment(e.target.value);
-            const numberOfLineBreaks = (e.target.value.match(/\n/g) || []).length;
-            // min-height + lines x line-height + padding + border
-            const newHeight = 20 + numberOfLineBreaks * 20;
-            if (commentBoxRef.current) {
-              commentBoxRef.current.style.height = `${newHeight}px`;
+            const value = e.target.value;
+            setComment(value);
+            if (value.trim().length === 0) {
+              setOrResetChatBoxHeight();
+              return;
             }
+            setOrResetChatBoxHeight(e.target.scrollHeight + "px");
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -180,12 +172,6 @@ export const ThreadSection = (props: ThreadSectionProps) => {
             }
           }}
         />
-          <button
-            onClick={handleOnSend}
-            disabled={isCommenting}
-            className="inline-flex h-max justify-center p-2 rounded-full cursor-pointer bg-gray-600 disabled:opacity-20">
-            <SendIcon/>
-          </button>
         </div>
       </div>
     </div>
