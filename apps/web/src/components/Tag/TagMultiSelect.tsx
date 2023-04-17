@@ -40,7 +40,7 @@ const TagMultiSelect = (props: tagSelectProp) => {
           </svg>
         </div>
       </div>
-      {open && !isEmpty(tagFilteredData) && (
+      {open && (
         <div className={"absolute bottom-[-60px] w-full h-12"}>
           <MultiSelectDropdown
             dataArray={tagFilteredData}
