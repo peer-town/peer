@@ -3,10 +3,6 @@ import type {RuntimeCompositeDefinition} from '@composedb/types'
 
 export const definition: RuntimeCompositeDefinition = {
   "models": {
-    "Comment": {
-      "id": "kjzl6hvfrbw6c9x0v0j4keukbnyqmurnko9zknd1sj7pzfjqe1wfmpgw9rg5x1w",
-      "accountRelation": {"type": "list"}
-    },
     "Thread": {
       "id": "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x",
       "accountRelation": {"type": "list"}
@@ -14,6 +10,10 @@ export const definition: RuntimeCompositeDefinition = {
     "User": {
       "id": "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d",
       "accountRelation": {"type": "single"}
+    },
+    "Comment": {
+      "id": "kjzl6hvfrbw6c9x0v0j4keukbnyqmurnko9zknd1sj7pzfjqe1wfmpgw9rg5x1w",
+      "accountRelation": {"type": "list"}
     },
     "CommunityTag": {
       "id": "kjzl6hvfrbw6c7zj6mhyhon8t5ig3w8489iqvyacqvz338p7em8ft3uvu93639g",
@@ -45,50 +45,6 @@ export const definition: RuntimeCompositeDefinition = {
     }
   },
   "objects": {
-    "CommentSocialCommentId": {
-      "commentId": {"type": "string", "required": true},
-      "platformName": {"type": "string", "required": true}
-    },
-    "Comment": {
-      "text": {"type": "string", "required": true},
-      "userId": {"type": "streamid", "required": true},
-      "threadId": {"type": "streamid", "required": true},
-      "createdAt": {"type": "datetime", "required": true},
-      "createdFrom": {"type": "string", "required": true},
-      "socialCommentIds": {
-        "type": "list",
-        "required": true,
-        "item": {"type": "reference", "refType": "object", "refName": "CommentSocialCommentId", "required": true}
-      },
-      "user": {
-        "type": "view",
-        "viewType": "relation",
-        "relation": {
-          "source": "document",
-          "model": "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d",
-          "property": "userId"
-        }
-      },
-      "author": {"type": "view", "viewType": "documentAccount"},
-      "thread": {
-        "type": "view",
-        "viewType": "relation",
-        "relation": {
-          "source": "document",
-          "model": "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x",
-          "property": "threadId"
-        }
-      },
-      "votes": {
-        "type": "view",
-        "viewType": "relation",
-        "relation": {
-          "source": "queryConnection",
-          "model": "kjzl6hvfrbw6c7wojagutwctcw41gktwuhj3dvijtxnq2omdpeojbjfhcihm8y7",
-          "property": "commentId"
-        }
-      }
-    },
     "ThreadSocialThreadId": {
       "threadId": {"type": "string", "required": true},
       "platformName": {"type": "string", "required": true}
@@ -165,6 +121,50 @@ export const definition: RuntimeCompositeDefinition = {
           "source": "queryConnection",
           "model": "kjzl6hvfrbw6c7o6v6x3p3vly2ndnh5eexrci6bo8b1qvz8mhqrhk8yxiw6jphq",
           "property": "userId"
+        }
+      }
+    },
+    "CommentSocialCommentId": {
+      "commentId": {"type": "string", "required": true},
+      "platformName": {"type": "string", "required": true}
+    },
+    "Comment": {
+      "text": {"type": "string", "required": true},
+      "userId": {"type": "streamid", "required": true},
+      "threadId": {"type": "streamid", "required": true},
+      "createdAt": {"type": "datetime", "required": true},
+      "createdFrom": {"type": "string", "required": true},
+      "socialCommentIds": {
+        "type": "list",
+        "required": true,
+        "item": {"type": "reference", "refType": "object", "refName": "CommentSocialCommentId", "required": true}
+      },
+      "user": {
+        "type": "view",
+        "viewType": "relation",
+        "relation": {
+          "source": "document",
+          "model": "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d",
+          "property": "userId"
+        }
+      },
+      "author": {"type": "view", "viewType": "documentAccount"},
+      "thread": {
+        "type": "view",
+        "viewType": "relation",
+        "relation": {
+          "source": "document",
+          "model": "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x",
+          "property": "threadId"
+        }
+      },
+      "votes": {
+        "type": "view",
+        "viewType": "relation",
+        "relation": {
+          "source": "queryConnection",
+          "model": "kjzl6hvfrbw6c7wojagutwctcw41gktwuhj3dvijtxnq2omdpeojbjfhcihm8y7",
+          "property": "commentId"
         }
       }
     },
@@ -351,9 +351,9 @@ export const definition: RuntimeCompositeDefinition = {
   },
   "enums": {},
   "accountData": {
-    "commentList": {"type": "connection", "name": "Comment"},
     "threadList": {"type": "connection", "name": "Thread"},
     "user": {"type": "node", "name": "User"},
+    "commentList": {"type": "connection", "name": "Comment"},
     "communityTagList": {"type": "connection", "name": "CommunityTag"},
     "tagList": {"type": "connection", "name": "Tag"},
     "communityList": {"type": "connection", "name": "Community"},
