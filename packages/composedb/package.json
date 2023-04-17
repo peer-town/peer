@@ -1,0 +1,38 @@
+{
+  "name": "@devnode/composedb",
+  "version": "1.0.0",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index",
+  "typings": "./dist/index",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf .turbo node_modules dist",
+    "composedb:daemon": "node generate_compose_config.js && CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' ceramic daemon --hostname 0.0.0.0 --port=$PORT --config ./daemon.config.json",
+    "composedb:server": "composedb graphql:server --ceramic-url=$CERAMIC_NODE --graphiql ./gen/runtime-composite.json --port $PORT",
+    "test": "echo \"Error: no test specified\""
+  },
+  "resolutions": {
+    "graphql": "^16.5.0"
+  },
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "@ceramicnetwork/cli": "2.28.0",
+    "@composedb/cli": "0.4.3",
+    "@devnode/tsconfig": "*",
+    "rimraf": "^3.0.2",
+    "tsup": "^6.5.0",
+    "@composedb/client": "^0.4.3",
+    "@stablelib/random": "^1.0.2",
+    "cross-var": "^1.1.0",
+    "did-session": "^2.0.0",
+    "dotenv": "^16.0.3",
+    "dotenv-cli": "^6.0.0",
+    "latest": "^0.2.0"
+  }
+}

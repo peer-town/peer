@@ -1,0 +1,31 @@
+type Thread
+  @loadModel(
+    id: "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x"
+  ) {
+  id: ID!
+}
+
+type User 
+  @loadModel(
+     id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d"
+    ) {
+  id: ID!
+}
+
+type SocialCommentId{
+    platformName:String! @string(maxLength: 2000)
+    commentId:String! @string(maxLength: 2000)
+}
+
+type Comment
+  @createModel(accountRelation: LIST, description: "DevNode Comment") {
+  threadId: StreamID! @documentReference(model: "Thread")
+  thread: Thread! @relationDocument(property: "threadId")
+  author: DID! @documentAccount
+  userId: StreamID! @documentReference(model: "User")
+  user: User! @relationDocument(property: "userId")
+  text: String! @string(maxLength: 15000)
+  socialCommentIds: [SocialCommentId]! @list(maxLength: 5)
+  createdFrom: String! @string(maxLength: 2000)
+  createdAt: DateTime! @string(maxLength: 100)
+}

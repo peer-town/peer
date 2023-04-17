@@ -1,0 +1,21 @@
+{
+  "0.4.3": {
+    "User": "kjzl6hvfrbw6c8d3hhuhc0wnfz35z0zt068367m75ocjxgtpzjk95yaxqxjwjju",
+    "Community": "kjzl6hvfrbw6c629yrauoazzxq5do3wsar23vf2n7dy8jpswcpbka0yvee7zks1",
+    "SocialPlatform": "kjzl6hvfrbw6c726uxs60oywkxn9wv9c8ybysxnppw8cuqzcbw9pssrmcok1nyi",
+    "Thread": "kjzl6hvfrbw6cacg7g3hky17flj3qrom0948a2a9zzt6hv15d9x4c2iqar5i4j3",
+    "Comments": "kjzl6hvfrbw6c95pvk38yw31titjrq01rqg7ua5sfu4t1p8zcmn4o9gg4j51gvm"
+  },
+  "staging": {
+    "User": "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d",
+    "Community": "kjzl6hvfrbw6c6w86fbnft0c83g7hqscx6urkpz49bgv380hzudelk359m9q5vu",
+    "UserCommunity": "kjzl6hvfrbw6c7o6v6x3p3vly2ndnh5eexrci6bo8b1qvz8mhqrhk8yxiw6jphq",
+    "SocialPlatform": "kjzl6hvfrbw6cb3lqz7isqv48dffi80fqxrcrbjjr8xnm4oy84gp8t3lqcfrbkl",
+    "Thread": "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x",
+    "Comments": "kjzl6hvfrbw6c9x0v0j4keukbnyqmurnko9zknd1sj7pzfjqe1wfmpgw9rg5x1w",
+    "Tag": "kjzl6hvfrbw6c9mri41w31xgzu53xca1k1y0jg0lbolkujfa4t1ilvoo3nkvffr",
+    "CommunityTag": "kjzl6hvfrbw6c7zj6mhyhon8t5ig3w8489iqvyacqvz338p7em8ft3uvu93639g",
+    "ThreadTag": "kjzl6hvfrbw6ca270wsb2s8gv3zawm73msilrf7ul1chz74xj1vpupq1lkemv4m",
+    "Vote": "kjzl6hvfrbw6c7wojagutwctcw41gktwuhj3dvijtxnq2omdpeojbjfhcihm8y7"
+  }
+}

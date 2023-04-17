@@ -1,0 +1,7 @@
+type ThreadTag @loadModel(id: "kjzl6hvfrbw6ca270wsb2s8gv3zawm73msilrf7ul1chz74xj1vpupq1lkemv4m") {
+  id: ID!
+}
+
+type Tag @loadModel(id: "kjzl6hvfrbw6c9mri41w31xgzu53xca1k1y0jg0lbolkujfa4t1ilvoo3nkvffr") {
+ threads: [ThreadTag] @relationFrom(model: "ThreadTag", property: "tagId")
+}

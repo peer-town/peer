@@ -10,7 +10,7 @@ coverage
 
 # next.js
 .next/
-out/
+dist/
 build
 
 # misc
@@ -31,3 +31,12 @@ yarn-error.log*
 
 # turbo
 .turbo
+apps/discord-bot/tsconfig.tsbuildinfo
+apps/indexer/tsconfig.tsbuildinfo
+prisma/dev.db
+.env
+.env.*
+
+packages/composedb/.ceramic
+.idea/
+.nyc_output/

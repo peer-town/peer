@@ -1,0 +1,15 @@
+type Comment @loadModel(id: "kjzl6hvfrbw6c9x0v0j4keukbnyqmurnko9zknd1sj7pzfjqe1wfmpgw9rg5x1w") {
+  id: ID!
+}
+
+type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
+  id: ID!
+}
+
+type Vote @createModel(accountRelation: LIST, description: "Vote for Comments") {
+  commentId: StreamID! @documentReference(model: "Comment")
+  comment: Comment! @relationDocument(property: "commentId")
+  userId: StreamID! @documentReference(model: "User")
+  user: User! @relationDocument(property: "userId")
+  vote: Boolean!
+}

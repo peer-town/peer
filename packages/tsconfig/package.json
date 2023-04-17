@@ -1,11 +1,16 @@
 {
-  "name": "tsconfig",
-  "version": "0.0.0",
+  "name": "@devnode/tsconfig",
+  "version": "1.0.0",
+  "author": "",
+  "license": "MIT",
   "private": true,
   "main": "index.js",
   "files": [
     "base.json",
     "nextjs.json",
+    "database.json",
+    "discord-bot.json",
+    "indexer.json",
     "react-library.json"
   ]
 }

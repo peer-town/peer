@@ -2,12 +2,56 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "lint": {
       "outputs": []
     },
+    "clean": {
+      "cache": false
+    },
+    "start": {
+      "cache": false
+    },
+    "start:bot": {
+      "cache": false
+    },
+    "start:web": {
+      "cache": false
+    },
+    "dev:web": {
+      "cache": false
+    },
+    "dev:bot": {
+      "cache": false
+    },
     "dev": {
+      "cache": false
+    },
+    "test:web": {
+      "cache": true
+    },
+    "test:bot": {
+      "cache": true
+    },
+    "composedb:daemon": {
+      "cache": false
+    },
+    "composedb:server": {
+      "cache": false
+    },
+    "composedb:server:docker": {
+      "cache": false
+    },
+    "generate": {
+      "cache": false
+    },
+    "studio": {
       "cache": false
     }
   }
