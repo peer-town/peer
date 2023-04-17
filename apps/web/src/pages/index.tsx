@@ -68,8 +68,8 @@ const Home: NextPage = () => {
                       community.node?.socialPlatforms.edges[0]?.node
                         .communityAvatar
                     }
-                    members={20}
-                    questions={10}
+                    members={community.node?.userCount}
+                    questions={community.node?.threadCount}
                     tags={tags}
                   />
                 </Link>

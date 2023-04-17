@@ -595,6 +595,8 @@ export const composeQueryHandler = () => {
                 id
                 communityName
                 description
+                userCount
+                threadCount
                 tags(first: 10) {
                   edges {
                     node {
