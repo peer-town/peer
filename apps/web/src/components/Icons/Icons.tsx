@@ -24,21 +24,15 @@ export const UpVote = (props: SVGProps<any>) => {
   return (
     <svg
       id="up-vote"
+      width={18}
+      height={18}
+      className="cursor-pointer hover:fill-accent"
+      viewBox="0 0 24 24"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      className="cursor-pointer hover:fill-[#ff225b]"
-      width={18} height={18}
-      viewBox="0 0 20 20" fill="currentColor"
       {...props}
     >
-      <g clipPath="url(#clip0_472_1110)">
-        <path
-          d="M12.877 19H7.123A1.125 1.125 0 016 17.877V11H2.126a1.114 1.114 0 01-1.007-.7 1.249 1.249 0 01.171-1.343L9.166.368a1.128 1.128 0 011.668.004l7.872 8.581a1.252 1.252 0 01.176 1.348 1.114 1.114 0 01-1.005.7H14v6.877A1.125 1.125 0 0112.877 19zM7.25 17.75h5.5v-8h4.934L10 1.31 2.258 9.75H7.25v8zM2.227 9.784l-.012.016c.01-.006.014-.01.012-.016z"></path>
-      </g>
-      <defs>
-        <clipPath id="clip0_472_1110">
-          <path d="M0 0h20v20H0z"></path>
-        </clipPath>
-      </defs>
+      <path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z" />
     </svg>
   );
 };
@@ -47,21 +41,47 @@ export const DownVote = (props: SVGProps<any>) => {
   return (
     <svg
       id="down-vote"
+      width={18}
+      height={18}
+      className="cursor-pointer rotate-180 hover:fill-accent"
+      viewBox="0 0 24 24"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      className="cursor-pointer rotate-180 hover:fill-[#ff225b]"
-      width={18} height={18}
-      viewBox="0 0 20 20" fill="currentColor"
       {...props}
     >
-      <g clipPath="url(#clip0_472_1110)">
-        <path
-          d="M12.877 19H7.123A1.125 1.125 0 016 17.877V11H2.126a1.114 1.114 0 01-1.007-.7 1.249 1.249 0 01.171-1.343L9.166.368a1.128 1.128 0 011.668.004l7.872 8.581a1.252 1.252 0 01.176 1.348 1.114 1.114 0 01-1.005.7H14v6.877A1.125 1.125 0 0112.877 19zM7.25 17.75h5.5v-8h4.934L10 1.31 2.258 9.75H7.25v8zM2.227 9.784l-.012.016c.01-.006.014-.01.012-.016z"></path>
-      </g>
-      <defs>
-        <clipPath id="clip0_472_1110">
-          <path d="M0 0h20v20H0z"></path>
-        </clipPath>
-      </defs>
+      <path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z" />
+    </svg>
+  );
+};
+
+export const UpVoteFilled = (props: SVGProps<any>) => {
+  return (
+    <svg
+      id="up-vote-filled"
+      width={18}
+      height={18}
+      className="cursor-pointer fill-accent"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14z" />
+    </svg>
+  );
+};
+
+export const DownVoteFilled = (props: SVGProps<any>) => {
+  return (
+    <svg
+      id="down-vote-filled"
+      width={18}
+      height={18}
+      className="cursor-pointer rotate-180 fill-accent"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path d="M4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14z" />
     </svg>
   );
 };

@@ -668,6 +668,7 @@ export const composeQueryHandler = () => {
                         node {
                           id
                           vote
+                          userId
                         }
                       }
                     }

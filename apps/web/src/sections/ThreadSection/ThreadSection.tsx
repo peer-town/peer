@@ -57,6 +57,15 @@ export const ThreadSection = (props: ThreadSectionProps) => {
     return <Loader/>;
   }
 
+  const handleOnSend = () => {
+    handleOnCommentSubmit().finally(() => {
+      // setting default height for comment box
+      if (commentBoxRef.current) {
+        commentBoxRef.current.style.height = `20px`;
+      }
+    });
+  }
+
   const handleOnCommentSubmit = async () => {
     if (comment.trim().length === 0) {
       toast.warn("Comment cannot be empty");
@@ -132,6 +141,7 @@ export const ThreadSection = (props: ThreadSectionProps) => {
               <Comment
                 key={item.node.id}
                 comment={item.node}
+                currentUserId={get(user, "id")}
                 onUpVote={handleUpVote}
                 onDownVote={handleDownVote}
               />
@@ -166,17 +176,12 @@ export const ThreadSection = (props: ThreadSectionProps) => {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
-              handleOnCommentSubmit().finally(() => {
-                if (commentBoxRef.current) {
-                  // default height
-                  commentBoxRef.current.style.height = `20px`;
-                }
-              });
+              handleOnSend();
             }
           }}
         />
           <button
-            onClick={handleOnCommentSubmit}
+            onClick={handleOnSend}
             disabled={isCommenting}
             className="inline-flex h-max justify-center p-2 rounded-full cursor-pointer bg-gray-600 disabled:opacity-20">
             <SendIcon/>
