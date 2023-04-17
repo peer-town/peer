@@ -1,3 +1,4 @@
+import "../../../test/setup";
 import {ThreadSection} from "./ThreadSection";
 import {Provider} from "react-redux";
 import {store} from "../../store";
@@ -65,6 +66,12 @@ jest.mock('../../utils/trpc', () => ({
       fetchCommentsByThreadId: {
         useInfiniteQuery: () => mockFetchCommentsByThreadId,
       },
+      upVoteComment: {
+        useMutation: () => ({mutateAsync: mutationMock}),
+      },
+      downVoteComment: {
+        useMutation: () => ({mutateAsync: mutationMock}),
+      }
     },
   },
 }));

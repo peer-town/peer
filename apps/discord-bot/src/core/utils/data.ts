@@ -15,3 +15,9 @@ export const getSocialThreadId = (socials: SocialThreadId[], platformName: strin
   const id = socials.find((s) => s.platformName === platformName);
   return _.get(id,"threadId", "");
 }
+
+export const getBoolean = (value: string | undefined | null) => {
+  if (_.isNil(value)) return false;
+  if (value === 'true') return true;
+  return false;
+}

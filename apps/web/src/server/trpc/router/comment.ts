@@ -1,12 +1,19 @@
 import {publicProcedure, router} from "../trpc";
 import {z} from "zod";
-import {definition, composeMutationHandler, composeQueryHandler } from "@devnode/composedb";
+import {
+  definition,
+  composeMutationHandler,
+  composeQueryHandler,
+  updateVoteComment,
+  downVoteComment
+} from "@devnode/composedb";
 import {ComposeClient} from "@composedb/client";
 import {config} from "../../../config";
 import {left, right} from "../../../utils/fp";
-import {has, omit, get} from "lodash";
+import {has, omit, get, isNil} from "lodash";
 import {DIDSession} from "did-session";
 import {SocialCommentId} from "../../types";
+import {upVoteComment, getUserVoteOnComment} from "@devnode/composedb";
 
 export const compose = new ComposeClient({
   ceramic: config.ceramic.nodeUrl,
@@ -23,10 +30,23 @@ const createCommentSchema = z.object({
   createdAt: z.string(),
 });
 
+const voteCommentSchema = z.object({
+  session: z.string(),
+  commentId: z.string(),
+  userId: z.string(),
+  userAuthorId: z.string(),
+});
+
 const getHandler = async (didSession: string) => {
   const session = await DIDSession.fromSession(didSession);
   compose.setDID(session.did);
   return await composeMutationHandler(compose);
+}
+
+const getCompose = async (didSession: string) => {
+  const session = await DIDSession.fromSession(didSession);
+  compose.setDID(session.did);
+  return compose;
 }
 
 export const commentRouter = router({
@@ -67,6 +87,54 @@ export const commentRouter = router({
     .query(async ({input}) => {
       const {threadId, first, cursor} = input;
       return await queryHandler.fetchCommentsByThreadId(threadId, first, cursor);
+    }),
+
+  upVoteComment: publicProcedure
+    .input(voteCommentSchema)
+    .mutation(async ({input}) => {
+      try {
+        const {session, userId, userAuthorId, commentId} = input;
+        const compose = await getCompose(session);
+        const existing = await getUserVoteOnComment(commentId, userAuthorId);
+        if (!isNil(existing)) {
+          if (existing.node.vote) return right(existing); // its upvoted 
+          const response = await updateVoteComment(compose, existing.node.id, true);
+          return (response.errors && response.errors.length > 0)
+            ? left(response.errors)
+            : right(response.data);
+        } else {
+          const response = await upVoteComment(compose, commentId, userId);
+          return (response.errors && response.errors.length > 0)
+            ? left(response.errors)
+            : right(response.data);
+        }
+      } catch (e) {
+        return left(e);
+      }
+    }),
+
+  downVoteComment: publicProcedure
+    .input(voteCommentSchema)
+    .mutation(async ({input}) => {
+      try {
+        const {session, userId, userAuthorId, commentId} = input;
+        const compose = await getCompose(session);
+        const existing = await getUserVoteOnComment(commentId, userAuthorId);
+        if (!isNil(existing)) {
+          if (!existing.node.vote) return right(existing); // its downvoted 
+          const response = await updateVoteComment(compose, existing.node.id, false);
+          return (response.errors && response.errors.length > 0)
+            ? left(response.errors)
+            : right(response.data);
+        } else {
+          const response = await downVoteComment(compose, commentId, userId);
+          return (response.errors && response.errors.length > 0)
+            ? left(response.errors)
+            : right(response.data);
+        }
+      } catch (e) {
+        return left(e);
+      }
     }),
 });
 

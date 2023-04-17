@@ -13,5 +13,6 @@ export const constants = {
     noPermsToDel: "I should delete this but I can't! ADMIN PLS HELP!",
     noMsgOutOfThread: "You can only start threads or reply to threads in the devnode channel",
     userUnknown: `You must have an account on devnode to create thread or reply. Please create an account on ${config.devnodeWebsite}`,
+    composeError: "There was an error submitting your request. Please try again in a while!",
   },
 }

@@ -20,7 +20,7 @@ const LeftPanel = (props: LeftPanelProp) => {
       >
         <div className={`h-full flex flex-col justify-between`}>
           <div
-              className={`relative z-1 w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}
+              className={`relative z-[1] w-full top-0 my-[14px] flex h-auto flex-col gap-[30px] `}
           >
             <CommunityAvatar
                 key={"create"}
@@ -59,7 +59,7 @@ const LeftPanel = (props: LeftPanelProp) => {
           </div>
           <hr className="my-2"/>
           <div
-              className={`relative z-1 bottom-0 mt-[14px] flex h-auto flex-col gap-[15px] w-full items-center justify-center`}
+              className={`relative z-[1] bottom-0 mt-[14px] flex h-auto flex-col gap-[15px] w-full items-center justify-center`}
           >
             <GlobalAskQuestion/>
             <UserOnboard/>

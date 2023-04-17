@@ -4,7 +4,7 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {Loader} from "../components/Loader";
 import {ThreadCard} from "../components/ThreadCard";
-import {ThreadSection} from "../components/ThreadSection";
+import {ThreadSection} from "../sections";
 import {trpc} from "../utils/trpc";
 import {Search} from "../components/Search";
 import {CreateThread} from "../components/Thread";
@@ -84,15 +84,17 @@ const CommunityPage = () => {
   }
 
   return (
-    <div className="flex h-full max-h-full flex-col relative overflow-hidden">
+    <div className="flex h-screen flex-col overflow-y-hidden">
       <JoinCommunity />
-      <div className="flex max-h-full flex-row grow ">
-        <div className="mx-4 flex flex-col h-full w-[30%]">
+      <div className="flex flex-row grow overflow-y-auto">
+      <div className="mx-4 flex flex-col w-[40%]">
           {communityName && (
             <p className="my-4 text-4xl font-medium">{communityName}</p>
           )}
           <FlexRow classes="gap-2">
-            <Search onQuery={() => {}} />
+            <div className="grow">
+              <Search onQuery={() => {}} />
+            </div>
             <button
               title="ask a question"
               className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
@@ -101,7 +103,7 @@ const CommunityPage = () => {
               <AddIcon />
             </button>
           </FlexRow>
-          <div className="scrollbar-hide mt-4 flex h-full flex-col space-y-4 overflow-y-scroll pt-4">
+          <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
             {data?.pages?.map((page) => (
                page?.edges?.map((thread) => (
                 <Link

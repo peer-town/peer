@@ -1,4 +1,4 @@
-import { gql, GraphQLClient } from "graphql-request";
+import {gql, GraphQLClient} from "graphql-request";
 import {
   Comment,
   Communities,
@@ -9,6 +9,7 @@ import {
   User,
   UserCommunities,
   UserFeedResponse,
+  Vote,
 } from "./type";
 
 const client = new GraphQLClient(String(process.env.CERAMIC_GRAPH), {});
@@ -271,33 +272,33 @@ export const composeQueryHandler = () => {
     fetchUserDetails: async function (walletAddress: string) {
       const allUsers = await this.fetchAllUsers();
       const user = allUsers.filter(
-        (user: any) => user?.node.walletAddress === walletAddress
+          (user: any) => user?.node.walletAddress === walletAddress
       )[0];
       return user;
     },
     fetchUserByPlatformDetails: async function (
-      platformName: string,
-      platformId: string
+        platformName: string,
+        platformId: string
     ) {
       const allUsers = await this.fetchAllUsers();
       return allUsers.find((user: any) => {
         return user.node.userPlatforms.some(
-          (platform: any) =>
-            platform.platformName === platformName &&
-            platform.platformId === platformId
+            (platform: any) =>
+                platform.platformName === platformName &&
+                platform.platformId === platformId
         );
       });
     },
     fetchUserDetailsFromPlatformId: async function (
-      platformName: string,
-      platformId: string
+        platformName: string,
+        platformId: string
     ) {
       const allUsers = await this.fetchAllUsers();
       const user = allUsers.map((user: any) => {
         const userExists = user?.node.userPlatforms.filter(
-          (platform: any) =>
-            platform.platformName === platformName &&
-            platform.platformId === platformId
+            (platform: any) =>
+                platform.platformName === platformName &&
+                platform.platformId === platformId
         )[0];
         if (Object.keys(userExists).length !== 0) {
           return user;
@@ -350,7 +351,7 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, { id: threadId });
+      return await client.request(query, {id: threadId});
     },
     fetchCommentDetails: async function (commentId: string) {
       const query = gql`
@@ -409,7 +410,7 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, { id: commentId });
+      return await client.request(query, {id: commentId});
     },
     fetchCommunityDetails: async function (communityId: string) {
       const query = gql`
@@ -464,29 +465,29 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, { id: communityId });
+      return await client.request(query, {id: communityId});
     },
     fetchSocialPlatform: async function (platformId: string) {
       const allSocialPlatforms = await this.fetchAllSocialPlatforms();
       const socialPlatform = allSocialPlatforms.filter(
-        (socialPlatform: any) => socialPlatform.node.platformId === platformId
+          (socialPlatform: any) => socialPlatform.node.platformId === platformId
       )[0];
       return socialPlatform;
     },
     fetchAuthorPlatformDetails: async function (
-      walletAddress: string,
-      usersPlatform: string
+        walletAddress: string,
+        usersPlatform: string
     ) {
       const userDetails = await this.fetchUserDetails(walletAddress);
       const platfromAuthor =
-        userDetails &&
-        userDetails.node.userPlatforms.filter(
-          (platform: any) => platform && platform.platformName === usersPlatform
-        )[0];
+          userDetails &&
+          userDetails.node.userPlatforms.filter(
+              (platform: any) => platform && platform.platformName === usersPlatform
+          )[0];
       return platfromAuthor;
     },
     fetchAllCommunitiesPlatformDetails: async function (
-      communityPlatform?: string
+        communityPlatform?: string
     ) {
       const allCommunities = await this.fetchAllCommunities();
       if (!communityPlatform) {
@@ -496,11 +497,11 @@ export const composeQueryHandler = () => {
         });
       }
       const communities = allCommunities.map(
-        (community: any) =>
-          community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
-            if (socialPlatform && socialPlatform.node !== undefined)
-              return socialPlatform.node.platform === communityPlatform;
-          })[0]
+          (community: any) =>
+              community.node.socialPlatforms.edges.filter((socialPlatform: any) => {
+                if (socialPlatform && socialPlatform.node !== undefined)
+                  return socialPlatform.node.platform === communityPlatform;
+              })[0]
       );
       return communities;
     },
@@ -508,13 +509,13 @@ export const composeQueryHandler = () => {
     fetchAllUserThreads: async function (walletAddress: string) {
       const allThreads = await this.fetchAllThreads();
       return allThreads.filter(
-        (thread: any) => thread.node.user.walletAddress === walletAddress
+          (thread: any) => thread.node.user.walletAddress === walletAddress
       );
     },
     fetchAllCommunityThreads: async (
-      communityId: string,
-      first?: number,
-      after?: string
+        communityId: string,
+        first?: number,
+        after?: string
     ): Promise<PageResponse<Thread>> => {
       const query = `
       query CommunityThreads($id: ID!, $first: Int!, $after: String!) {
@@ -563,22 +564,22 @@ export const composeQueryHandler = () => {
       const allThreads = await this.fetchAllThreads();
       return allThreads.find((thread: Node<Thread>) => {
         return thread.node.socialThreadIds.some(
-          (socialThread) => socialThread.threadId === threadId
+            (socialThread) => socialThread.threadId === threadId
         );
       });
     },
     fetchCommunityUsingPlatformId: async function (platformId: string) {
       const allCommunities: Node<Community>[] =
-        await this.fetchAllCommunities();
+          await this.fetchAllCommunities();
       return allCommunities.find((community: any) => {
         return community.node?.socialPlatforms.edges.some(
-          (platform: any) => platform.node?.platformId === platformId
+            (platform: any) => platform.node?.platformId === platformId
         );
       });
     },
     fetchCommunities: async (
-      first: number,
-      after?: string
+        first: number,
+        after?: string
     ): Promise<Communities> => {
       const query = gql`
         query ($first: Int!, $after: String!) {
@@ -627,9 +628,9 @@ export const composeQueryHandler = () => {
       return response.communityIndex;
     },
     fetchCommentsByThreadId: async (
-      threadId: string,
-      first: number,
-      after?: string
+        threadId: string,
+        first: number,
+        after?: string
     ): Promise<PageResponse<Comment>> => {
       const query = gql`
         query CommentsByThread($id: ID!, $first: Int!, $after: String!) {
@@ -660,6 +661,15 @@ export const composeQueryHandler = () => {
                         platformName
                         platformAvatar
                         platformUsername
+                      }
+                    }
+                    votes(first: 100) {
+                      edges {
+                        node {
+                          id
+                          vote
+                          userId
+                        }
                       }
                     }
                   }
@@ -697,12 +707,12 @@ export const composeQueryHandler = () => {
           }
         }
       `;
-      return await client.request(query, { id });
+      return await client.request(query, {id});
     },
     fetchUserCommunities: async (
-      id: string,
-      first?: number,
-      after?: string
+        id: string,
+        first?: number,
+        after?: string
     ): Promise<UserCommunities> => {
       const query = gql`
         query UserCommunities($id: ID!, $first: Int!, $after: String!) {
@@ -749,9 +759,9 @@ export const composeQueryHandler = () => {
       return response?.node?.author?.userCommunityList;
     },
     fetchFeedThreads: async (
-      userStreamId: string,
-      communityCount?: number,
-      threadCount?: number
+        userStreamId: string,
+        communityCount?: number,
+        threadCount?: number
     ): Promise<PageResponse<UserFeedResponse>> => {
       const query = `
       query ($id: ID!, $communityCount: Int!, $threadCount: Int!) {
@@ -805,8 +815,8 @@ export const composeQueryHandler = () => {
       return response?.node?.communities;
     },
     checkCommunityUser: async (
-      communityStreamId: string,
-      userAuthorId: string
+        communityStreamId: string,
+        userAuthorId: string
     ) => {
       const query = `
       query UserCommunities3($id: ID!,$author: ID!) {
@@ -833,10 +843,79 @@ export const composeQueryHandler = () => {
       });
       const isUSER = response?.node?.users?.edges
 
-      if(isUSER && isUSER?.length>0){
+      if (isUSER && isUSER?.length > 0) {
         return true;
       }
       return false;
     },
+    fetchAllTags: async () => {
+      const query = `
+      query fetchTags{
+        tagIndex(first:100){
+          edges{
+            node{
+              id 
+              tag
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query);
+      return response.tagIndex?.edges;
+    },
+    fetchCommunityTags: async (communityId:string) => {
+      const query = `
+      query tagsInCommunity($id:ID!){
+        node(id:$id){
+          ...on Community{
+            tags(first:5){
+              edges{
+                node{
+                  tag{
+                    tag
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `;
+      const response = await client.request(query,{
+        id: communityId
+      });
+      return response.node?.tags?.edges;
+    },
   };
 };
+
+export const getUserVoteOnComment = async (commentId: string, userAuthorId: string) => {
+  const query = gql`
+  query voteOnComment($id: ID!, $author: ID!) {
+    node(id: $id) {
+      ... on Comment {
+        id
+        votes(first: 1, account: $author) {
+          edges {
+            node {
+              id
+              vote
+              user {
+                author {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `;
+  const response = await client.request(query, {
+    id: commentId,
+    author: userAuthorId,
+  });
+  return response.node.votes.edges[0];
+}
