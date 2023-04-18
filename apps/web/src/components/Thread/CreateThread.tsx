@@ -11,6 +11,7 @@ import {useAppDispatch, useAppSelector} from "../../store";
 import {PrimaryButton} from "../Button";
 import {useRouter} from "next/router";
 import {newlyCreatedThread} from "../../store/features/thread";
+import {TagMultiSelect} from "../Tag";
 
 const CreateThread = (props: CreateThreadProps) => {
   const router = useRouter();
@@ -20,6 +21,8 @@ const CreateThread = (props: CreateThreadProps) => {
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
+  const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
+  const minLimit =1;
 
   const user = useAppSelector((state) => state.user);
   const {communityId, communityName} = props.community;
@@ -68,6 +71,12 @@ const CreateThread = (props: CreateThreadProps) => {
       return;
     }
 
+    if(tags.length<minLimit){
+      toast.error(`Select at least ${minLimit} tags`);
+      setCreatingThread(false);
+      return;
+    }
+
     const result = await createThread
         .mutateAsync({
           session: user.didSession,
@@ -77,6 +86,7 @@ const CreateThread = (props: CreateThreadProps) => {
           body: description,
           createdFrom: constants.CREATED_FROM_DEVNODE,
           createdAt: new Date().toISOString(),
+          tags:tags
         });
     if (isRight(result)) {
       setQuestion("");
@@ -129,6 +139,11 @@ const CreateThread = (props: CreateThreadProps) => {
             <div className="w-full whitespace-normal break-all p-2">
               Posting on <span className="font-bold">{communityName}</span>
             </div>
+          </div>
+          <div
+            className="mt-5 mb-14 h-auto w-full rounded-md border-2 border-solid border-gray-200 text-sm leading-5 text-gray-900 focus:ring-0"
+          >
+            <TagMultiSelect selectedData={tags} setData={setTags} placeholder={"Select tag"}/>
           </div>
           <PrimaryButton
               classes={"w-full mt-4"}
