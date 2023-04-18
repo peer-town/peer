@@ -20,7 +20,7 @@ const Dropdown = (props: DropDownProps) => {
           </svg>
         </button>
         {open && <div
-            className={`absolute right-0 z-50 h-[130px] overflow-scroll w-full mt-2 origin-top-right rounded-md shadow-lg dropdown-menu scrollbar-hide ${props.dropdownClass}`}
+            className={`absolute right-0 z-50 h-[170px] overflow-scroll w-full mt-2 origin-top-right rounded-md shadow-lg dropdown-menu scrollbar-hide ${props.dropdownClass}`}
             id="dropdown-menu">
             <div className="py-1 bg-white rounded-md shadow-xs" onClick={toggleDropdown}>
               {props.children}

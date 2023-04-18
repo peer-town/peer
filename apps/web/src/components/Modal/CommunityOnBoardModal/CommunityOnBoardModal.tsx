@@ -11,7 +11,7 @@ export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
   const [description, setDescription] = useState<string>();
   const [submitting, setIsSubmitting] = useState<boolean>(false );
   const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
-  const minLimit =3;
+  const minLimit =1;
   const onSave = (event) => {
     event.preventDefault();
     if(tags.length<minLimit){
