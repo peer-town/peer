@@ -46,7 +46,7 @@ const TagMultiSelect = (props: tagSelectProp) => {
             dataArray={tagFilteredData}
             selectedData={selectedData}
             setData={setData}
-            maxLimit={5}
+            maxLimit={3}
             attribute={"tag"}
             NoDataComponent={(query: string) => (
               <>
