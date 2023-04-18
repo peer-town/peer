@@ -12,6 +12,7 @@ import {PrimaryButton} from "../Button";
 import {useRouter} from "next/router";
 import Dropdown from "../Dropdown/Dropdown";
 import {newlyCreatedThread} from "../../store/features/thread";
+import {TagMultiSelect} from "../Tag";
 
 const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
   const router = useRouter();
@@ -22,6 +23,8 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
   const [community, setCommunity] = useState<SelectedCommunity>({communityName: "", communityId: ""});
+  const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
+  const minLimit =1;
 
   const user = useAppSelector((state) => state.user);
 
@@ -105,6 +108,12 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
       return;
     }
 
+    if(tags.length<minLimit){
+      toast.error(`Select at least ${minLimit} tags`);
+      setCreatingThread(false);
+      return;
+    }
+
     const result = await createThread
         .mutateAsync({
           session: user.didSession,
@@ -114,6 +123,7 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
           body: description,
           createdFrom: constants.CREATED_FROM_DEVNODE,
           createdAt: new Date().toISOString(),
+          tags:tags
         });
     if (isRight(result)) {
       setQuestion("");
@@ -167,6 +177,11 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
                       placeholder={isEmpty(communities.data?.edges) ? "Please join a Community" : "Select Community"}>
               {getCommunityList()}
             </Dropdown>
+          </div>
+          <div
+            className="mt-5 mb-14 h-auto w-full rounded-md border-2 border-solid border-gray-200 text-sm leading-5 text-gray-900 focus:ring-0"
+          >
+            <TagMultiSelect selectedData={tags} setData={setTags} placeholder={"Select tag"}/>
           </div>
           <PrimaryButton
               classes={"w-full mt-4"}
