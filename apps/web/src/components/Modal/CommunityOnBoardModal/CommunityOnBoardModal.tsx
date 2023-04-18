@@ -4,6 +4,7 @@ import { BaseModal } from "../BaseModal/BaseModal";
 import {Spinner} from "../../Icons";
 import {TagMultiSelect} from "../../Tag";
 import {toast} from "react-toastify";
+import {constants} from "../../../config";
 
 export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
   const [name, setName] = useState<string>();
@@ -11,7 +12,7 @@ export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
   const [description, setDescription] = useState<string>();
   const [submitting, setIsSubmitting] = useState<boolean>(false );
   const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
-  const minLimit =1;
+  const minLimit = constants.TAG_MIN_LIMIT;
   const onSave = (event) => {
     event.preventDefault();
     if(tags.length<minLimit){
