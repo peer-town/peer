@@ -28,6 +28,6 @@ export const right = <T>(val: T): Right<T> => {
   };
 };
 
-export const isRight = <T>(check: Left<T> | Right<T>): boolean => {
+export const isRight = <L,R>(check: Left<L> | Right<R>): boolean => {
   return check.tag === 'right';
 };
