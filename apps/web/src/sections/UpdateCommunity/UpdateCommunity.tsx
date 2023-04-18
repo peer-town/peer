@@ -40,7 +40,6 @@ export const UpdateCommunity = (props: Props) => {
   }
 
   const onSubmit = async (e) => {
-    console.log("submitting");
     e.preventDefault();
     setIsSubmitting(true);
     if (!has(user, "id") || isNil(get(user, "didSession"))) {
