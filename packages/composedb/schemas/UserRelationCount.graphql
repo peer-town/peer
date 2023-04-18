@@ -1,0 +1,34 @@
+type Comment 
+  @loadModel(
+     id: "kjzl6hvfrbw6c9x0v0j4keukbnyqmurnko9zknd1sj7pzfjqe1wfmpgw9rg5x1w"
+    ) {
+  id: ID!
+}
+
+type Thread 
+  @loadModel(
+     id: "kjzl6hvfrbw6c85luxixex8z6bjlzli1e2obz1cptcxre5dfd1tbmip52od049x"
+    ) {
+  id: ID!
+}
+
+type UserCommunity 
+  @loadModel(
+     id: "kjzl6hvfrbw6c7o6v6x3p3vly2ndnh5eexrci6bo8b1qvz8mhqrhk8yxiw6jphq"
+    ) {
+  id: ID!
+}
+
+type Vote 
+  @loadModel(
+     id: "kjzl6hvfrbw6c7wojagutwctcw41gktwuhj3dvijtxnq2omdpeojbjfhcihm8y7"
+    ) {
+  id: ID!
+}
+
+type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
+  commentCount: Int! @relationCountFrom(model: "Comment", property: "userId")
+  threadCount: Int! @relationCountFrom(model: "Thread", property: "userId")
+  communityCount: Int! @relationCountFrom(model: "UserCommunity", property: "userId")
+  votesCount: Int! @relationCountFrom(model: "Vote", property: "userId")
+}

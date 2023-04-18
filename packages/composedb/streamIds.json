@@ -17,5 +17,17 @@
     "CommunityTag": "kjzl6hvfrbw6c7zj6mhyhon8t5ig3w8489iqvyacqvz338p7em8ft3uvu93639g",
     "ThreadTag": "kjzl6hvfrbw6ca270wsb2s8gv3zawm73msilrf7ul1chz74xj1vpupq1lkemv4m",
     "Vote": "kjzl6hvfrbw6c7wojagutwctcw41gktwuhj3dvijtxnq2omdpeojbjfhcihm8y7"
+  },
+  "dev": {
+    "User": "kjzl6hvfrbw6c7bb4p0j3klw2qzn2zzbjjk9rapp67f39np1vgvu3vh4x571cgr",
+    "Community": "kjzl6hvfrbw6c6elmefzm05abjsbalbz3fschl9ysstcccagzmq8y6izdyoeu3z",
+    "UserCommunity": "kjzl6hvfrbw6c8dhf7ruslo18xvlmqg02lxiu0vgn8ifpnrv3e6oa7i4qc5iyn9",
+    "SocialPlatform": "kjzl6hvfrbw6c9x1g4fimepp1hljk72pbm5edjfgtw9oirq0mpmt7vqhjbjhjnn",
+    "Thread": "kjzl6hvfrbw6c5h2e5ilsfv9kop3gh2ee2mz5axozgmeyc6sr3s0oosh148patg",
+    "Comment": "kjzl6hvfrbw6c9hb5aobiugacs6rz5brj23l4tmiphxvqdljcgnea2q7whnuj61",
+    "Tag": "kjzl6hvfrbw6c9vcpdyfmsdh6btj4zs1cw6beyievasiio28lffvh1q30lxewmr",
+    "CommunityTag": "kjzl6hvfrbw6c5oknkt2qu1x0uj7o5dt7v75g3cwunlfy272yfblqwi8xevz6p2",
+    "ThreadTag": "kjzl6hvfrbw6c8pxvwx7iy4nx8gr6q7xd3n2rq9si6aiuzpgljd2g1qz6a5ycmq",
+    "Vote": "kjzl6hvfrbw6c5n20mpcscgnzrk06h1ieemw83w78iz23asxirfdebvw7a6n2dn"
   }
 }
