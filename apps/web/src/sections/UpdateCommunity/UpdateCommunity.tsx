@@ -41,7 +41,6 @@ export const UpdateCommunity = (props: Props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
     if (!has(user, "id") || isNil(get(user, "didSession"))) {
       toast.error("Please re-connect with your wallet!");
       return;
@@ -60,7 +59,6 @@ export const UpdateCommunity = (props: Props) => {
     } else {
       toast.error("Error updating community details");
     }
-    setIsSubmitting(false);
   }
 
   return (
@@ -72,7 +70,10 @@ export const UpdateCommunity = (props: Props) => {
         <CloseIcon/>
       </button>
       <div className="p-4">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(e) => {
+          setIsSubmitting(true);
+          onSubmit(e).finally(() => setIsSubmitting(false));
+        }}>
          <Image
           className={"rounded-2xl border mx-auto"}
           src={imageUrl || get(socialPlatform, "node.communityAvatar")}
