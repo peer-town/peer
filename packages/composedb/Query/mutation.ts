@@ -374,6 +374,31 @@ export const composeMutationHandler = async (compose: ComposeClient) => {
   };
 };
 
+export const createThreadTags = async  (
+  compose: ComposeClient,
+  tagId: string,
+  threadId: string
+) => {
+  const query = gql`
+       mutation createThreadTags($input:CreateThreadTagInput!){
+        createThreadTag(input:$input){
+          document{
+            id
+            tagId
+            threadId
+          }
+        }
+      }`;
+  return await compose.executeQuery(query, {
+    input: {
+      content: {
+        tagId: tagId,
+        threadId: threadId,
+      }
+    }
+  });
+}
+
 const createVoteComment = async (compose: ComposeClient, input: CreateVoteInput) => {
   const query = gql`
     mutation UpVoteComment($input: CreateVoteInput!) {

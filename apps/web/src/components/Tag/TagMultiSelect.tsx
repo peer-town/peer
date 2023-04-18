@@ -5,6 +5,7 @@ import {trpc} from "../../utils/trpc";
 import {tagSelectProp} from "./types";
 import {Chip} from "../Chip";
 import {CreateTag} from "./index";
+import {constants} from "../../config";
 
 const TagMultiSelect = (props: tagSelectProp) => {
 
@@ -46,7 +47,7 @@ const TagMultiSelect = (props: tagSelectProp) => {
             dataArray={tagFilteredData}
             selectedData={selectedData}
             setData={setData}
-            maxLimit={5}
+            maxLimit={constants.TAG_MAX_LIMIT}
             attribute={"tag"}
             NoDataComponent={(query: string) => (
               <>
