@@ -16,6 +16,11 @@ jest.mock('../../utils/trpc', () => ({
         useMutation: () => ({mutateAsync: mutationMock}),
       },
     },
+    tag: {
+      getAllTags: {
+        useQuery: () => (jest.fn()),
+      },
+    },
   },
 }));
 
