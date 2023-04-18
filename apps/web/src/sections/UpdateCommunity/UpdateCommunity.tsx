@@ -76,7 +76,7 @@ export const UpdateCommunity = (props: Props) => {
         <form onSubmit={onSubmit}>
          <Image
           className={"rounded-2xl border mx-auto"}
-          src={imageUrl || "https://placekitten.com/200/200"}
+          src={imageUrl || get(socialPlatform, "node.communityAvatar")}
           alt={`community ${name}`}
           width={126}
           height={126}

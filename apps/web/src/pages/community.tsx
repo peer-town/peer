@@ -13,6 +13,7 @@ import {selectCommunity, setUpdateCommunityId, useAppDispatch, useAppSelector} f
 import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
+import {SecondaryButton} from "../components/Button/SecondaryButton";
 
 const AddIcon = () => {
   return (
@@ -47,6 +48,7 @@ const CommunityPage = () => {
       },
     }
   );
+  const user = useAppSelector((state) => state.user);
   const newlyCreatedThread = useAppSelector((state) => state.thread.newlyCreatedThread);
   //clean up function is getting called even when the component is mounted
   //until i find any solution, below is the quick fix.
@@ -79,6 +81,12 @@ const CommunityPage = () => {
     fetchData();
   }, [newlyCreatedThread])
 
+  const canEditCommunityDetails = () => {
+    const authorId = get(user, "author.id");
+    const adminId = get(community, "data.value.node.author.id");
+    return authorId === adminId;
+  }
+
   if (isLoading) {
     return <Loader />;
   }
@@ -89,9 +97,12 @@ const CommunityPage = () => {
       <div className="flex flex-row grow overflow-y-auto">
       <div className="mx-4 flex flex-col w-[40%]">
           {communityName && (
-            <FlexRow>
-              <p className="my-4 text-4xl font-medium">{communityName}</p>
-              <button onClick={() => dispatch(setUpdateCommunityId(communityId))}>Edit</button>
+            <FlexRow classes={"flex-wrap gap-2 my-4 justify-between"}>
+              <p className="text-4xl font-medium">{communityName}</p>
+              {canEditCommunityDetails()
+                ? <SecondaryButton title={"Edit"} onClick={() => dispatch(setUpdateCommunityId(communityId))} />
+                : null
+              }
             </FlexRow>
           )}
           <FlexRow classes="gap-2">
