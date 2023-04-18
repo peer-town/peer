@@ -3,9 +3,12 @@ import {FlexColumn, FlexRow} from "../Flex";
 import {showUserProfile, useAppDispatch} from "../../store";
 import {AvatarCard} from "../AvatarCard";
 import {Markdown} from "../Markdown";
+import {Badge} from "../Badge";
+import {isEmpty, isNil} from "lodash";
 
 export const Thread = ({thread}: ThreadProps) => {
   const userId = thread?.user?.id;
+  const tags = thread?.tags?.edges;
   const user = thread?.user?.userPlatforms[0];
   const dispatch = useAppDispatch();
 
@@ -43,9 +46,22 @@ export const Thread = ({thread}: ThreadProps) => {
             {thread?.title}
           </div>
           <div className="text-md mt-3 text-gray-500">
-            <Markdown markdown={thread?.body} />
+            <Markdown markdown={thread?.body}/>
           </div>
         </FlexColumn>
+        <FlexRow classes={"mt-4 gap-2 flex-wrap"}>
+          {tags && tags
+            .slice(0, 4)
+            .map((tag, index) => {
+                if (isNil(tag.node) || isEmpty(tag.node)) {
+                  return <Badge key={index} text={"no tags"}/>
+                } else {
+                  return <Badge key={index} text={tag.node.tag.tag}/>
+                }
+              }
+            )
+          }
+        </FlexRow>
       </FlexColumn>
     </div>
   );
