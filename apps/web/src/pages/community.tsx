@@ -9,7 +9,7 @@ import {trpc} from "../utils/trpc";
 import {Search} from "../components/Search";
 import {CreateThread} from "../components/Thread";
 import {FlexRow} from "../components/Flex";
-import {selectCommunity, useAppDispatch, useAppSelector} from "../store";
+import {selectCommunity, setUpdateCommunityId, useAppDispatch, useAppSelector} from "../store";
 import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
@@ -89,7 +89,10 @@ const CommunityPage = () => {
       <div className="flex flex-row grow overflow-y-auto">
       <div className="mx-4 flex flex-col w-[40%]">
           {communityName && (
-            <p className="my-4 text-4xl font-medium">{communityName}</p>
+            <FlexRow>
+              <p className="my-4 text-4xl font-medium">{communityName}</p>
+              <button onClick={() => dispatch(setUpdateCommunityId(communityId))}>Edit</button>
+            </FlexRow>
           )}
           <FlexRow classes="gap-2">
             <div className="grow">

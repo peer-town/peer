@@ -25,6 +25,7 @@ import { Provider } from "react-redux";
 import { store } from "../store";
 import { LeftPanel } from "../components/LeftPanel";
 import {UserProfileWrapper} from "../sections";
+import {UpdateCommunityWrapper} from "../sections/UpdateCommunity";
 
 const projectId = config.walletConnect.projectId;
 const chains = [
@@ -74,6 +75,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
             <div className={"max-w-full h-full ml-[75px] box-border"} >
               <Component {...pageProps} />
               <UserProfileWrapper />
+              <UpdateCommunityWrapper />
             </div>
           </div>
         </Provider>

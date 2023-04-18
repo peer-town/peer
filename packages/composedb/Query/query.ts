@@ -420,10 +420,11 @@ export const composeQueryHandler = () => {
               id
               createdAt
               communityName
+              description
               author {
                 id
               }
-              socialPlatforms(first: 100) {
+              socialPlatforms(first: 5) {
                 edges {
                   node {
                     id
@@ -433,31 +434,6 @@ export const composeQueryHandler = () => {
                     communityId
                     communityName
                     communityAvatar
-                    user {
-                      id
-                      walletAddress
-                      author {
-                        id
-                      }
-                      userPlatforms {
-                        platformId
-                        platformName
-                        platformAvatar
-                        platformUsername
-                      }
-                      createdAt
-                    }
-                    author {
-                      id
-                    }
-                    community {
-                      id
-                      createdAt
-                      communityName
-                      author {
-                        id
-                      }
-                    }
                   }
                 }
               }

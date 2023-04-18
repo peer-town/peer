@@ -7,6 +7,7 @@ export interface CommunityState {
   communityAvatar: string;
   description: string;
   newlyCreatedCommunity?: string,
+  updateCommunityId?: string;
 }
 
 const initialState: CommunityState = {
@@ -15,6 +16,7 @@ const initialState: CommunityState = {
   communityAvatar: "",
   description: "",
   newlyCreatedCommunity: "",
+  updateCommunityId: undefined,
 };
 
 export const communitySlice = createSlice({
@@ -29,9 +31,15 @@ export const communitySlice = createSlice({
     },
     newlyCreatedCommunity: (state, action: PayloadAction<string>) => {
       state.newlyCreatedCommunity = action.payload
+    },
+    setUpdateCommunityId: (state, action: PayloadAction<string>) => {
+      state.updateCommunityId = action.payload;
+    },
+    clearUpdateCommunityId: (state,) => {
+      state.updateCommunityId = undefined;
     }
   },
 });
 
-export const {selectCommunity, newlyCreatedCommunity} = communitySlice.actions;
+export const {selectCommunity, newlyCreatedCommunity, setUpdateCommunityId, clearUpdateCommunityId} = communitySlice.actions;
 export default communitySlice.reducer;
