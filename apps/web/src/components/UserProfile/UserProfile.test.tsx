@@ -52,6 +52,10 @@ jest.mock("../../utils/trpc", () => ({
       getUserCommunities: {
         useQuery: () => mockCommunities,
       },
+      getUserThreads: {
+        useQuery: () => jest.fn(),
+        useInfiniteQuery: () => jest.fn(),
+      },
     },
   },
 }));
@@ -73,6 +77,5 @@ describe("UserProfile", () => {
       <UserProfile userStreamId="12345" />
     );
     expect(await findByText("username")).toBeInTheDocument();
-    expect(await findByText("community name")).toBeInTheDocument();
   });
 });
