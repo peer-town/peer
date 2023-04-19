@@ -10,6 +10,7 @@ import Image from "next/image";
 import {SecondaryButton} from "../Button/SecondaryButton";
 import {Loader} from "../Loader";
 import {clearUserProfile, useAppDispatch} from "../../store";
+import { Badge } from "../Badge";
 
 const CloseIcon = () => {
   return (
@@ -63,7 +64,7 @@ export const UserProfile = (props: UserProfileProps) => {
   };
 
   return (
-    <div className="w-full max-w-sm h-screen scrollbar-hide overflow-y-scroll">
+    <div className="w-full h-screen scrollbar-hide overflow-y-scroll">
       {/* user profile */}
       <button
         className="p-4"
@@ -71,13 +72,14 @@ export const UserProfile = (props: UserProfileProps) => {
       >
         <CloseIcon />
       </button>
-      <div className="flex flex-col items-center my-12">
+      <div className="flex flex-row items-center m-4 gap-2">
         <Image
           className={"rounded-2xl border"}
           src={profile.platformAvatar}
           alt={`profile ${profile.platformUsername}`}
-          width={126}
-          height={126}
+          width={85}
+          height={85}
+          style={{ width: 85, height: 85 }}
         />
         <p className="text-4xl my-4">{profile.platformUsername}</p>
         {!isDiscordConnected && (
@@ -92,44 +94,42 @@ export const UserProfile = (props: UserProfileProps) => {
         )}
       </div>
 
-      {/* reputation */}
-      <hr/>
-      <div className="p-6">
-        <p className="text-2xl">Reputation</p>
-
-        <div className="my-4 rounded-md border bg-white text-gray-500">
-          {points.map((point, index) => {
-            return (
-              <FlexRow key={index} classes={"justify-between p-2 border-b"}>
-                <p>{point.tag}</p>
-                <p>{`${point.points} pts`}</p>
-              </FlexRow>
-            );
-          })}
-        </div>
-        <FlexRow classes={"justify-between"}>
-          <p className="text-gray-500">Total Points</p>
-          <p className="text-2xl text-right text-black">1,200</p>
-        </FlexRow>
-      </div>
-
       {/* communities */}
       <hr/>
       <div className="p-6">
-        <p className="text-2xl"> Communities</p>
-        <FlexColumn classes="mt-6 gap-6">
+        <p className="text-xl font-medium"> Communities</p>
+        <FlexRow classes="flex-wrap mt-6 gap-2">
           {communities.data && communities.data.edges.map((community) => {
             return (
               <AvatarCard
+                imageClasses="border"
                 key={community.node.community.id}
                 image={get(community, "node.community.socialPlatforms.edges[0].node.communityAvatar")}
                 imageSize={44}
-                name={get(community, "node.community.socialPlatforms.edges[0].node.communityName")}
               />
             )
           })}
-        </FlexColumn>
+        </FlexRow>
       </div>
+
+      {/* reputation */}
+      <hr/>
+      <div className="p-6">
+        <p className="text-xl font-medium">Reputation</p>
+        <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
+          {points.map((point, index) => {
+            return (
+              <Badge text={`${point.tag} ${point.points} pts`} />
+            );
+          })}
+        </FlexRow>
+        <FlexRow classes={"justify-between"}>
+          <p className="text-gray-500 font-semibold">Total Points</p>
+          <p className="text-2xl text-right text-black">1,200</p>
+        </FlexRow>
+      </div>
+      <hr/>
+
     </div>
   );
 }
