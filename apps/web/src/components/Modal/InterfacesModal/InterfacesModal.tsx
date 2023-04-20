@@ -13,7 +13,7 @@ export const InterfacesModal = (props: InterfaceModelProps) => {
       <div id="interface-modal">
         <button
           id="discord-button"
-          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           onClick={connectDiscord}
         >
           Connect discord
