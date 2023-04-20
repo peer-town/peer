@@ -8,14 +8,12 @@ import {isRight} from "../../utils/fp";
 import {get, has, isNil} from "lodash";
 import {getDevnodeSocialPlatform} from "../../utils";
 import {toast} from "react-toastify";
-import {useRouter} from "next/router";
 
 interface Props {
   communityId: string;
 }
 
 export const UpdateCommunity = (props: Props) => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.user);
   const [name, setName] = useState<string>("");
@@ -82,7 +80,7 @@ export const UpdateCommunity = (props: Props) => {
           height={126}
         />
           <input
-            className="mt-5 h-12 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0"
+            className="mt-5 h-12 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
             placeholder="community name"
             type="text"
             maxLength={100}
@@ -91,7 +89,7 @@ export const UpdateCommunity = (props: Props) => {
             required={true}
           />
           <textarea
-            className="mt-5 h-28 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0"
+            className="mt-5 h-28 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
             placeholder="community description"
             maxLength={1000}
             value={description}
@@ -99,7 +97,7 @@ export const UpdateCommunity = (props: Props) => {
             required={true}
           />
           <input
-            className="mt-5 h-12 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0"
+            className="mt-5 h-12 w-full rounded-md border border-solid border-gray-200 py-2 px-3 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
             placeholder="image url"
             type="url"
             value={imageUrl}
