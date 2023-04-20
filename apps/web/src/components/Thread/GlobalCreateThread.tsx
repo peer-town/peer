@@ -51,7 +51,7 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
           "node.community.socialPlatforms.edges[0].node.communityAvatar"
       );
       return (
-          <div key={index} className={"p-4 !text-gray-700 font-normal cursor-pointer border-b hover:bg-slate-200 "}
+          <div key={index} className={"p-2 !text-gray-700 font-normal cursor-pointer border hover:bg-slate-200 rounded-md border-2 border-solid border-gray-200 bg-white shadow-lg mt-1"}
                onClick={() => {
                  setCommunity({...communityDetails})
                }}>
@@ -147,6 +147,7 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
       <Question title={"Ask question"} open={props.open} onClose={props.onClose}>
         <div className="form-group mb-6">
           <input
+            tabIndex={1}
               id="question-title"
               className={utils.classNames(
                   "form-control mb-3 block w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none",
@@ -160,6 +161,7 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
               required
           />
           <textarea
+            tabIndex={2}
               id="question-desc"
               className={utils.classNames(
                   "form-control mb-3 block h-[264px] min-h-[120px] w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none",
@@ -172,14 +174,16 @@ const GlobalCreateThread = (props: GlobalCreateThreadProps) => {
               required
           />
           <div
-              className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
+            tabIndex={3}
+              className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding py-2 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
             <Dropdown selected={community.communityName} disableDropdown={isEmpty(communities.data?.edges)}
                       placeholder={isEmpty(communities.data?.edges) ? "Please join a Community" : "Select Community"}>
               {getCommunityList()}
             </Dropdown>
           </div>
           <div
-            className="mt-5 mb-14 h-auto w-full rounded-md border-2 border-solid border-gray-200 text-sm leading-5 text-gray-900 focus:ring-0"
+            tabIndex={4}
+            className="mt-3 mb-14 py-2 h-auto w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           >
             <TagMultiSelect selectedData={tags} setData={setTags} placeholder={"Select tag"}/>
           </div>
