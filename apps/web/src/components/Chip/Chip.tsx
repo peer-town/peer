@@ -3,7 +3,7 @@ import {ChipProps} from "./types";
 export const Chip = (props: ChipProps) => {
   return (
     <div
-      className={`flex flex-row gap-2 items-center px-3 py-2 block w-max rounded-md border border-gray-300 ${props.classes || ''}`}
+      className={`flex flex-row gap-2 items-center px-3 py-2 block w-max rounded-md border border-gray-300 text-sm font-normal text-base text-gray-600 ${props.classes || ''}`}
       id="chip"
     >
       <span>{props.text}</span>
