@@ -19,7 +19,7 @@ export const WebOnBoardModal = (props: WebOnBoardProps) => {
     <BaseModal open={props.open} title={"your details"} onClose={()=>{}}>
       <form onSubmit={onSave}>
         <input
-          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           placeholder="name"
           type="text"
           maxLength={100}
@@ -27,7 +27,7 @@ export const WebOnBoardModal = (props: WebOnBoardProps) => {
           required={true}
         />
         <input
-          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="w-full mt-5 h-12 border-solid border-2 border-gray-200 rounded-md py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           placeholder="image url"
           type="url"
           onChange={(e) => setImageUrl(e.target.value)}
