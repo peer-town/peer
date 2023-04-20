@@ -1,0 +1,7 @@
+type Reputation @loadModel(id: "<>") {
+  id: ID!
+}
+
+type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
+ reputations: [Reputation] @relationFrom(model: "Reputation", property: "userId")
+}

@@ -1,0 +1,16 @@
+type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
+  id: ID!
+}
+
+type Tag @loadModel(id: "kjzl6hvfrbw6c9mri41w31xgzu53xca1k1y0jg0lbolkujfa4t1ilvoo3nkvffr"){
+  id: ID!
+}
+
+type Reputation @createModel(accountRelation: LIST, description: "User and Tag Relation") {
+  author: DID! @documentAccount
+  userId: StreamID! @documentReference(model: "User")
+  tagId: StreamID! @documentReference(model: "Tag")
+  user: User! @relationDocument(property: "userId")
+  tag: Tag! @relationDocument(property: "tagId")
+  score: Float!
+}

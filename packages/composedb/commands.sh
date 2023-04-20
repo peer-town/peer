@@ -59,6 +59,12 @@ composedb composite:models ./gen/Composite.ThreadRelationCount.json --ceramic-ur
 composedb composite:create ./schemas/CommentRelationCount.graphql --output=gen/Composite.CommentRelationCount.json --ceramic-url=$2 --did-private-key=$1
 composedb composite:models ./gen/Composite.CommentRelationCount.json --ceramic-url=$2
 
+# user reputation
+composedb composite:create ./schemas/Reputation.graphql --output=gen/Composite.Reputation.json --ceramic-url=$2 --did-private-key=$1
+composedb composite:models ./gen/Composite.Reputation.json --ceramic-url=$2
+composedb composite:create ./schemas/ReputationInUser.graphql --output=gen/Composite.ReputationInUser.json --ceramic-url=$2 --did-private-key=$1
+composedb composite:models ./gen/Composite.ReputationInUser.json --ceramic-url=$2
+
 composedb composite:merge ./gen/Composite.* --output=./gen/DevNode.json --ceramic-url=$2
 composedb composite:compile ./gen/DevNode.json ./gen/runtime-composite.json --ceramic-url=$2
 composedb composite:compile ./gen/DevNode.json src/definition.ts --ceramic-url=$2

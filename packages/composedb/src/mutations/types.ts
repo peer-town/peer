@@ -9,3 +9,14 @@ export interface UpdateSocialPlatformPayload {
   communityName: string;
   communityAvatar: string;
 }
+
+export interface CreateReputationPayload {
+  userId: string;
+  tagId: string;
+  score: number;
+}
+
+export interface UpdateReputationPayload {
+  id: string;
+  score: number;
+}
