@@ -26,7 +26,7 @@ import { store } from "../store";
 import { LeftPanel } from "../components/LeftPanel";
 import {UserProfileWrapper} from "../sections";
 import {UpdateCommunityWrapper} from "../sections/UpdateCommunity";
-import {md_component} from "../styles/app_styels";
+import {md_component} from "../styles/app_styles";
 import {useState} from "react";
 
 const projectId = config.walletConnect.projectId;
@@ -56,7 +56,7 @@ const client = createClient({
 const ethereumClient = new EthereumClient(client, chains);
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  const [margin, setMargin] = useState<boolean>(true);
+  const [margin, setMargin] = useState<boolean>(false);
   const handleMargin = (value) =>{
     setMargin(value);
   }
@@ -78,7 +78,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         <Provider store={store}>
           <div className={"w-screen h-screen box-border"}>
             <LeftPanel style={'w-[75px]'} handleMargin={handleMargin}/>
-            <div className={`max-w-full h-full ml-[75px] box-border ${!margin && md_component}`} >
+            <div className={`max-w-full h-full ml-[75px] box-border ${(margin === false) && md_component}`} >
               <Component {...pageProps} />
               <UserProfileWrapper />
               <UpdateCommunityWrapper />

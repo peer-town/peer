@@ -9,11 +9,12 @@ import {trpc} from "../utils/trpc";
 import {Search} from "../components/Search";
 import {CreateThread} from "../components/Thread";
 import {FlexRow} from "../components/Flex";
-import {selectCommunity, setUpdateCommunityId, useAppDispatch, useAppSelector} from "../store";
+import {selectCommunity, setUpdateCommunityId, toggleLeftPanel, useAppDispatch, useAppSelector} from "../store";
 import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
 import {SecondaryButton} from "../components/Button/SecondaryButton";
+import {index_title, selectedThreadToggle, threadListToggle} from "../styles/app_styles";
 
 const AddIcon = () => {
   return (
@@ -50,6 +51,7 @@ const CommunityPage = () => {
   );
   const user = useAppSelector((state) => state.user);
   const newlyCreatedThread = useAppSelector((state) => state.thread.newlyCreatedThread);
+  const isLeftPanelVisible = useAppSelector((state) => state.responsiveToggles.leftPanelToggle)
   //clean up function is getting called even when the component is mounted
   //until i find any solution, below is the quick fix.
   let mounted = false;
@@ -63,7 +65,10 @@ const CommunityPage = () => {
   }, []);
 
   useEffect(() => {
-    if (threadId) setCurrentThread(threadId);
+    if (threadId) {
+      dispatch(toggleLeftPanel(false))
+      setCurrentThread(threadId);
+    }
   }, [threadId]);
 
   useEffect(() => {
@@ -87,39 +92,54 @@ const CommunityPage = () => {
     return authorId === adminId;
   }
 
+  const handleLeftpanelToggle = () => {
+    dispatch(toggleLeftPanel(!isLeftPanelVisible))
+  }
+
+  const handleCreateThread = () => {
+    dispatch(toggleLeftPanel(!isLeftPanelVisible));
+    setQuestionModal(true)
+  }
+
   if (isLoading) {
-    return <Loader />;
+    return <Loader/>;
   }
 
   return (
     <div className="flex h-screen flex-col overflow-y-hidden">
-      <JoinCommunity />
+      <JoinCommunity/>
       <div className="flex flex-row grow overflow-y-auto">
-      <div className="mx-4 flex flex-col w-[40%]">
+        <div className={`mx-4 flex flex-col w-[40%] ${threadListToggle(communityId, threadId)}`}>
           {communityName && (
             <FlexRow classes={"flex-wrap gap-2 my-4 justify-between"}>
-              <p className="text-4xl font-medium">{communityName}</p>
+              <div className={"flex row gap-[10px] items-center"}>
+                <div className={` ${index_title}`} onClick={handleLeftpanelToggle}>
+                  <img src={"/hamburger.png"} alt={"hamburger"} width={"100%"} height={"100%"}/>
+                </div>
+                <p className="text-4xl font-medium">{communityName}</p>
+              </div>
               {canEditCommunityDetails()
-                ? <SecondaryButton title={"Edit"} onClick={() => dispatch(setUpdateCommunityId(communityId))} />
+                ? <SecondaryButton classes="!p-2 !h-auto" title={"Edit"} onClick={() => dispatch(setUpdateCommunityId(communityId))}/>
                 : null
               }
             </FlexRow>
           )}
           <FlexRow classes="gap-2">
             <div className="grow">
-              <Search onQuery={() => {}} />
+              <Search onQuery={() => {
+              }}/>
             </div>
             <button
               title="ask a question"
               className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
-              onClick={() => setQuestionModal(true)}
+              onClick={handleCreateThread}
             >
-              <AddIcon />
+              <AddIcon/>
             </button>
           </FlexRow>
           <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
             {data?.pages?.map((page) => (
-               page?.edges?.map((thread) => (
+              page?.edges?.map((thread) => (
                 <Link
                   key={thread.node.id}
                   href={{
@@ -148,9 +168,9 @@ const CommunityPage = () => {
             />
           </div>
         </div>
-        <div className="w-full border-l">
+        <div className={`w-full border-l ${selectedThreadToggle(communityId, threadId)}`}>
           {currentThread ? (
-            <ThreadSection threadId={currentThread} />
+            <ThreadSection threadId={currentThread}/>
           ) : (
             <NoData
               title={"No thread selected"}
@@ -162,7 +182,7 @@ const CommunityPage = () => {
           title={"Ask Question"}
           open={questionModal}
           onClose={() => setQuestionModal(false)}
-          community={{ communityName, communityId }}
+          community={{communityName, communityId}}
         />
       </div>
     </div>
