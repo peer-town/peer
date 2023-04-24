@@ -3,7 +3,7 @@ import { trpc } from "../../utils/trpc";
 import * as utils from "../../utils";
 import { get, has } from "lodash";
 import {
-  fetchUserDetails, newlyCreatedCommunity,
+  fetchUserDetails, newlyCreatedCommunity, toggleLeftPanel,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
@@ -176,6 +176,7 @@ const CommunityOnboard = () => {
   };
 
   const handleCreateCommunity = () => {
+    dispatch(toggleLeftPanel(false));
     if (!userId || !didSession) {
       toast.error("Please re-connect with your wallet!");
       return;
