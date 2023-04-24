@@ -3,6 +3,7 @@ import userReducer from "./features/user";
 import communityReducer from "./features/community";
 import profileReducer from "./features/profile";
 import threadReducer from "./features/thread";
+import responsiveToggleReducer from "./features/responsive_toggles";
 import {loadFromLocalStorage, saveToLocalStorage} from "./storage";
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     user: userReducer,
     profile: profileReducer,
     thread: threadReducer,
+    responsiveToggles: responsiveToggleReducer,
   },
   preloadedState: loadFromLocalStorage(),
 });
