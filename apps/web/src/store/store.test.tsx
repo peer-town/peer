@@ -62,25 +62,25 @@ describe("redux.storage", () => {
   beforeEach(() => window.localStorage.clear());
 
   it("should store new value to local storage", () => {
-    saveToLocalStorage("test");
-    expect(loadFromLocalStorage()).toEqual("test");
+    saveToLocalStorage({test:"test"});
+    expect(loadFromLocalStorage({})).toEqual({test:"test"});
   });
 
   it("should return undefined if no item in local storage", () => {
-    expect(loadFromLocalStorage()).toEqual(undefined);
+    expect(loadFromLocalStorage({})).toEqual(undefined);
   });
 
   it("should not store on fail case", () => {
     // @ts-ignore
     saveToLocalStorage(2n as any);
-    expect(loadFromLocalStorage()).toEqual(undefined);
+    expect(loadFromLocalStorage({})).toEqual(undefined);
     window.localStorage.setItem("state", "string");
-    expect(loadFromLocalStorage()).toEqual(undefined);
+    expect(loadFromLocalStorage({})).toEqual(undefined);
   });
 
   it("should handle when window is not available", () => {
     Object.defineProperty(global, "window", {});
     saveToLocalStorage("test");
-    expect(loadFromLocalStorage()).toEqual(undefined);
+    expect(loadFromLocalStorage({})).toEqual(undefined);
   });
 });
