@@ -1,4 +1,3 @@
-import { initialState as toggleInitialState } from "./features/responsive_toggles";
 
 export const saveToLocalStorage = (state) => {
   try {
@@ -11,13 +10,13 @@ export const saveToLocalStorage = (state) => {
   }
 }
 
-export const loadFromLocalStorage = () => {
+export const loadFromLocalStorage = (resetState: object) => {
   try {
     if (typeof window !== "undefined") {
       const serializedState = window.localStorage.getItem("state");
       if (serializedState === null) return undefined;
       const state = JSON.parse(serializedState);
-      return { ...state , responsiveToggles:toggleInitialState};
+      return { ...state , ...resetState };
     }
     return undefined;
   } catch (e) {
