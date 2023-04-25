@@ -4,7 +4,7 @@ import {createSlice} from '@reduxjs/toolkit';
 export interface ResponsiveToggles {
   leftPanelToggle: boolean;
 }
-const initialState: ResponsiveToggles = {
+export const initialState: ResponsiveToggles = {
   leftPanelToggle: false,
 };
 
