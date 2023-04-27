@@ -14,7 +14,7 @@ import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
 import {SecondaryButton} from "../components/Button/SecondaryButton";
-import {index_title, selectedThreadToggle, threadListToggle} from "../styles/app_styles";
+import {index_title, mobile_font, selectedThreadToggle, threadListToggle} from "../styles/app_styles";
 
 const AddIcon = () => {
   return (
@@ -97,7 +97,7 @@ const CommunityPage = () => {
   }
 
   const handleCreateThread = () => {
-    dispatch(toggleLeftPanel(!isLeftPanelVisible));
+    dispatch(toggleLeftPanel(false));
     setQuestionModal(true)
   }
 
@@ -112,11 +112,11 @@ const CommunityPage = () => {
         <div className={`mx-4 flex flex-col w-[40%] ${threadListToggle(communityId, threadId)}`}>
           {communityName && (
             <FlexRow classes={"flex-wrap gap-2 my-4 justify-between"}>
-              <div className={"flex row gap-[10px] items-center"}>
+              <div className={"flex row gap-[10px]"}>
                 <div className={` ${index_title}`} onClick={handleLeftpanelToggle}>
                   <img src={"/hamburger.png"} alt={"hamburger"} width={"100%"} height={"100%"}/>
                 </div>
-                <p className="text-4xl font-medium">{communityName}</p>
+                <p className={`text-3xl font-medium ${mobile_font}`}>{communityName}</p>
               </div>
               {canEditCommunityDetails()
                 ? <SecondaryButton classes="!p-2 !h-auto" title={"Edit"} onClick={() => dispatch(setUpdateCommunityId(communityId))}/>
