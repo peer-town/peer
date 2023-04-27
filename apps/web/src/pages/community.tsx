@@ -14,7 +14,7 @@ import {JoinCommunity} from "../components/JoinCommunity";
 import {NoData} from "../components/NoData";
 import {LoadMore} from "../components/Button/LoadMore";
 import {SecondaryButton} from "../components/Button/SecondaryButton";
-import {index_title, mobile_font, selectedThreadToggle, threadListToggle} from "../styles/app_styles";
+import {index_title, mobile_title_font, selectedThreadToggle, threadListToggle} from "../styles/app_styles";
 
 const AddIcon = () => {
   return (
@@ -116,7 +116,7 @@ const CommunityPage = () => {
                 <div className={` ${index_title}`} onClick={handleLeftpanelToggle}>
                   <img src={"/hamburger.png"} alt={"hamburger"} width={"100%"} height={"100%"}/>
                 </div>
-                <p className={`text-3xl font-medium ${mobile_font}`}>{communityName}</p>
+                <p className={`text-3xl font-medium ${mobile_title_font}`}>{communityName}</p>
               </div>
               {canEditCommunityDetails()
                 ? <SecondaryButton classes="!p-2 !h-auto" title={"Edit"} onClick={() => dispatch(setUpdateCommunityId(communityId))}/>
