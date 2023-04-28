@@ -6,4 +6,5 @@ export interface CommunityAvatarProps {
   onClick?(): void;
   selected?: boolean;
   classes?: string;
+  style?: object;
 }
