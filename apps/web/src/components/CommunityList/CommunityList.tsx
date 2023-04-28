@@ -76,6 +76,7 @@ const CommunityList = () => {
                 name={name}
                 image={image}
                 selected={selected}
+                style={{width:'45px', height:'45px'}}
                 onClick={() => handleOnCommunityClick(communityDetails)}
             />
           </Link>
