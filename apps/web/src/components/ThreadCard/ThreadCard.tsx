@@ -2,6 +2,7 @@ import { FlexColumn, FlexRow } from "../Flex";
 import { AvatarCard } from "../AvatarCard";
 import { get } from "lodash";
 import { ThreadCardProps } from "./types";
+import {md_date} from "./style";
 
 export const ThreadCard = (props: ThreadCardProps) => {
   const { id, title, body, createdAt, user } = props.thread;
@@ -11,7 +12,7 @@ export const ThreadCard = (props: ThreadCardProps) => {
       <FlexColumn classes="gap-2">
         <div className="text-xl line-clamp-2">{title}</div>
         <div className="text-gray-500 line-clamp-2">{body}</div>
-        <FlexRow classes="text-sm gap-3">
+        <FlexRow classes={`text-sm gap-3 ${md_date}`}>
           <AvatarCard
             imageSize={20}
             image={get(user, "userPlatforms[0].platformAvatar")}

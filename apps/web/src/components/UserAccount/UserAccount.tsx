@@ -1,5 +1,5 @@
 import {AvatarCard} from "../AvatarCard"
-import {showUserProfile, updateDid, updateDidSession, useAppSelector} from "../../store"
+import {showUserProfile, toggleLeftPanel, updateDid, updateDidSession, useAppSelector} from "../../store"
 import {get, isNil} from "lodash"
 import {useEffect, useState} from "react";
 import {useAppDispatch} from "../../store";
@@ -13,6 +13,7 @@ const UserAccount = (props) => {
   const dispatch = useAppDispatch();
 
   const viewProfilehandler = () => {
+    dispatch(toggleLeftPanel(false));
     dispatch(showUserProfile({userProfileId: user.id}));
   }
   const handleDisconnect = () => {

@@ -5,6 +5,7 @@ import {AvatarCard} from "../AvatarCard";
 import {Markdown} from "../Markdown";
 import {Badge} from "../Badge";
 import {isEmpty, isNil} from "lodash";
+import {mobile_title_font} from "../../styles/app_styles";
 
 export const Thread = ({thread}: ThreadProps) => {
   const userId = thread?.user?.id;
@@ -42,7 +43,7 @@ export const Thread = ({thread}: ThreadProps) => {
           </div>
         </FlexRow>
         <FlexColumn>
-          <div className="text-[36px] font-medium text-gray-700">
+          <div className={`text-[36px] font-medium text-gray-700 ${mobile_title_font}`}>
             {thread?.title}
           </div>
           <div className="text-md mt-3 text-gray-500">
