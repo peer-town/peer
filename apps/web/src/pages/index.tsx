@@ -7,7 +7,7 @@ import {LoadMore} from "../components/Button/LoadMore";
 import {useEffect} from "react";
 import {toggleLeftPanel, useAppDispatch, useAppSelector} from "../store";
 import {isEmpty, isNil} from "lodash";
-import {index_title, md_index_container, md_index_grid} from "../styles/app_styels";
+import {index_title, md_index_container, md_index_grid} from "../styles/app_styles";
 
 const Home: NextPage = () => {
   const newlyCreatedCommunity = useAppSelector((state) => state.community.newlyCreatedCommunity);

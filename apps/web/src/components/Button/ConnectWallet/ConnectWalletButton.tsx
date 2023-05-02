@@ -7,7 +7,7 @@ import { DIDSession } from "did-session";
 import { config } from "../../../config";
 import { toast } from "react-toastify";
 import { ConnectWalletProps } from "./types";
-import { useAppDispatch, updateDidSession, updateDid } from "../../../store";
+import {useAppDispatch, updateDidSession, updateDid, toggleLeftPanel} from "../../../store";
 
 
 export const ConnectWalletButton = (props: ConnectWalletProps) => {
@@ -59,6 +59,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
   };
 
   const onClick = async () => {
+    dispatch(toggleLeftPanel(false));
     isConnected ? disconnect() : await onOpen();
   };
 

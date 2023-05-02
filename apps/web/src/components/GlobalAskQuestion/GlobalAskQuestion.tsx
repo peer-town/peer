@@ -2,12 +2,12 @@ import {GlobalCreateThread} from "../Thread";
 import {useState} from "react";
 import {get, has, isNil} from "lodash";
 import {toast} from "react-toastify";
-import {useAppSelector} from "../../store";
+import {toggleLeftPanel, useAppDispatch, useAppSelector} from "../../store";
 
 const GlobalAskQuestion = () => {
   const [questionModal, setQuestionModal] = useState<boolean>(false);
   const user = useAppSelector((state) => state.user);
-
+  const dispatch = useAppDispatch();
   const AskQuestion = () => {
     return (
         <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,6 +19,7 @@ const GlobalAskQuestion = () => {
   }
 
   const handleClick = () =>{
+    dispatch(toggleLeftPanel(false));
     if (!has(user, "id") || isNil(get(user, "didSession"))) {
       toast.error("Please re-connect with your wallet!");
       return;
