@@ -5,18 +5,24 @@ import * as utils from "../../utils";
 import UserOnboard from "../UserOnboard/UserOnboard";
 import {CommunityOnboard} from "../CommunityOnboard";
 import {CommunityList} from "../CommunityList";
-import {selectCommunity, useAppDispatch} from "../../store";
+import {selectCommunity, useAppDispatch, useAppSelector} from "../../store";
 import {GlobalAskQuestion} from "../GlobalAskQuestion";
+import {md_screen} from "./styles";
+import {useEffect} from "react";
 
 const LeftPanel = (props: LeftPanelProp) => {
   const {style} = props;
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const isLeftPanelVisible = useAppSelector((state) => state.responsiveToggles.leftPanelToggle)
 
+  useEffect(() =>{
+    props.handleMargin(isLeftPanelVisible);
+  },[isLeftPanelVisible])
 
   return (
       <div
-          className={`fixed left-0 h-full border-r border-solid border-[#08010d12] ${style}`}
+          className={`fixed left-0 h-full border-r border-solid border-[#08010d12] bg-white z-[999] ${isLeftPanelVisible ? 'block' :md_screen} ${style}`}
       >
         <div className={`h-full flex flex-col justify-between`}>
           <div

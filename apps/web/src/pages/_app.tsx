@@ -26,6 +26,8 @@ import { store } from "../store";
 import { LeftPanel } from "../components/LeftPanel";
 import {UserProfileWrapper} from "../sections";
 import {UpdateCommunityWrapper} from "../sections/UpdateCommunity";
+import {md_component} from "../styles/app_styels";
+import {useState} from "react";
 
 const projectId = config.walletConnect.projectId;
 const chains = [
@@ -54,6 +56,10 @@ const client = createClient({
 const ethereumClient = new EthereumClient(client, chains);
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const [margin, setMargin] = useState<boolean>(true);
+  const handleMargin = (value) =>{
+    setMargin(value);
+  }
   return (
     <>
       <WagmiConfig client={client}>
@@ -71,8 +77,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         />
         <Provider store={store}>
           <div className={"w-screen h-screen box-border"}>
-            <LeftPanel style={'w-[75px]'}/>
-            <div className={"max-w-full h-full ml-[75px] box-border"} >
+            <LeftPanel style={'w-[75px]'} handleMargin={handleMargin}/>
+            <div className={`max-w-full h-full ml-[75px] box-border ${!margin && md_component}`} >
               <Component {...pageProps} />
               <UserProfileWrapper />
               <UpdateCommunityWrapper />
