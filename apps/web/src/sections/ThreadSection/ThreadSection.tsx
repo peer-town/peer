@@ -10,9 +10,14 @@ import {isRight} from "../../utils/fp";
 import {Loader} from "../../components/Loader";
 import {LoadMore} from "../../components/Button/LoadMore";
 import {get, has, isNil} from "lodash";
+import {useRouter} from "next/router";
+import Link from "next/link";
+import {thread_section_header} from "./style";
 
 export const ThreadSection = (props: ThreadSectionProps) => {
   const threadId = props.threadId;
+  const router = useRouter();
+  const communityId = router.query.communityId as string;
   const user = useAppSelector((state) => state.user);
 
   const commentBoxRef = useRef<HTMLTextAreaElement>(null);
@@ -123,8 +128,26 @@ export const ThreadSection = (props: ThreadSectionProps) => {
   }
 
   return (
-    <div className="flex flex-col h-full px-4">
-      <div className="overflow-y-scroll h-full py-4 scrollbar-hide box-border ">
+    <div className="flex flex-col h-full relative box-border">
+      <div
+        className={`flex gap-[30px] w-full p-2 items-center h-[50px] sticky  shadow-md border box-border top-0 left-0 right-0 ${thread_section_header}`}>
+        <Link
+          href={{
+            pathname: communityId ?"/community":"/feed",
+            query: {
+              communityId
+            },
+          }}
+        >
+          <div className={"w-[20px] "}>
+            <img src={"/back.svg"} alt="back" width="100%" height="100%"/>
+          </div>
+        </Link>
+        <div className={"whitespace-nowrap truncate w-[80%] "}>
+          {currentThread.data?.node?.title}
+        </div>
+      </div>
+      <div className="overflow-y-scroll h-full py-4 scrollbar-hide box-border px-4">
         {currentThread.data?.node && <Thread thread={currentThread.data.node}/>}
         <div className="mt-[40px] space-y-[40px] mb-[120px]">
           {data?.pages?.map((page) => (
@@ -146,8 +169,8 @@ export const ThreadSection = (props: ThreadSectionProps) => {
           />
         </div>
       </div>
-      <div className="relative pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-full">
-      <div className="flex flex-row p-2 rounded-xl bg-white border shadow-sm h-auto items-center">
+      <div className="relative pb-[20px] h-auto bg-[#FBFBFB] mt-4 w-full px-4">
+        <div className="flex flex-row p-2 rounded-xl bg-white border shadow-sm h-auto items-center">
         <textarea
           id="chat"
           ref={commentBoxRef}

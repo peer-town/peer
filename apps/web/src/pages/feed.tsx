@@ -59,7 +59,7 @@ const FeedPage = () => {
           <div className={` ${index_title}`} onClick={handleLeftpanelToggle}>
             <img src={"/hamburger.png"} alt={"hamburger"} width={"100%"} height={"100%"}/>
           </div>
-          <p className="text-4xl font-medium my-4">your feed</p>
+          <p className="text-3xl font-medium my-4 ">your feed</p>
         </div>
         <Search onQuery={() => {}}/>
         <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
