@@ -1,7 +1,7 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { trpcProxy } from "../../utils/trpc";
-import { has, get } from "lodash";
+import { has } from "lodash";
 import { isRight } from "../../utils/fp";
 
 export interface UserState {
@@ -27,7 +27,7 @@ export interface CompleteUserState extends UserState {
   discordContext: string;
 }
 
-export const initialState: CompleteUserState = {
+const initialState: CompleteUserState = {
   id: null,
   createdAt: null,
   walletAddress: null,

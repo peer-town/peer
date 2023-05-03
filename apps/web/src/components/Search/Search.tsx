@@ -2,7 +2,7 @@ import {SearchProps} from "./types";
 
 export const Search = (props: SearchProps) => {
   return (
-    <div className="flex items-center lg:mx-0 lg:max-w-none xl:px-0">
+    <div className="flex items-center lg:mx-0 lg:max-w-none xl:px-0 relative z-[0]">
       <div className="w-full">
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">

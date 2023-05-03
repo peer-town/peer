@@ -42,6 +42,17 @@ export interface Comments {
   edges: Comment[];
 }
 
+export interface Tag {
+  node: {
+    id: string;
+    tag: {
+      tag: string
+    }
+  }
+}
+export interface Tags {
+  edges: Tag[];
+}
 export interface Thread {
   id: string;
   title: string;
@@ -55,6 +66,7 @@ export interface Thread {
   user: User;
   community: Community;
   comments: Comments;
+  tags: Tags
 }
 
 export interface SocialThreadId {

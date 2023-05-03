@@ -5,6 +5,7 @@ import {trpc} from "../../utils/trpc";
 import {tagSelectProp} from "./types";
 import {Chip} from "../Chip";
 import {CreateTag} from "./index";
+import {constants} from "../../config";
 
 const TagMultiSelect = (props: tagSelectProp) => {
 
@@ -24,18 +25,18 @@ const TagMultiSelect = (props: tagSelectProp) => {
     setData((prevState) => prevState.filter((tag) => tag !== removedTag));
   }
   return (
-    <div className={"relative w-full h-full"}>
-      <div className={"flex row w-full h-full items-center "}>
-        <div className={"flex row gap-[10px] w-full p-3 flex-wrap"}>
-          {isEmpty(selectedData) && <div className={"text-sm text-[#A2A8B4]"}> {placeholder} </div>}
+    <div className={"relative z-[1] w-full h-full "}>
+      <div className={"relative z-[2] px-5 flex row w-full h-full items-center cursor-pointer"} onClick={handleOpen}>
+        <div className={" relative z-[3] flex row gap-[10px] w-full flex-wrap"}>
+          {isEmpty(selectedData) && <div className={"text-sm font-normal text-base text-[#A2A8B4]"}> {placeholder} </div>}
           {selectedData && selectedData.length > 0 ? (selectedData.map((tag, index) => {
             return (<Chip key={index} text={tag.tag} onClose={() => {
               handleCloseTag(tag)
             }}/>)
           })) : null}
         </div>
-        <div className={"w-[30px] h-[30px] text-center"} onClick={handleOpen}>
-          <svg className="w-full h-full cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+        <div className={"w-[20px] h-[20px] text-center"} >
+          <svg className="w-full h-full cursor-pointer" viewBox="0 0 20 20" fill="black">
             <path fillRule="evenodd" d="M10 14l-5-5h10l-5 5z" clipRule="evenodd"/>
           </svg>
         </div>
@@ -46,7 +47,7 @@ const TagMultiSelect = (props: tagSelectProp) => {
             dataArray={tagFilteredData}
             selectedData={selectedData}
             setData={setData}
-            maxLimit={5}
+            maxLimit={constants.TAG_MAX_LIMIT}
             attribute={"tag"}
             NoDataComponent={(query: string) => (
               <>

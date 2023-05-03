@@ -1,0 +1,1 @@
+export const thread_section_header = "min-680:hidden ";

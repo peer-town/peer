@@ -30,9 +30,9 @@ const MultiSelectDropdown = (props: multiSelectProps) => {
         <Combobox value={selectedData} onChange={handleChange as any} multiple>
           <div className="relative mt-1">
             <div
-                className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+                className="relative w-full cursor-default overflow-hidden bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
               <Combobox.Input
-                  className="w-full py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 rounded-md border-2 border-solid border-gray-200 text-sm leading-5 text-gray-900 focus:ring-0"
+                  className="w-full py-2 pl-3 pr-10 text-sm font-normal text-gray-900 rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0"
                   displayValue={() => ""}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search Tag"
@@ -47,7 +47,7 @@ const MultiSelectDropdown = (props: multiSelectProps) => {
             >
               <Combobox.Options
                   as={"div"}
-                  className="absolute mt-1 max-h-[100px] w-full overflow-auto rounded-md border-2 border-solid border-gray-200 bg-white shadow-lg text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm scrollbar-hide">
+                  className="absolute mt-1 max-h-[140px] w-full overflow-auto rounded-md border-2 border-solid border-gray-200 bg-white shadow-lg text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm scrollbar-hide">
                 {filteredPeople.length === 0 && query !== '' ? (
                     <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                       {NoDataComponent(query)}

@@ -4,6 +4,7 @@ import { BaseModal } from "../BaseModal/BaseModal";
 import {Spinner} from "../../Icons";
 import {TagMultiSelect} from "../../Tag";
 import {toast} from "react-toastify";
+import {constants} from "../../../config";
 
 export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
   const [name, setName] = useState<string>();
@@ -11,7 +12,7 @@ export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
   const [description, setDescription] = useState<string>();
   const [submitting, setIsSubmitting] = useState<boolean>(false );
   const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
-  const minLimit =3;
+  const minLimit = constants.TAG_MIN_LIMIT;
   const onSave = (event) => {
     event.preventDefault();
     if(tags.length<minLimit){
@@ -31,7 +32,7 @@ export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
     >
       <form onSubmit={onSave}>
         <input
-          className="mt-5 h-12 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="mt-5 h-12 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           placeholder="community name"
           type="text"
           maxLength={100}
@@ -39,21 +40,22 @@ export const CommunityOnBoardModal = (props: CommunityOnBoardProps) => {
           required={true}
         />
         <textarea
-          className="mt-5 h-28 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="mt-5 h-28 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           placeholder="community description"
           maxLength={1000}
           onChange={(e) => setDescription(e.target.value)}
           required={true}
         />
         <input
-          className="mt-5 h-12 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+          className="mt-5 h-12 w-full rounded-md border-2 border-solid border-gray-200 py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
           placeholder="image url"
           type="url"
           onChange={(e) => setImageUrl(e.target.value)}
           required={true}
         />
         <div
-          className="mt-5  h-auto w-full rounded-md border-2 border-solid border-gray-200 text-sm leading-5 text-gray-900 focus:ring-0"
+          tabIndex={4}
+          className="mt-3 mb-14 py-2 h-auto w-full rounded-md border-2 border-solid border-gray-200 bg-white focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
         >
           <TagMultiSelect selectedData={tags} setData={setTags} placeholder={"Select tag"}/>
         </div>

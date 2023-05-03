@@ -40,3 +40,6 @@ prisma/dev.db
 packages/composedb/.ceramic
 .idea/
 .nyc_output/
+
+# compose json files
+Composite.*.json

@@ -5,12 +5,14 @@ import {Search} from "../components/Search";
 import {CommunityCard} from "../components/CommunityCard";
 import {LoadMore} from "../components/Button/LoadMore";
 import {useEffect} from "react";
-import {useAppSelector} from "../store";
+import {toggleLeftPanel, useAppDispatch, useAppSelector} from "../store";
 import {isEmpty, isNil} from "lodash";
+import {index_title, md_index_container, md_index_grid} from "../styles/app_styles";
 
 const Home: NextPage = () => {
   const newlyCreatedCommunity = useAppSelector((state) => state.community.newlyCreatedCommunity);
-
+  const dispatch = useAppDispatch();
+  const isLeftPanelVisible = useAppSelector((state) => state.responsiveToggles.leftPanelToggle)
   // @ts-ignore
   const {data, fetchNextPage, hasNextPage, refetch, isFetching} = trpc.public.fetchCommunities.useInfiniteQuery({
       first: 10,
@@ -31,15 +33,24 @@ const Home: NextPage = () => {
     fetchData();
   }, [newlyCreatedCommunity])
 
+  const handleLeftpanelToggle = () =>{
+    dispatch(toggleLeftPanel(!isLeftPanelVisible))
+  }
   return (
-    <div className="container mx-auto">
-      <h1 className="p-4 text-4xl font-medium">discover</h1>
-      <div className="mx-4 max-w-[682px]">
+    <div className={`.container mx-auto ${md_index_container}`}>
+      <div className={"flex row gap-[10px] items-center mx-4"} >
+        <div className={` ${index_title}`} onClick={handleLeftpanelToggle}>
+          <img src={"/hamburger.png"} alt={"hamburger"} width={"100%"} height={"100%"}/>
+        </div>
+        <h1 className="p-4 text-4xl font-medium">discover</h1>
+      </div>
+
+      <div className="mx-4 max-w-[682px] ">
         <Search label={"Search by name or tags"} onQuery={() => {
         }}/>
       </div>
 
-      <div className="m-4 mt-12 grid gap-8 md:grid-cols-1 lg:grid-cols-2">
+      <div className={`m-4 mt-12 grid gap-8 ${md_index_grid}`}>
         {data?.pages?.map((page) => {
           return (
             page?.edges?.map((community) => {
@@ -68,8 +79,8 @@ const Home: NextPage = () => {
                       community.node?.socialPlatforms.edges[0]?.node
                         .communityAvatar
                     }
-                    members={20}
-                    questions={10}
+                    members={community.node?.userCount}
+                    questions={community.node?.threadCount}
                     tags={tags}
                   />
                 </Link>

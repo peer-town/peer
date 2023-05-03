@@ -34,7 +34,7 @@ export const BaseModal = (props: BaseModalProps) => {
                 >
                   <Dialog.Panel
                     className={utils.classNames(
-                      "w-full max-w-sm transform overflow-hidden rounded-2xl bg-white px-4 py-7 text-left align-middle shadow-xl transition-all ",
+                      "w-full max-w-sm transform rounded-2xl bg-white px-4 py-7 text-left align-middle shadow-xl transition-all ",
                       props?.classNameContent
                     )}
                   >

@@ -4,6 +4,7 @@ import {
   composeMutationHandler,
   composeQueryHandler,
   definition,
+  getUserThreadsByAuthorId,
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
@@ -155,5 +156,16 @@ export const userRouter = router({
         communityStreamId,
         userAuthor
       );
+    }),
+
+  getUserThreads: publicProcedure
+    .input(z.object({
+      authorId: z.string(),
+      last: z.number(),
+      cursor: z.string().nullish(),
+    }))
+    .query(async ({input}) => {
+      const {authorId, last, cursor} = input;
+      return await getUserThreadsByAuthorId(authorId, last, cursor);
     }),
 });
