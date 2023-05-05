@@ -96,6 +96,8 @@ const AddRepoModal = (props:AddRepoModalProps) => {
 
     const result = await adRepo
       .mutateAsync({
+        session: user?.didSession,
+        userId: user?.id,
         username: userName,
         repoUrl: url,
         description: description,
