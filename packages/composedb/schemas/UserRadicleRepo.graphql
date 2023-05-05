@@ -1,0 +1,12 @@
+type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
+  id: ID!
+}
+
+type UserRadicleRepo @createModel(accountRelation: LIST, description: " users repositories on radicle node") {
+  userId: StreamID! @documentReference(model: "User")
+  user: User! @relationDocument(property: "userId")
+  name: String! @string(maxLength: 100)
+  description: String! @string(maxLength: 2000)
+  url: String! @string(maxLength: 2000)
+  radId: String! @string(maxLength: 100)
+}
