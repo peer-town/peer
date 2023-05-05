@@ -22,12 +22,9 @@ const hostRepo = (url: string, repoName: string, branch: string, description: st
   cd("temp");
   exec(`git clone ${url} ${repoName}`);
   cd(repoName);
-  exec("ls -l");
   exec(`rad init . --name ${repoName} --description "${description}" --default-branch ${branch}`);
   const radId = exec("rad .").stdout;
   exec("git push rad && rad sync");
   cd("../../");
-  exec("rm -rf temp");
-  exec(`rad rm --no-confirm ${radId}`);
   return radId.trim();
 }
