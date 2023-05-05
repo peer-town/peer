@@ -15,11 +15,13 @@ import {ContentCard} from "../ContentCard";
 import {CloseIcon} from "../Icons";
 import {UserThreadList} from "../../sections/UserThreadList/UserThreadList";
 import Link from "next/link";
+import AddRepoModal from "../Modal/AddRepoModal/AddRepoModal";
 
 export const UserProfile = (props: UserProfileProps) => {
   const [profile, setProfile] = useState<any>();
   const [isUserThreadListOpen, setUserThreadListOpen] = useState<boolean>(false);
   const [isDiscordConnected, setIsDiscordConnected] = useState(false);
+  const [openAddRepoModal, setOpenAddRepoModal] = useState(false);
   const points = [
     {tag: "python", points: 35},
     {tag: "web3", points: 35},
@@ -148,6 +150,29 @@ export const UserProfile = (props: UserProfileProps) => {
           ))}
         </div>
       </div>
+
+      {/* radicle integration */}
+      <hr/>
+      <div className="p-4">
+        <p className="text-xl font-medium">Radicle Repos</p>
+        <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
+          {/*{points.map((point, index) => {*/}
+          {/*  return (*/}
+          {/*    <Badge key={index} text={`${point.tag} ${point.points} pts`}/>*/}
+          {/*  );*/}
+          {/*})}*/}
+        </FlexRow>
+        <FlexRow classes={"justify-between"}>
+          <button onClick={() => setOpenAddRepoModal(true)}> Add Repos</button>
+        </FlexRow>
+      </div>
+      <hr/>
+
+      <AddRepoModal
+        open={openAddRepoModal}
+        onClose={() => setOpenAddRepoModal(false)}
+        title="add repo"
+      />
 
       <UserThreadList
         open={isUserThreadListOpen}
