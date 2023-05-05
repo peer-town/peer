@@ -5,13 +5,13 @@ export interface ProfileState {
   userProfileId: string;
 }
 
-const initialState: ProfileState = {
+export const profileInitialState: ProfileState = {
   userProfileId: "",
 };
 
 export const profileSlice = createSlice({
   name: 'community',
-  initialState,
+  initialState:profileInitialState ,
   reducers: {
     showUserProfile: (state, action: PayloadAction<ProfileState>) => {
       state.userProfileId = action.payload?.userProfileId;
