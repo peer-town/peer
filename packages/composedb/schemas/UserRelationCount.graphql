@@ -26,9 +26,17 @@ type Vote
   id: ID!
 }
 
+type UserRadicleRepo
+  @loadModel(
+     id: "kjzl6hvfrbw6c88ng8eknqq5ce2swcvwap4pg3i8gk8u3jntjb7ct27qf5buo2z"
+    ) {
+  id: ID!
+}
+
 type User @loadModel(id: "kjzl6hvfrbw6c828cr9zv69x34395lnxo7g5f6uwnxlv3fnwtgho7e5o3hayx0d") {
   commentCount: Int! @relationCountFrom(model: "Comment", property: "userId")
   threadCount: Int! @relationCountFrom(model: "Thread", property: "userId")
   communityCount: Int! @relationCountFrom(model: "UserCommunity", property: "userId")
   votesCount: Int! @relationCountFrom(model: "Vote", property: "userId")
+  userRepoCount: Int! @relationCountFrom(model: "UserRadicleRepo", property: "userId")
 }
