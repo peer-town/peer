@@ -4,6 +4,6 @@ export const config = {
     apiKey: process.env.RADICLE_API_KEY || "sample-api-key",
   },
   rad: {
-    repoDir: process.env.RADICLE_REPOS_DIR || "~/radile-repos",
+    repoDir: process.env.RADICLE_REPOS_DIR || "~/radicle-repos",
   },
 };
