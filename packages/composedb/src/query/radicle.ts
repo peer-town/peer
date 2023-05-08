@@ -2,12 +2,12 @@ import {gql} from "graphql-request";
 import {graphqlClient} from "../clients";
 import {UserRepoResponse} from "./types";
 
-export const getUserRepos = async (authorId: string, last: number, before?: string): Promise<UserRepoResponse> => {
+export const getUserRepos = async (authorId: string, first: number, after?: string): Promise<UserRepoResponse> => {
   const query = gql`
-    query UserRepos($authorId: ID!, $last: Int!, $before: String!) {
+    query UserRepos($authorId: ID!, $first: Int!, $after: String!) {
       node(id: $authorId) {
         ... on CeramicAccount {
-          userRadicleRepoList(last: $last, before: $before) {
+          userRadicleRepoList(first: $first, after: $after) {
             pageInfo {
               hasNextPage
               hasPreviousPage
@@ -22,20 +22,17 @@ export const getUserRepos = async (authorId: string, last: number, before?: stri
                 name
                 description
                 url
-                author{
-                id
-                }
               }
             }
           }
         }
       }
-    }
-  `;
+    } 
+ `;
   const response = await graphqlClient.request(query, {
     authorId: authorId,
-    last: last || 20,
-    before: before || "",
+    first: first || 20,
+    after: after || "",
   });
   return response?.node?.userRadicleRepoList;
 }

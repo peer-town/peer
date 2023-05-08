@@ -28,6 +28,7 @@ export interface BaseModalProps extends ModalProps {
 
 export interface AddRepoModalProps extends ModalProps {
   title?: string;
+  onDone?(): void;
 }
 
 export interface WebOnBoardProps extends ModalProps {

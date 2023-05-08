@@ -2,7 +2,8 @@ import {config} from "../../../config";
 import {RadicleRepoComposeObject, RadicleRepoObject} from "../../types";
 import {publicProcedure, router} from "../trpc";
 import {z} from "zod";
-import {left, right} from "../../../utils/fp";
+import {isRight, left, right} from "../../../utils/fp";
+import {extractProjectName} from "../../../utils";
 import {
   composeQueryHandler,
   definition,
@@ -11,7 +12,7 @@ import {
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { DIDSession } from "did-session";
-import { omit} from "lodash";
+import {isNil, omit} from "lodash";
 
 
 export const compose = new ComposeClient({
@@ -42,6 +43,8 @@ export const radicleRouter = router({
     .input(addRepoSchema)
     .mutation(async ({input}) => {
       const payload = omit(input, ["session","userId"]);
+      const repoName = extractProjectName(input.repoUrl);
+      if (isNil(repoName)) return left("Not a valid git url");
       const response = await handleRadicleAddRepo(payload as any);
       const data = await response.json();
       console.log("data",data);
@@ -49,7 +52,7 @@ export const radicleRouter = router({
       if (response.ok) {
         const composeInput = {
           session: input.session,
-          name: input.username,
+          name: `${input.username}/${repoName}`,
           url: input.repoUrl,
           description: input.description,
           radId: data?.data.radId,

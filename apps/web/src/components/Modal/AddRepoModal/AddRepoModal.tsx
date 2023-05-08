@@ -106,6 +106,10 @@ const AddRepoModal = (props:AddRepoModalProps) => {
 
     if(isRight(result)){
       toast.success("repo added");
+      setUrl("");
+      setBranch("");
+      setDescription("");
+      props?.onDone();
     }
     else{
       toast.error("error occurred");

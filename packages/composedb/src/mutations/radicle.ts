@@ -4,8 +4,8 @@ import {CreateRadicleRepoPayload} from "./types";
 
 export const createRadicleRepo = async (compose: ComposeClient, payload: CreateRadicleRepoPayload) => {
   const query = gql`
-    mutation CreateRadicleRepo($input: CreateRadicleRepoInput!) {
-      createRadicleRepo(input: $input) {
+    mutation CreateRadicleRepo($input: CreateUserRadicleRepoInput!) {
+      createUserRadicleRepo(input: $input) {
         document {
           id
         }
