@@ -9,7 +9,7 @@ import {getDiscordAuthUrl} from "../../utils";
 import Image from "next/image";
 import {SecondaryButton} from "../Button/SecondaryButton";
 import {Loader} from "../Loader";
-import {clearUserProfile, useAppDispatch} from "../../store";
+import {clearUserProfile, useAppDispatch, useAppSelector} from "../../store";
 import {Badge} from "../Badge";
 import {ContentCard} from "../ContentCard";
 import {CloseIcon} from "../Icons";
@@ -31,6 +31,7 @@ export const UserProfile = (props: UserProfileProps) => {
   ];
 
   const dispatch = useAppDispatch();
+  const currentUserId = useAppSelector((state) => state.user.id);
   const user = trpc.user.getUserByStreamId.useQuery({streamId: props.userStreamId});
   const communities = trpc.user.getUserCommunities.useQuery({streamId: props.userStreamId});
   const userThreads = trpc.user.getUserThreads.useQuery({last: 2, authorId: get(user, "data.value.author.id")});
@@ -166,18 +167,22 @@ export const UserProfile = (props: UserProfileProps) => {
         <FlexRow classes={"gap-4"}>
           <p className="text-xl font-medium">Repos</p>
           <p className="text-lg text-gray-500">{get(user, "data.value.userRepoCount")}</p>
-          <p
-            className="text-sm text-gray-400 hover:text-gray-600 ml-auto cursor-pointer"
-            onClick={() => setOpenAddRepoModal(true)}
-          >
-            add new
-          </p>
-          <p
-            className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
-            onClick={() => setUserRepoListOpen(true)}
-          >
-            see more
-          </p>
+          <div className="flex flex-row gap-4 ml-auto">
+            { (props.userStreamId === currentUserId) &&
+              <p
+                className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
+                onClick={() => setOpenAddRepoModal(true)}
+              >
+                add new
+              </p>
+            }
+            <p
+              className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
+              onClick={() => setUserRepoListOpen(true)}
+            >
+              see more
+            </p>
+          </div>
         </FlexRow>
         <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
           {userRepos.data?.edges?.map((repo) => (
@@ -185,7 +190,6 @@ export const UserProfile = (props: UserProfileProps) => {
           ))}
         </FlexRow>
       </div>
-      <hr/>
 
       <AddRepoModal
         open={openAddRepoModal}
