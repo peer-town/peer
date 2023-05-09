@@ -18,13 +18,10 @@ export const publish = (req: Request, res: Response) => {
 
 const hostRepo = (url: string, repoName: string, branch: string, description: string) => {
   cd(config.rad.repoDir);
-  exec("mkdir -p temp");
-  cd("temp");
   exec(`git clone ${url} ${repoName}`);
   cd(repoName);
   exec(`rad init . --name ${repoName} --description "${description}" --default-branch ${branch}`);
   const radId = exec("rad .").stdout;
   exec("git push rad && rad sync");
-  cd("../../");
   return radId.trim();
 }
