@@ -1,4 +1,4 @@
-rm -rf gen
+#rm -rf gen
 
 composedb composite:create ./schemas/User.graphql --output=gen/Composite.User.json --ceramic-url=$2 --did-private-key=$1
 composedb composite:models ./gen/Composite.User.json --ceramic-url=$2
@@ -48,6 +48,9 @@ composedb composite:create ./schemas/Vote.graphql --output=gen/Composite.Vote.js
 composedb composite:models ./gen/Composite.Vote.json --ceramic-url=$2
 composedb composite:create ./schemas/VotesInComment.graphql --output=gen/Composite.VotesInComment.json --ceramic-url=$2 --did-private-key=$1
 composedb composite:models ./gen/Composite.VotesInComment.json --ceramic-url=$2
+
+composedb composite:create ./schemas/UserRadicleRepo.graphql --output=gen/Composite.UserRadicleRepo.json --ceramic-url=$2 --did-private-key=$1
+composedb composite:models ./gen/Composite.UserRadicleRepo.json --ceramic-url=$2
 
 # relation count updates
 composedb composite:create ./schemas/UserRelationCount.graphql --output=gen/Composite.UserRelationCount.json --ceramic-url=$2 --did-private-key=$1

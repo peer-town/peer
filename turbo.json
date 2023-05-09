@@ -30,6 +30,9 @@
     "dev:bot": {
       "cache": false
     },
+    "dev:radicle": {
+      "cache": false
+    },
     "dev": {
       "cache": false
     },

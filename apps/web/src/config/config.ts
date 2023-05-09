@@ -11,11 +11,15 @@ export const config = {
     projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "",
   },
   didSession: {
-    expiresInSecs: 60 * 60 * 24 * 7 * 1, // 1 week
+    expiresInSecs: 60 * 60 * 24 * 7, // 1 week
   },
   aggregator: {
     endpoint: process.env.NEXT_PUBLIC_AGGREGATOR_URL || "http://localhost:4000/api",
     apiKey: process.env.AGGREGATOR_API_KEY || "sample-api-key",
+  },
+  radicle: {
+    endpoint: process.env.NEXT_PUBLIC_RADICLE_URL || "http://localhost:4001/api",
+    apiKey: process.env.RADICLE_API_KEY || "sample-api-key",
   },
   ceramic: {
     nodeUrl: process.env.CERAMIC_NODE || "",

@@ -681,6 +681,7 @@ export const composeQueryHandler = () => {
               createdAt
               walletAddress
               threadCount
+              userRepoCount
               userPlatforms {
                 platformId
                 platformName

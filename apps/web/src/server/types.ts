@@ -78,3 +78,20 @@ export interface SocialCommentId {
   platformName: string;
   commentId: string;
 }
+
+export interface RadicleRepoObject {
+  session: string;
+  username: string,
+  repoUrl: string,
+  description: string,
+  branch: string,
+}
+
+export interface RadicleRepoComposeObject {
+  session: string;
+  name: string,
+  url: string,
+  description: string,
+  radId: string,
+  userId:string,
+}
