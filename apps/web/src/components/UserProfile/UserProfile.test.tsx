@@ -57,6 +57,15 @@ jest.mock("../../utils/trpc", () => ({
         useInfiniteQuery: () => jest.fn(),
       },
     },
+    radicle: {
+      fetchRepo: {
+        useQuery: () => jest.fn(),
+        useInfiniteQuery: () => jest.fn(),
+      },
+      addRepo: {
+        useMutation: () => jest.fn(),
+      }
+    }
   },
 }));
 
