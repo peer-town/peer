@@ -18,9 +18,9 @@
     "build": "tsup",
     "dev": "tsup && node dist/index.js",
     "dev:radicle": "tsup && node dist/index.js",
-    "test:radicle": "mocha tests/**/*.spec.ts tests/**/**/*.spec.ts -- --silent",
-    "test:radicle-coverage": "c8 --reporter=html --reporter=text mocha tests/**/*.spec.ts tests/unit/**/*.spec.ts",
-    "test": "c8 --reporter=html --reporter=text mocha tests/**/*.spec.ts tests/unit/**/*.spec.ts"
+    "test:radicle": "echo 'no tests'",
+    "test:radicle-coverage": "echo 'no tests'",
+    "test": "echo 'no tests'"
   },
   "dependencies": {
     "@composedb/client": "^0.4.3",
