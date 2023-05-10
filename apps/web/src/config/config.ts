@@ -18,7 +18,7 @@ export const config = {
     apiKey: process.env.AGGREGATOR_API_KEY || "sample-api-key",
   },
   radicle: {
-    endpoint: process.env.NEXT_PUBLIC_RADICLE_URL || "http://localhost:4001/api",
+    endpoint: process.env.RADICLE_URL || "http://localhost:4001/api",
     apiKey: process.env.RADICLE_API_KEY || "sample-api-key",
   },
   ceramic: {
