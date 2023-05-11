@@ -45,7 +45,13 @@ export const publicRouter = router({
       cursor: z.string().nullish(),
     }))
     .query(async ({input}) => {
-      return await queryHandler.fetchCommunities(input.first, input.cursor);
+
+      try{
+        return await queryHandler.fetchCommunities(input.first, input.cursor);
+      }
+      catch(e){
+        return e?.response?.data?.communityIndex;
+      }
   }),
 
   fetchAllCommunities: publicProcedure.query(async () => {
