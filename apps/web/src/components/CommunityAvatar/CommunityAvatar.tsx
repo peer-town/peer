@@ -26,10 +26,9 @@ export const CommunityAvatar = (props: CommunityAvatarProps) => {
         </span>
         <Image
           width={props.width ?? 45}
-          height={props.width ?? 45}
-          className={
-            props.selected ? `rounded-xl` : `rounded-full hover:rounded-xl`
-          }
+          height={props.height ?? 45}
+          className={`object-cover ${props.selected ? "rounded-xl" : "rounded-full hover:rounded-xl"}`}
+          style={props.style}
           src={props.image}
           alt={`${props.name} community`}
         />

@@ -5,6 +5,8 @@ import {
   composeQueryHandler,
   definition,
   SocialPlatformInput,
+  updateCommunityDetails,
+  updateSocialPlatformDetails,
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
@@ -27,6 +29,7 @@ const socialPlatformSchema = z.object({
   communityId: z.string().min(1),
   communityAvatar: z.string().min(1),
 });
+
 const socialPlatformInputSchema = z.object({
   session: z.string(),
   socialPlatform: socialPlatformSchema,
@@ -49,6 +52,15 @@ const UserCommunityRelationSchema = z.object({
   session: z.string(),
   userId: z.string(),
   communityId: z.string(),
+});
+
+const updateCommunitySchema = z.object({
+  session: z.string(),
+  communityId: z.string(),
+  socialPlatformId: z.string(),
+  communityName: z.string(),
+  description: z.string(),
+  communityAvatar: z.string(),
 });
 
 const getHandler = async (didSession: string) => {
@@ -173,4 +185,30 @@ export const communityRouter = router({
       return left(e);
     }
   }),
+
+  updateCommunityDetails: publicProcedure
+    .input(updateCommunitySchema)
+    .mutation(async ({input}) => {
+      try {
+        const handler = await getHandler(input.session);
+        const communityCall = updateCommunity(handler, input);
+        const socialCall = updateSocialPlatform(handler, input);
+        const results = await Promise.all([communityCall, socialCall]);
+        const lefts = results.filter((r) => !isRight(r));
+        if (lefts.length > 0) return left(results);
+        return right(results);
+      } catch (e) {
+        return left(e);
+      }
+    }),
 });
+
+const updateCommunity = async (handler, payload) => {
+  const response = await updateCommunityDetails(compose, {...payload});
+  return isEmpty(response.errors) ? right(response.data) : left(response.errors);
+}
+
+const updateSocialPlatform = async (handler, payload) => {
+  const response = await updateSocialPlatformDetails(compose, {...payload});
+  return isEmpty(response.errors) ? right(response.data) : left(response.errors);
+}

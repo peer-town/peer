@@ -1,5 +1,6 @@
-import {Edges, Vote, Node} from "@devnode/composedb";
+import {Edges, Vote, Node, SocialPlatform} from "@devnode/composedb";
 import {isEmpty, isNil, get} from "lodash";
+import {constants} from "../config";
 
 export const getAbsVotes = (votes: Edges<Vote> | undefined): number => {
   if (isNil(votes) || isEmpty(votes.edges)) return 0;
@@ -41,4 +42,18 @@ const getDownVotes = (votes: Node<Vote>[]): number => {
     }
   }
   return count;
+}
+
+export const getDevnodeSocialPlatform = (socialPlatforms: Node<SocialPlatform>[] | undefined): Node<SocialPlatform>  => {
+  if (isNil(socialPlatforms) || isEmpty(socialPlatforms)) return undefined;
+  return socialPlatforms.find((platform) => platform.node.platformId === constants.PLATFORM_DEVNODE_ID);
+}
+
+export const extractProjectName = (gitUrl: string): string | null => {
+  const regex = /(?:.*\/)?(.+?)(?:\.git|$)/;
+  const match = gitUrl.match(regex);
+  if (match) {
+    return match[1];
+  }
+  return null;
 }

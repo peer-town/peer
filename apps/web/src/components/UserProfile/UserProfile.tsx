@@ -1,4 +1,4 @@
-import {FlexColumn, FlexRow} from "../Flex";
+import {FlexRow} from "../Flex";
 import {AvatarCard} from "../AvatarCard";
 import {trpc} from "../../utils/trpc";
 import {UserProfileProps} from "./types";
@@ -9,28 +9,21 @@ import {getDiscordAuthUrl} from "../../utils";
 import Image from "next/image";
 import {SecondaryButton} from "../Button/SecondaryButton";
 import {Loader} from "../Loader";
-import {clearUserProfile, useAppDispatch} from "../../store";
-
-const CloseIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className="h-6 w-6 text-gray-500 hover:text-black">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M6 18L18 6M6 6l12 12"/>
-    </svg>
-  );
-}
+import {clearUserProfile, useAppDispatch, useAppSelector} from "../../store";
+import {Badge} from "../Badge";
+import {ContentCard} from "../ContentCard";
+import {CloseIcon} from "../Icons";
+import {UserThreadList} from "../../sections/UserThreadList/UserThreadList";
+import Link from "next/link";
+import AddRepoModal from "../Modal/AddRepoModal/AddRepoModal";
+import {UserRepoList} from "../../sections/UserRepoList/UserRepoList";
 
 export const UserProfile = (props: UserProfileProps) => {
   const [profile, setProfile] = useState<any>();
+  const [isUserThreadListOpen, setUserThreadListOpen] = useState<boolean>(false);
+  const [isUserRepoListOpen, setUserRepoListOpen] = useState<boolean>(false);
   const [isDiscordConnected, setIsDiscordConnected] = useState(false);
+  const [openAddRepoModal, setOpenAddRepoModal] = useState(false);
   const points = [
     {tag: "python", points: 35},
     {tag: "web3", points: 35},
@@ -38,8 +31,11 @@ export const UserProfile = (props: UserProfileProps) => {
   ];
 
   const dispatch = useAppDispatch();
+  const currentUserId = useAppSelector((state) => state.user.id);
   const user = trpc.user.getUserByStreamId.useQuery({streamId: props.userStreamId});
   const communities = trpc.user.getUserCommunities.useQuery({streamId: props.userStreamId});
+  const userThreads = trpc.user.getUserThreads.useQuery({last: 2, authorId: get(user, "data.value.author.id")});
+  const userRepos = trpc.radicle.fetchRepo.useQuery({first: 20, authorId: get(user, "data.value.author.id")});
 
   useEffect(() => {
     if (has(user, "data.value.userPlatforms[0]")) {
@@ -62,22 +58,29 @@ export const UserProfile = (props: UserProfileProps) => {
     window.location.replace(getDiscordAuthUrl("user"));
   };
 
+  const handleOnRepoAdded = () => {
+    setOpenAddRepoModal(false);
+    user.refetch();
+    userRepos.refetch();
+  }
+
   return (
-    <div className="w-full max-w-sm h-screen scrollbar-hide overflow-y-scroll">
+    <div className="w-full h-screen scrollbar-hide overflow-y-scroll">
       {/* user profile */}
       <button
         className="p-4"
         onClick={() => dispatch(clearUserProfile())}
       >
-        <CloseIcon />
+        <CloseIcon/>
       </button>
-      <div className="flex flex-col items-center my-12">
+      <div className="flex flex-row items-center m-4 gap-2">
         <Image
           className={"rounded-2xl border"}
           src={profile.platformAvatar}
           alt={`profile ${profile.platformUsername}`}
-          width={126}
-          height={126}
+          width={85}
+          height={85}
+          style={{width: 85, height: 85}}
         />
         <p className="text-4xl my-4">{profile.platformUsername}</p>
         {!isDiscordConnected && (
@@ -92,44 +95,120 @@ export const UserProfile = (props: UserProfileProps) => {
         )}
       </div>
 
-      {/* reputation */}
-      <hr/>
-      <div className="p-6">
-        <p className="text-2xl">Reputation</p>
-
-        <div className="my-4 rounded-md border bg-white text-gray-500">
-          {points.map((point, index) => {
-            return (
-              <FlexRow key={index} classes={"justify-between p-2 border-b"}>
-                <p>{point.tag}</p>
-                <p>{`${point.points} pts`}</p>
-              </FlexRow>
-            );
-          })}
-        </div>
-        <FlexRow classes={"justify-between"}>
-          <p className="text-gray-500">Total Points</p>
-          <p className="text-2xl text-right text-black">1,200</p>
-        </FlexRow>
-      </div>
-
       {/* communities */}
       <hr/>
-      <div className="p-6">
-        <p className="text-2xl"> Communities</p>
-        <FlexColumn classes="mt-6 gap-6">
+      <div className="p-4">
+        <p className="text-xl font-medium"> Communities</p>
+        <FlexRow classes="flex-wrap mt-6 gap-2">
           {communities.data && communities.data.edges.map((community) => {
             return (
               <AvatarCard
+                imageClasses="border"
                 key={community.node.community.id}
                 image={get(community, "node.community.socialPlatforms.edges[0].node.communityAvatar")}
                 imageSize={44}
-                name={get(community, "node.community.socialPlatforms.edges[0].node.communityName")}
               />
             )
           })}
-        </FlexColumn>
+        </FlexRow>
       </div>
+
+      {/* reputation */}
+      <hr/>
+      <div className="p-4">
+        <p className="text-xl font-medium">Reputation</p>
+        <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
+          {points.map((point, index) => {
+            return (
+              <Badge key={index} text={`${point.tag} ${point.points} pts`}/>
+            );
+          })}
+        </FlexRow>
+        <FlexRow classes={"justify-between"}>
+          <p className="text-gray-500 font-semibold">Total Points</p>
+          <p className="text-2xl text-right text-black">1,200</p>
+        </FlexRow>
+      </div>
+      <hr/>
+
+      {/* user threads */}
+      <div className="p-4">
+        <FlexRow classes={"gap-4"}>
+          <p className="text-xl font-medium">Questions</p>
+          <p className="text-lg text-gray-500">{get(user, "data.value.threadCount")}</p>
+          <p
+            className="text-sm text-gray-400 hover:text-gray-600 ml-auto cursor-pointer"
+            onClick={() => setUserThreadListOpen(true)}
+          >
+            see more
+          </p>
+        </FlexRow>
+        <div className="flex flex-col gap-2 mt-2">
+          {userThreads.data?.edges?.map((thread) => (
+            <Link
+              key={thread.node.id}
+              href={{
+                pathname: "/community",
+                query: {
+                  communityId: thread.node.communityId,
+                  threadId: thread.node.id,
+                },
+              }}
+            >
+              <ContentCard key={thread.node.id} title={thread.node.title} body={thread.node.body}/>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* radicle integration */}
+      <hr/>
+      <div className="p-4">
+        <FlexRow classes={"gap-4"}>
+          <p className="text-xl font-medium">Repos</p>
+          <p className="text-lg text-gray-500">{get(user, "data.value.userRepoCount")}</p>
+          <div className="flex flex-row gap-4 ml-auto">
+            { (props.userStreamId === currentUserId) &&
+              <p
+                className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
+                onClick={() => setOpenAddRepoModal(true)}
+              >
+                add new
+              </p>
+            }
+            <p
+              className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
+              onClick={() => setUserRepoListOpen(true)}
+            >
+              see more
+            </p>
+          </div>
+        </FlexRow>
+        <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
+          {userRepos.data?.edges?.map((repo) => (
+            <ContentCard key={repo.node.id} title={repo.node.name} subtitle={repo.node.radId} body={repo.node.description}/>
+          ))}
+        </FlexRow>
+      </div>
+
+      <AddRepoModal
+        open={openAddRepoModal}
+        onClose={() => setOpenAddRepoModal(false)}
+        onDone={handleOnRepoAdded}
+        title="add repo"
+      />
+
+      <UserThreadList
+        open={isUserThreadListOpen}
+        authorId={get(user, "data.value.author.id")}
+        onClose={() => setUserThreadListOpen(false)}
+      />
+
+      <UserRepoList
+        open={isUserRepoListOpen}
+        authorId={get(user, "data.value.author.id")}
+        onClose={() => setUserRepoListOpen(false)}
+      />
     </div>
   );
 }

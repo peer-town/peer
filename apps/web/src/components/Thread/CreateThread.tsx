@@ -11,6 +11,7 @@ import {useAppDispatch, useAppSelector} from "../../store";
 import {PrimaryButton} from "../Button";
 import {useRouter} from "next/router";
 import {newlyCreatedThread} from "../../store/features/thread";
+import {TagMultiSelect} from "../Tag";
 
 const CreateThread = (props: CreateThreadProps) => {
   const router = useRouter();
@@ -20,6 +21,8 @@ const CreateThread = (props: CreateThreadProps) => {
   const [creatingThread, setCreatingThread] = useState<boolean>(false);
   const [questionError, setQuestionError] = useState<boolean>(false);
   const [descriptionError, setDescriptionError] = useState<boolean>(false);
+  const [tags, setTags] = useState<{id:string,tag:string}[]>([]);
+  const minLimit =1;
 
   const user = useAppSelector((state) => state.user);
   const {communityId, communityName} = props.community;
@@ -68,6 +71,12 @@ const CreateThread = (props: CreateThreadProps) => {
       return;
     }
 
+    if(tags.length<minLimit){
+      toast.error(`Select at least ${minLimit} tags`);
+      setCreatingThread(false);
+      return;
+    }
+
     const result = await createThread
         .mutateAsync({
           session: user.didSession,
@@ -77,6 +86,7 @@ const CreateThread = (props: CreateThreadProps) => {
           body: description,
           createdFrom: constants.CREATED_FROM_DEVNODE,
           createdAt: new Date().toISOString(),
+          tags:tags
         });
     if (isRight(result)) {
       setQuestion("");
@@ -100,6 +110,7 @@ const CreateThread = (props: CreateThreadProps) => {
       <Question title={"Ask question"} open={props.open} onClose={props.onClose}>
         <div className="form-group mb-6">
           <input
+            tabIndex={1}
               id="question-title"
               className={utils.classNames(
                   "form-control mb-3 block w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none",
@@ -113,6 +124,7 @@ const CreateThread = (props: CreateThreadProps) => {
               required
           />
           <textarea
+            tabIndex={2}
               id="question-desc"
               className={utils.classNames(
                   "form-control mb-3 block h-[264px] min-h-[120px] w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none",
@@ -125,10 +137,17 @@ const CreateThread = (props: CreateThreadProps) => {
               required
           />
           <div
+            tabIndex={3}
               className=" mb-3 block flex w-full flex-col rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white bg-clip-padding p-2 px-5 text-base font-normal text-gray-700 focus:border-gray-400 focus:bg-white focus:text-gray-700 focus:outline-none">
             <div className="w-full whitespace-normal break-all p-2">
               Posting on <span className="font-bold">{communityName}</span>
             </div>
+          </div>
+          <div
+            tabIndex={4}
+            className="mt-3 mb-14 py-2 h-auto w-full rounded-[10px] border-2 border-solid border-[#F1F1F1] bg-white focus:ring-0 focus:border-gray-400 focus:bg-white focus:outline-none"
+          >
+            <TagMultiSelect selectedData={tags} setData={setTags} placeholder={"Select tag"}/>
           </div>
           <PrimaryButton
               classes={"w-full mt-4"}

@@ -42,6 +42,17 @@ export interface Comments {
   edges: Comment[];
 }
 
+export interface Tag {
+  node: {
+    id: string;
+    tag: {
+      tag: string
+    }
+  }
+}
+export interface Tags {
+  edges: Tag[];
+}
 export interface Thread {
   id: string;
   title: string;
@@ -55,6 +66,7 @@ export interface Thread {
   user: User;
   community: Community;
   comments: Comments;
+  tags: Tags
 }
 
 export interface SocialThreadId {
@@ -65,4 +77,21 @@ export interface SocialThreadId {
 export interface SocialCommentId {
   platformName: string;
   commentId: string;
+}
+
+export interface RadicleRepoObject {
+  session: string;
+  username: string,
+  repoUrl: string,
+  description: string,
+  branch: string,
+}
+
+export interface RadicleRepoComposeObject {
+  session: string;
+  name: string,
+  url: string,
+  description: string,
+  radId: string,
+  userId:string,
 }

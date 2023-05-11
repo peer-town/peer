@@ -3,12 +3,13 @@ import Image from "next/image";
 import {Badge} from "../Badge";
 import {CommunityCardProps} from "./types";
 import * as utils from "../../utils";
+import {md_screen_image, md_screen_wrapper, sm_screen_image, sm_screen_wrapper} from "./style";
 
 export const CommunityCard = (props: CommunityCardProps) => {
   return (
     <div
       onClick={props.onClick}
-      className="flex flex-col-reverse md:flex-row min-h-[246px] border hover:drop-shadow-xl rounded-2xl bg-white">
+      className={`flex flex-col-reverse h-full min-h-[246px] border hover:drop-shadow-xl rounded-2xl bg-white mx-auto ${md_screen_wrapper} ${sm_screen_wrapper}`}>
       <div className={"flex flex-col grow"}>
         <div className="flex flex-col justify-start px-6 py-7">
           <h2 className="mb-2 text-2xl font-medium line-clamp-1 break-all">
@@ -35,7 +36,7 @@ export const CommunityCard = (props: CommunityCardProps) => {
         </div>
       </div>
       <Image
-        className="rounded-tr-2xl w-[100%] max-h-[246px] md:w-[229px] border-l rounded-b-2xl object-cover"
+        className={`rounded-tr-2xl w-[100%] max-h-[auto]  border-l rounded-b-2xl object-cover ${md_screen_image} ${sm_screen_image}`}
         src={props.communityAvatar}
         width={229}
         height={0}

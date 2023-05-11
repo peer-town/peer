@@ -1,0 +1,1 @@
+export const md_date = "max-900:flex-wrap"

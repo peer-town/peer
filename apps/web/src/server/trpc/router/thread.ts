@@ -4,11 +4,13 @@ import {
   composeMutationHandler,
   definition,
   ThreadInput,
+  createThreadTags,
+  fetchThreadTags
 } from "@devnode/composedb";
 import { ComposeClient } from "@composedb/client";
 import { config } from "../../../config";
 import {isRight, left, right} from "../../../utils/fp";
-import {get, has, omit} from "lodash";
+import {get, has, isEmpty, isNil, omit} from "lodash";
 import { DIDSession } from "did-session";
 import {SocialThreadId} from "../../types";
 
@@ -25,6 +27,10 @@ const createThreadSchema = z.object({
   body: z.string(),
   createdFrom: z.string(),
   createdAt: z.string(),
+  tags:z.array(z.object({
+    id:z.string(),
+    tag:z.string()
+  }))
 });
 
 const getHandler = async (didSession: string) => {
@@ -43,6 +49,8 @@ export const threadRouter = router({
         const response = await handler.createThread(payload as ThreadInput);
         if(response.data) {
           const threadId = get(response.data, "createThread.document.id");
+          const {tags} = input;
+          await createThreadTag(handler,tags, threadId);
           const apiResponse = await handleWebToAggregator(threadId);
           const data = await apiResponse.json();
           if (has(data, "data[0]")) {
@@ -62,8 +70,39 @@ export const threadRouter = router({
         return left(e);
       }
     }),
+  fetchThreadTags: publicProcedure
+    .input(z.object({ streamId: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const response = await fetchThreadTags(
+          input.streamId as string
+        );
+        return response.errors && response.errors.length > 0
+          ? left(response.errors)
+          : right(response);
+      } catch (e) {
+        return left(e);
+      }
+    }),
 });
 
+const createThreadTag = async (handler, tags, threadId) => {
+  if(tags.length>0 && !isEmpty(tags) && !isNil(tags)){
+    const promises =  tags.map(async (tag)=>{
+      const tagId = tag.id ;
+      const  tagResponse = await createThreadTags(compose, tagId as string, threadId as string);
+      if (tagResponse.errors && tagResponse.errors.length > 0) {
+        return left(tagResponse.errors);
+      }
+      return right(tagResponse.data)
+    })
+    const result = await Promise.all(promises);
+    const checkLeft = result.filter((data) => !isRight(data as any))
+    if(checkLeft.length>0){
+      return left({message: "error occurred ",error: result});
+    }
+  }
+}
 const updateThread = async (handler, streamId, social: SocialThreadId) => {
   try {
     const response = await handler.updateThreadWithSocialThreadId(streamId, social);
