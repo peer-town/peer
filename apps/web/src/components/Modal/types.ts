@@ -26,6 +26,11 @@ export interface BaseModalProps extends ModalProps {
   classNameContent?: string;
 }
 
+export interface AddRepoModalProps extends ModalProps {
+  title?: string;
+  onDone?(): void;
+}
+
 export interface WebOnBoardProps extends ModalProps {
   onSubmit(data: WebOnBoardData): Promise<void>;
 }

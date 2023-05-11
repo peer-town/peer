@@ -48,3 +48,12 @@ export const getDevnodeSocialPlatform = (socialPlatforms: Node<SocialPlatform>[]
   if (isNil(socialPlatforms) || isEmpty(socialPlatforms)) return undefined;
   return socialPlatforms.find((platform) => platform.node.platformId === constants.PLATFORM_DEVNODE_ID);
 }
+
+export const extractProjectName = (gitUrl: string): string | null => {
+  const regex = /(?:.*\/)?(.+?)(?:\.git|$)/;
+  const match = gitUrl.match(regex);
+  if (match) {
+    return match[1];
+  }
+  return null;
+}

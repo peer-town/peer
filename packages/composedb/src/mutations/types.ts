@@ -9,3 +9,11 @@ export interface UpdateSocialPlatformPayload {
   communityName: string;
   communityAvatar: string;
 }
+
+export interface CreateRadicleRepoPayload {
+  userId: string;
+  name: string;
+  description: string;
+  url: string;
+  radId: string;
+}
