@@ -73,7 +73,7 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
         "flex h-[74px] items-center justify-center w-full",
         "bg-[#5865F2] focus:outline-none",
         "font-medium text-white ",
-        "overflow: hidden"
+        "overflow-hidden"
       )}
       onClick={onClick}
       disabled={loading}
