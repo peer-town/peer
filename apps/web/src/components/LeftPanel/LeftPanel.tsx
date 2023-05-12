@@ -35,7 +35,7 @@ const LeftPanel = (props: LeftPanelProp) => {
                 )}
                 width={50}
                 name={"DevNode "}
-                image={"/devnode.png"}
+                image={"/peer.png"}
                 selected={false}
                 onClick={() => {
                   dispatch(selectCommunity(null));
