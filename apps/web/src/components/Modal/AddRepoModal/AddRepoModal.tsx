@@ -45,7 +45,7 @@ const AddRepoModal = (props:AddRepoModalProps) => {
   };
 
   const validateUrl = (url) => {
-    const regex = /((git|ssh|http(s)?)|(git@[\w\.-]+))(:(\/\/)?)([\w\.@\:/\-~]+)(\.git)(\/)?/;
+    const regex = /((git|ssh|http(s)?)|(git@[\w\.-]+))(:(\/\/)?)([\w\.@\:/\-~]+)(\/)?/;
     const match = url.match(regex);
     if (!match) {
       toast.error("Invalid Url");
@@ -99,7 +99,7 @@ const AddRepoModal = (props:AddRepoModalProps) => {
         session: user?.didSession,
         userId: user?.id,
         username: userName,
-        repoUrl: url,
+        repoUrl: utils.keepOrAppendGit(url),
         description: description,
         branch: branch,
       });

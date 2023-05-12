@@ -57,3 +57,8 @@ export const extractProjectName = (gitUrl: string): string | null => {
   }
   return null;
 }
+
+export const keepOrAppendGit = (gitUrl: string): string => {
+  if(gitUrl.split(".").pop() === 'git') return gitUrl;
+  return gitUrl.concat(".git");
+}
