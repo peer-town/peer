@@ -168,13 +168,13 @@ export const UserProfile = (props: UserProfileProps) => {
           <p className="text-xl font-medium">Repos</p>
           <p className="text-lg text-gray-500">{get(user, "data.value.userRepoCount")}</p>
           <div className="flex flex-row gap-4 ml-auto">
-            { (props.userStreamId === currentUserId) &&
-              <p
-                className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
-                onClick={() => setOpenAddRepoModal(true)}
-              >
-                add new
-              </p>
+            {(props.userStreamId === currentUserId) &&
+                <p
+                    className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
+                    onClick={() => setOpenAddRepoModal(true)}
+                >
+                    add new
+                </p>
             }
             <p
               className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -186,7 +186,16 @@ export const UserProfile = (props: UserProfileProps) => {
         </FlexRow>
         <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
           {userRepos.data?.edges?.map((repo) => (
-            <ContentCard key={repo.node.id} title={repo.node.name} subtitle={repo.node.radId} body={repo.node.description}/>
+            <Link
+              key={repo.node.id}
+              href={{
+                pathname: `https://app.radicle.xyz/seeds/seed.peer.town/${repo.node.radId}`,
+              }}
+              target="_blank"
+            >
+              <ContentCard key={repo.node.id} title={repo.node.name} subtitle={repo.node.radId}
+                           body={repo.node.description}/>
+            </Link>
           ))}
         </FlexRow>
       </div>
