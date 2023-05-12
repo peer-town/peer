@@ -16,6 +16,9 @@ export const config = {
     channel: process.env.DISCORD_SERVER_NAME || "devnode",
     channelCategory: process.env.DISCORD_CHANNEL_CATEGORY_NAME || "DEVNODE COMMS"
   },
+  telegram: {
+    token: process.env.TELEGRAM_TOKEN || "",
+  },
   debug: {
     devs: ["933958006218031114", "922429029544525866"],
   },

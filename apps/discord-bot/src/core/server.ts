@@ -3,7 +3,6 @@ import cors from "cors";
 import {config} from "../config";
 import * as commentHandler from "./comments/handler";
 import * as threadHandler from "./threads/handler";
-import {Client, GatewayIntentBits, Partials} from "discord.js";
 import {commentSchema, threadSchema, validator} from "./middleware/validator";
 import {Clients} from "./types";
 import {logger} from "./utils/logger";
@@ -35,20 +34,3 @@ export const initServer = (clients: Clients): Express => {
   return server;
 };
 
-export const initDiscord = async () => {
-  const client = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.GuildMessageReactions,
-      GatewayIntentBits.GuildMessageTyping,
-      GatewayIntentBits.MessageContent,
-      GatewayIntentBits.DirectMessages,
-      GatewayIntentBits.DirectMessageReactions,
-      GatewayIntentBits.DirectMessageTyping,
-    ],
-    partials: [Partials.Channel],
-  });
-  await client.login(config.discord.token);
-  return client;
-}

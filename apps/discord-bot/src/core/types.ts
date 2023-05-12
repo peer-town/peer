@@ -1,11 +1,13 @@
 import {ComposeClient} from "@composedb/client";
 import {Client as DiscordClient} from "discord.js";
 import {composeQueryHandler} from "@devnode/composedb";
+import {Telegraf} from "telegraf";
 
 export type Clients = {
   compose: ComposeClient,
   composeQuery: typeof composeQueryHandler,
   discord: DiscordClient,
+  telegraf: Telegraf,
 };
 
 export interface Edges<T> {
