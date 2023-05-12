@@ -72,7 +72,8 @@ export const ConnectWalletButton = (props: ConnectWalletProps) => {
       className={utils.classNames(
         "flex h-[74px] items-center justify-center w-full",
         "bg-[#5865F2] focus:outline-none",
-        "font-medium text-white "
+        "font-medium text-white ",
+        "overflow-hidden"
       )}
       onClick={onClick}
       disabled={loading}
