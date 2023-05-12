@@ -132,10 +132,10 @@ const CommunityPage = () => {
             </FlexRow>
           )}
           <FlexRow classes="gap-2">
-            <div className="grow">
-              <Search onQuery={() => {
-              }}/>
-            </div>
+            {/*<div className="grow">*/}
+            {/*  <Search onQuery={() => {*/}
+            {/*  }}/>*/}
+            {/*</div>*/}
             <button
               title="ask a question"
               className="h-[50px] min-w-[50px] rounded-xl border bg-white p-2 hover:border-gray-500"
