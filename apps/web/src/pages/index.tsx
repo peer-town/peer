@@ -45,10 +45,10 @@ const Home: NextPage = () => {
         <h1 className="p-4 text-4xl font-medium">discover</h1>
       </div>
 
-      <div className="mx-4 max-w-[682px] ">
-        <Search label={"Search by name or tags"} onQuery={() => {
-        }}/>
-      </div>
+      {/*<div className="mx-4 max-w-[682px] ">*/}
+      {/*  <Search label={"Search by name or tags"} onQuery={() => {*/}
+      {/*  }}/>*/}
+      {/*</div>*/}
 
       <div className={`m-4 mt-12 grid gap-8 ${md_index_grid}`}>
         {data?.pages?.map((page) => {

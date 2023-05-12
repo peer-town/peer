@@ -5,10 +5,12 @@ import {NoData} from "../../components/NoData";
 import {LoadMore} from "../../components/Button/LoadMore";
 import {ContentCard} from "../../components/ContentCard";
 import {useEffect} from "react";
+import Link from "next/link";
 
 interface Props {
   open: boolean;
   authorId: string;
+
   onClose?(): void;
 }
 
@@ -36,10 +38,19 @@ export const UserRepoList = (props: Props) => {
 
   return (
     <BaseModal title={"Repos"} open={props.open} onClose={props.onClose}>
-      <div className="flex flex-col mt-4 gap-2 max-w-lg h-[500px] overflow-y-scroll scrollbar-hide">
+      <div className="flex flex-col mt-4 gap-2 max-w-lg h-[500px] text-gray-500 overflow-y-scroll scrollbar-hide">
         {data?.pages?.map((page) => (
           page?.edges?.map((repo) => (
-            <ContentCard key={repo.node.id} title={repo.node.name} body={repo.node.description}/>
+            <Link
+              key={repo.node.id}
+              href={{
+                pathname: `https://app.radicle.xyz/seeds/seed.peer.town/${repo.node.radId}`,
+              }}
+              target="_blank"
+            >
+              <ContentCard key={repo.node.id} title={repo.node.name} subtitle={repo.node.radId}
+                           body={repo.node.description}/>
+            </Link>
           ))
         ))}
         {isEmpty(data?.pages[0]?.edges) && (
