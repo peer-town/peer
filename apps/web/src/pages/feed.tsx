@@ -61,7 +61,7 @@ const FeedPage = () => {
           </div>
           <p className="text-3xl font-medium my-4 ">your feed</p>
         </div>
-        <Search onQuery={() => {}}/>
+        {/*<Search onQuery={() => {}}/>*/}
         <div className="mt-4 flex flex-col space-y-4 overflow-y-scroll scrollbar-hide pt-4 pb-[500px]">
           {threads && threads.map((thread) => (
               <Link
