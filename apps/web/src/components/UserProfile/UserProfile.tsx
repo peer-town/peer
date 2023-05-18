@@ -112,24 +112,24 @@ export const UserProfile = (props: UserProfileProps) => {
           })}
         </FlexRow>
       </div>
-
+      {/*  Reputation functionality is on hold*/}
       {/* reputation */}
-      <hr/>
-      <div className="p-4">
-        <p className="text-xl font-medium">Reputation</p>
-        <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
-          {points.map((point, index) => {
-            return (
-              <Badge key={index} text={`${point.tag} ${point.points} pts`}/>
-            );
-          })}
-        </FlexRow>
-        <FlexRow classes={"justify-between"}>
-          <p className="text-gray-500 font-semibold">Total Points</p>
-          <p className="text-2xl text-right text-black">1,200</p>
-        </FlexRow>
-      </div>
-      <hr/>
+      {/*<hr/>*/}
+      {/*<div className="p-4">*/}
+      {/*  <p className="text-xl font-medium">Reputation</p>*/}
+      {/*  <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>*/}
+      {/*    {points.map((point, index) => {*/}
+      {/*      return (*/}
+      {/*        <Badge key={index} text={`${point.tag} ${point.points} pts`}/>*/}
+      {/*      );*/}
+      {/*    })}*/}
+      {/*  </FlexRow>*/}
+      {/*  <FlexRow classes={"justify-between"}>*/}
+      {/*    <p className="text-gray-500 font-semibold">Total Points</p>*/}
+      {/*    <p className="text-2xl text-right text-black">1,200</p>*/}
+      {/*  </FlexRow>*/}
+      {/*</div>*/}
+      {/*<hr/>*/}
 
       {/* user threads */}
       <div className="p-4">
