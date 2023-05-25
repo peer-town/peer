@@ -187,6 +187,7 @@ export const UserProfile = (props: UserProfileProps) => {
         <FlexRow classes={"flex-wrap gap-2 my-4 bg-white text-gray-500"}>
           {userRepos.data?.edges?.map((repo) => (
             <Link
+              className="w-full"
               key={repo.node.id}
               href={{
                 pathname: `https://app.radicle.xyz/seeds/seed.peer.town/${repo.node.radId}`,

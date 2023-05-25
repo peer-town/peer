@@ -20,7 +20,7 @@ const AddRepoModal = (props:AddRepoModalProps) => {
   const [branchError , setBranchError] = useState<boolean>(false);
 
   const user = useAppSelector((state) => state.user);
-  const userName = user?.userPlatforms[0].platformUsername;
+  const userName = get(user, "userPlatforms[0].platformUsername");
   const adRepo = trpc.radicle.addRepo.useMutation();
 
   const handleUrlInput = (e) => {
